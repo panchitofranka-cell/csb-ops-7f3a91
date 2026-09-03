@@ -1,0 +1,943 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="googlebot" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0A0A09">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pilotage">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; form-action 'none'; base-uri 'none'">
+<title>Pilotage Bienne 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --paper:#F4F4F1; --card:#FFFFFF; --sunk:#EBEBE6; --line:#DCDCD5; --line2:#C9C9C0;
+  --ink:#16150F; --ink2:#4A4940; --ink3:#77766B;
+  --brand:#F5C400; --brand-ink:#7A6100;
+  --ok:#1F7A4D; --ok-bg:#E4F1E9; --warn:#A96A00; --warn-bg:#FBEEDA; --bad:#AA2A20; --bad-bg:#FBE6E4;
+  --shadow:0 1px 2px rgba(20,19,15,.05), 0 8px 20px -14px rgba(20,19,15,.18);
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --paper:#121210; --card:#1B1B18; --sunk:#232320; --line:#2E2E29; --line2:#3C3C35;
+  --ink:#EFEEE7; --ink2:#B4B3A8; --ink3:#87867B;
+  --brand:#F5C400; --brand-ink:#F5C400;
+  --ok:#5FC08C; --ok-bg:#16301F; --warn:#E0A03A; --warn-bg:#332506; --bad:#F08C82; --bad-bg:#331714;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 22px -14px rgba(0,0,0,.7);
+}}
+:root[data-theme="dark"]{
+  --paper:#121210; --card:#1B1B18; --sunk:#232320; --line:#2E2E29; --line2:#3C3C35;
+  --ink:#EFEEE7; --ink2:#B4B3A8; --ink3:#87867B;
+  --brand:#F5C400; --brand-ink:#F5C400;
+  --ok:#5FC08C; --ok-bg:#16301F; --warn:#E0A03A; --warn-bg:#332506; --bad:#F08C82; --bad-bg:#331714;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 22px -14px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:Archivo,"IBM Plex Sans",sans-serif;margin:0;letter-spacing:-.02em;text-wrap:balance}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px 72px}
+
+/* ===================== GATE ===================== */
+#gate{position:fixed;inset:0;z-index:99;background:#0A0A09;color:#EDEDE7;
+  display:flex;align-items:center;justify-content:center;padding:24px;
+  transition:opacity .55s ease, visibility .55s}
+#gate.gone{opacity:0;visibility:hidden;pointer-events:none}
+.gate-in{width:100%;max-width:420px;text-align:center}
+.gate-eyebrow{font-size:10.5px;letter-spacing:.34em;text-transform:uppercase;color:#6F6E64;font-weight:600}
+.gate-eyebrow b{background:var(--brand);color:#0A0A09;padding:1px 5px;border-radius:3px;letter-spacing:.1em}
+#gate h1{font-size:31px;font-weight:800;margin:14px 0 0;color:#fff;letter-spacing:-.03em}
+#gate p{margin:9px 0 0;color:#84837A;font-size:13.5px}
+
+.stage{position:relative;height:230px;display:flex;align-items:center;justify-content:center;margin-top:6px}
+.ring{position:absolute;width:186px;height:186px;border:1px solid #2B2B27;border-radius:50%;
+  opacity:0;transition:opacity .7s ease .1s}
+.stage.intro .ring{opacity:1}
+.ring::after{content:"";position:absolute;top:50%;left:50%;width:5px;height:5px;margin:-2.5px;
+  background:#4A4A44;border-radius:50%}
+.cells{display:flex;gap:14px;position:relative}
+.cell{width:62px;height:74px;border-radius:17px;border:1.5px solid #33332E;background:#171715;
+  display:flex;align-items:center;justify-content:center;
+  font-family:Archivo;font-size:31px;font-weight:700;color:#fff;
+  transition:transform .85s cubic-bezier(.22,1,.36,1), border-color .3s, box-shadow .3s, opacity .45s, background .3s}
+.cell.on{border-color:#EDEDE7;box-shadow:0 0 0 1px #EDEDE7, 0 0 26px -4px rgba(237,237,231,.55)}
+.stage.intro .cell:nth-child(1){transform:translate(2px,-104px)}
+.stage.intro .cell:nth-child(2){transform:translate(78px,-24px) }
+.stage.intro .cell:nth-child(3){transform:translate(-6px,58px)}
+.stage.intro .cell:nth-child(4){transform:translate(-92px,6px)}
+.stage.err .cells{animation:shake .42s}
+.stage.err .cell{border-color:#C0554C;box-shadow:0 0 0 1px rgba(192,85,76,.5)}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
+.stage.ok .cell{opacity:0;transform:scale(.5)}
+.burst{position:absolute;width:150px;height:150px;opacity:0;transition:opacity .3s}
+.stage.ok .burst{opacity:1}
+.core{position:absolute;top:50%;left:50%;width:96px;height:96px;margin:-48px;border-radius:28px;
+  border:2px solid #4FBF8B;transform:scale(.4);opacity:0;transition:transform .6s cubic-bezier(.22,1,.36,1),opacity .4s}
+.core::after{content:"";position:absolute;inset:16px;border-radius:16px;background:#1B4634;border:1.5px solid #4FBF8B}
+.stage.ok .core{transform:scale(1);opacity:1}
+.spark{position:absolute;top:50%;left:50%;width:6px;height:6px;border-radius:50%;background:#6FD3A2;opacity:0}
+.stage.ok .spark{animation:fly .9s cubic-bezier(.16,1,.3,1) forwards}
+@keyframes fly{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}
+ 25%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(.9)}}
+
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;max-width:262px;margin:4px auto 0}
+.pad button{height:50px;border:1px solid #2B2B27;background:#151513;color:#EDEDE7;border-radius:12px;
+  font:600 19px/1 "IBM Plex Mono";cursor:pointer;transition:background .15s}
+.pad button:hover{background:#201F1D}
+.pad button:active{background:#2A2926}
+.pad button.wide{grid-column:span 1;font-size:14px;font-family:"IBM Plex Sans"}
+.gate-msg{min-height:22px;margin-top:16px;font-size:13px;font-weight:600}
+.gate-msg.bad{color:#E2887F}.gate-msg.good{color:#6FD3A2}
+.gate-foot{margin-top:18px;font-size:11px;color:#5B5A52;line-height:1.5}
+
+/* ===================== APP ===================== */
+header{background:var(--ink);color:#F4F4F1;padding:18px 0 0}
+.hrow{max-width:1120px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.mark{font-family:Archivo;font-weight:800;font-size:17px;letter-spacing:-.03em;line-height:1}
+.mark b{background:var(--brand);color:#16150F;padding:1px 6px;border-radius:3px}
+.mark small{display:block;font-size:9px;letter-spacing:.16em;font-weight:600;color:var(--brand);margin-top:5px;text-transform:uppercase;font-family:"IBM Plex Sans"}
+.spacer{flex:1}
+.seg{display:flex;background:rgba(255,255,255,.1);border-radius:7px;padding:2px;gap:2px}
+.seg button{border:0;background:transparent;color:#D9D8CF;font:600 12px/1 "IBM Plex Sans";padding:7px 11px;border-radius:5px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--brand);color:#16150F}
+.seg button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.userchip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.09);border-radius:20px;padding:5px 6px 5px 12px;font-size:12.5px;font-weight:600;color:#EDEDE7}
+.userchip button{border:0;background:rgba(255,255,255,.12);color:#D9D8CF;border-radius:14px;padding:4px 9px;font:600 11px/1 "IBM Plex Sans";cursor:pointer}
+.htitle{max-width:1120px;margin:0 auto;padding:22px 20px 20px}
+.htitle h1{font-size:clamp(25px,4vw,37px);font-weight:800;color:#fff;line-height:1.03}
+.htitle p{margin:8px 0 0;color:#A3A298;font-size:13.5px;max-width:62ch}
+.status{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;color:#A3A298;margin-top:12px;
+  background:rgba(255,255,255,.07);padding:5px 10px;border-radius:20px}
+.dot{width:7px;height:7px;border-radius:50%;background:#77766B;flex:none}
+.dot.on{background:#5FC08C}.dot.off{background:#E0A03A}
+
+section{margin-top:34px}
+.shead{display:flex;align-items:baseline;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.shead h2{font-size:19px;font-weight:700}
+.shead .hint{font-size:12.5px;color:var(--ink3)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.p18{padding:18px}
+
+.today{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.tcell{background:var(--card);padding:15px 16px 16px}
+.tcell .k{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);font-weight:600}
+.tcell .v{font-family:"IBM Plex Mono";font-variant-numeric:tabular-nums;font-size:29px;font-weight:600;line-height:1.05;margin-top:7px}
+.tcell .s{font-size:11.5px;color:var(--ink2);margin-top:4px}
+.tcell.hero{background:var(--ink);color:#F4F4F1}
+.tcell.hero .k{color:var(--brand)}.tcell.hero .s{color:#A3A298}
+
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:12px;align-items:end}
+label{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);font-weight:600;margin-bottom:5px}
+input[type=number],input[type=date],input[type=text],select{width:100%;padding:9px 10px;border:1px solid var(--line2);border-radius:7px;
+  background:var(--sunk);color:var(--ink);font:500 15px/1.2 "IBM Plex Mono";font-variant-numeric:tabular-nums}
+input[type=date],select,input[type=text]{font-family:"IBM Plex Sans";font-size:13px}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
+.btn{border:0;border-radius:7px;padding:10px 16px;font:600 13px/1 "IBM Plex Sans";cursor:pointer;background:var(--brand);color:#16150F}
+.btn:hover{filter:brightness(.94)}
+.btn.ghost{background:var(--sunk);color:var(--ink);border:1px solid var(--line2)}
+.btn.sm{padding:6px 11px;font-size:12px}
+.saved{font-size:12px;color:var(--ok);font-weight:600}
+
+.prog{display:grid;gap:22px}
+.prow{display:grid;grid-template-columns:112px 1fr 138px;gap:14px;align-items:center}
+.prow .nm{font-weight:600;font-size:13.5px}
+.prow .nm span{display:block;font-size:11px;color:var(--ink3);font-weight:500}
+.bar{height:24px;background:var(--sunk);border-radius:5px;position:relative;overflow:hidden;border:1px solid var(--line)}
+.bar i{position:absolute;inset:0 auto 0 0;border-radius:4px 0 0 4px;display:block}
+.bar .tick{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink2)}
+.bar .tick::after{content:attr(data-l);position:absolute;top:-15px;left:50%;transform:translateX(-50%);
+  font:600 9px/1 "IBM Plex Sans";color:var(--ink3);white-space:nowrap;letter-spacing:.04em}
+.prow .fig{text-align:right;font-family:"IBM Plex Mono";font-variant-numeric:tabular-nums;font-size:14px;font-weight:600}
+.prow .fig span{display:block;font-size:11px;color:var(--ink3);font-weight:500;font-family:"IBM Plex Sans"}
+
+.pill{display:inline-block;padding:2px 8px;border-radius:20px;font:600 11px/1.55 "IBM Plex Sans";white-space:nowrap}
+.p-ok{background:var(--ok-bg);color:var(--ok)}.p-warn{background:var(--warn-bg);color:var(--warn)}
+.p-bad{background:var(--bad-bg);color:var(--bad)}.p-mut{background:var(--sunk);color:var(--ink3)}
+
+.tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--card);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:720px}
+th,td{padding:9px 12px;text-align:right;border-bottom:1px solid var(--line);font-size:13px}
+th{background:var(--sunk);font:600 10.5px/1.4 "IBM Plex Sans";letter-spacing:.09em;text-transform:uppercase;color:var(--ink3);position:sticky;top:0;z-index:1}
+th:first-child,td:first-child{text-align:left}
+tbody tr:last-child td{border-bottom:0}
+tbody tr.now{background:rgba(245,196,0,.13)}
+@supports (background:color-mix(in srgb,red 10%,transparent)){
+  tbody tr.now{background:color-mix(in srgb,var(--brand) 12%,transparent)}
+}
+tbody tr.tot td{font-weight:700;background:var(--sunk);border-top:2px solid var(--line2)}
+td.num{font-family:"IBM Plex Mono";font-variant-numeric:tabular-nums}
+td input{width:76px;padding:5px 7px;font-size:13px;text-align:right}
+.minibar{display:inline-block;width:52px;height:7px;background:var(--sunk);border-radius:4px;overflow:hidden;vertical-align:middle;margin-right:7px;border:1px solid var(--line)}
+.minibar i{display:block;height:100%}
+
+.wk h3{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--brand-ink);font-weight:700;
+  padding:16px 0 9px;border-bottom:1px solid var(--line);margin-bottom:2px}
+.task{display:flex;gap:11px;align-items:flex-start;padding:9px 4px;border-bottom:1px solid var(--line)}
+.task:last-child{border-bottom:0}
+.task input[type=checkbox]{width:17px;height:17px;margin:2px 0 0;accent-color:var(--brand);cursor:pointer;flex:none}
+.task input[type=checkbox]:disabled{cursor:not-allowed;opacity:.45}
+.task .d{font-family:"IBM Plex Mono";font-size:11px;font-weight:600;color:var(--ink3);flex:none;width:48px;padding-top:3px}
+.task .t{flex:1;font-size:13.5px;min-width:180px}
+.task.done .t{color:var(--ink3);text-decoration:line-through}
+.task.miss{background:rgba(170,42,32,.06)}
+.task .meta{flex:none;display:flex;gap:6px;align-items:center;padding-top:1px}
+.task.weekly .t::before{content:"↻ ";color:var(--brand-ink);font-weight:700}
+
+.who{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink3);white-space:nowrap}
+.av{width:19px;height:19px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;
+  font:700 9.5px/1 "IBM Plex Sans";color:#16150F;flex:none}
+
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.corr{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.corr:last-child{border-bottom:0}
+.corr .v{font-family:"IBM Plex Mono";font-weight:600;font-size:13px}
+.note{font-size:12px;color:var(--ink3);margin-top:10px;line-height:1.5}
+.scorebar{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px}
+.score{border:1px solid var(--line);border-radius:9px;padding:12px 14px;background:var(--card)}
+.score .n{display:flex;align-items:center;gap:7px;font-weight:600;font-size:13px}
+.score .b{font-family:"IBM Plex Mono";font-size:22px;font-weight:600;margin-top:6px}
+.score .s{font-size:11.5px;color:var(--ink3)}
+/* recap */
+.rcbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.rcbar select{width:auto;min-width:170px}
+textarea{width:100%;min-height:110px;padding:12px 13px;border:1px solid var(--line2);border-radius:9px;
+  background:var(--sunk);color:var(--ink);font:400 14.5px/1.55 "IBM Plex Sans";resize:vertical}
+textarea:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
+.mic{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line2);background:var(--sunk);
+  color:var(--ink);border-radius:22px;padding:8px 15px;font:600 13px/1 "IBM Plex Sans";cursor:pointer}
+.mic .rec{width:9px;height:9px;border-radius:50%;background:var(--bad);flex:none}
+.mic.on{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
+.mic.on .rec{animation:pulse 1.1s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.75)}}
+.rcpost{border-left:2.5px solid var(--line2);padding:2px 0 2px 14px;margin:16px 0}
+.rcpost .hd{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:5px}
+.rcpost .tx{font-size:14px;line-height:1.6;white-space:pre-wrap;word-break:break-word;color:var(--ink2)}
+.rcday{font:700 11px/1 "IBM Plex Sans";letter-spacing:.1em;text-transform:uppercase;color:var(--brand-ink);
+  padding:14px 0 2px;border-top:1px solid var(--line);margin-top:16px}
+.log{max-height:420px;overflow-y:auto}
+.logrow{display:flex;gap:11px;align-items:baseline;padding:7px 2px;border-bottom:1px solid var(--line);font-size:12.5px}
+.logrow:last-child{border-bottom:0}
+.logrow .ts{font-family:"IBM Plex Mono";font-size:11px;color:var(--ink3);flex:none;width:96px}
+.logrow .tx{flex:1;color:var(--ink2)}
+footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--ink3);line-height:1.6}
+@media(max-width:640px){
+  .prow{grid-template-columns:1fr;gap:6px}.prow .fig{text-align:left}
+  .task{flex-wrap:wrap}.task .meta{width:100%;padding-left:59px}
+}
+
+/* --- mobile & tactile --- */
+html{-webkit-text-size-adjust:100%}
+@media(max-width:560px){
+  .wrap{padding:0 14px 56px}
+  .hrow{padding:0 14px;gap:10px}
+  .htitle{padding:18px 14px 16px}
+  .htitle h1{font-size:23px}
+  section{margin-top:26px}
+  .p18{padding:14px}
+  .today{grid-template-columns:1fr 1fr}
+  .today .tcell:last-child{grid-column:1 / -1}
+  .tcell{padding:13px 13px 14px}
+  .tcell .v{font-size:24px}
+  .shead h2{font-size:17px}
+  .cells{gap:9px}
+  .cell{width:54px;height:66px;border-radius:15px;font-size:26px}
+  .stage{height:200px}
+  #gate h1{font-size:26px}
+  input[type=number],input[type=date],input[type=text],select,textarea{font-size:16px}
+  .rcbar select{min-width:0;width:100%}
+  .rcbar{gap:8px}
+  .logrow{flex-wrap:wrap;gap:6px}
+  .logrow .ts{width:auto}
+  .mark{font-size:15px}
+  .userchip{padding:4px 5px 4px 10px;font-size:12px}
+}
+@media(pointer:coarse){
+  .task input[type=checkbox]{width:23px;height:23px}
+  .btn{padding:12px 18px}
+  .pad button{height:56px}
+  .mic{padding:11px 17px}
+  a,button,input,select,textarea{-webkit-tap-highlight-color:rgba(245,196,0,.25)}
+}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+
+<!-- ============ GATE ============ -->
+<div id="gate">
+  <div class="gate-in">
+    <div class="gate-eyebrow">Capital <b>Services</b> · Bienne</div>
+    <h1 id="g-h1">Code d'accès</h1>
+    <p id="g-p">Entrez votre code personnel à 4 chiffres.</p>
+    <div class="stage intro" id="stage">
+      <div class="ring"></div>
+      <div class="core"></div>
+      <div class="burst" id="burst"></div>
+      <div class="cells" id="cells">
+        <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+      </div>
+    </div>
+    <div class="pad" id="pad"></div>
+    <div class="gate-msg" id="g-msg"></div>
+    <div class="gate-foot" id="g-foot"></div>
+  </div>
+</div>
+
+<div id="app" hidden>
+<header>
+  <div class="hrow">
+    <div class="mark">Capital <b>Services</b><small>Agence de Biel/Bienne</small></div>
+    <div class="spacer"></div>
+    <div class="userchip" id="uchip"></div>
+    <div class="seg" role="group" id="langsel">
+      <button data-l="fr" aria-pressed="true">Français</button>
+      <button data-l="es" aria-pressed="false">Español</button>
+    </div>
+  </div>
+  <div class="htitle">
+    <h1 id="h1"></h1><p id="hsub"></p>
+    <div class="status"><span class="dot" id="dot"></span><span id="statxt"></span></div>
+  </div>
+</header>
+<div class="wrap">
+  <section id="s-today"></section>
+  <section id="s-entry"></section>
+  <section id="s-month"></section>
+  <section id="s-tasks"></section>
+  <section id="s-recap"></section>
+  <section id="s-log"></section>
+  <section id="s-year"></section>
+  <section id="s-corr"></section>
+  <section id="s-admin"></section>
+  <footer id="foot"></footer>
+</div>
+</div>
+
+<script>
+"use strict";
+/* ===== RÉFÉRENCE ===== */
+const YEAR=2026, CUR=8, DAILY_VISA=2, DAILY_AVIS=1;
+const OBJ={mercury:[2084,2033,2453,2117,2230,1963,2253,2197,2298,2379,2364,2936],
+  mg:[508,477,623,504,560,534,577,458,512,522,460,508],
+  ria:[460,508,619,649,605,524,580,547,568,608,535,686]};
+const REAL0={mercury:[null,null,null,null,null,null,2464,null,null,null,null,null],
+  mg:[428,452,485,427,469,456,455,418,null,null,null,null],
+  ria:[368,365,420,390,406,480,423,407,null,null,null,null]};
+const ANN={mercury:{obj:27307},mg:{obj:6242},ria:{obj:6889}};
+const START={days:2,mercury:181,mgEnv:31,mgPay:11,ria:10,visa:0,avis:0};
+const SALT="CSB26|";
+const DEFAULT_USERS=[
+  {id:"gino",    name:"G.",     h:"d58f52af905728ab82d8616e852ada6a3911dd602dd38ae7f88d0d5e06272893", admin:false, color:"#7FD4C1"},
+  {id:"franklin",name:"F.", h:"90618e66ac3a775df13b13d3ee2f42e1aa74c6dda5bd19fb69005ec5c4ed85b6", admin:false, color:"#F5C400"},
+  {id:"admin",   name:"A.",    h:"61a720b0e45000519ecee8e80045a8be120b6442d8fb43a4fcb07078021846e6", admin:true,  color:"#C9A7F0"}
+];
+const MAXTRY=5, LOCKMS=60000;
+
+function sha256js(ascii){
+  function rr(v,a){return (v>>>a)|(v<<(32-a));}
+  var mp=Math.pow, mw=mp(2,32), L='length', i, j, result='';
+  var words=[], bits=ascii[L]*8;
+  var hash=sha256js.h=sha256js.h||[], k=sha256js.k=sha256js.k||[], pc=k[L];
+  var comp={};
+  for(var c=2; pc<64; c++){ if(!comp[c]){ for(i=0;i<313;i+=c) comp[i]=c;
+      hash[pc]=(mp(c,.5)*mw)|0; k[pc++]=(mp(c,1/3)*mw)|0; } }
+  ascii+='\x80';
+  while(ascii[L]%64-56) ascii+='\x00';
+  for(i=0;i<ascii[L];i++){ j=ascii.charCodeAt(i); if(j>>8) return ''; words[i>>2]|=j<<((3-i)%4)*8; }
+  words[words[L]]=((bits/mw)|0); words[words[L]]=(bits);
+  for(j=0;j<words[L];){
+    var w=words.slice(j,j+=16), oh=hash; hash=hash.slice(0,8);
+    for(i=0;i<64;i++){
+      var w15=w[i-15], w2=w[i-2], a=hash[0], e=hash[4];
+      var t1=hash[7]+(rr(e,6)^rr(e,11)^rr(e,25))+((e&hash[5])^((~e)&hash[6]))+k[i]
+        +(w[i]=(i<16)?w[i]:(w[i-16]+(rr(w15,7)^rr(w15,18)^(w15>>>3))+w[i-7]
+          +(rr(w2,17)^rr(w2,19)^(w2>>>10)))|0);
+      var t2=(rr(a,2)^rr(a,13)^rr(a,22))+((a&hash[1])^(a&hash[2])^(hash[1]&hash[2]));
+      hash=[(t1+t2)|0].concat(hash); hash[4]=(hash[4]+t1)|0;
+    }
+    for(i=0;i<8;i++) hash[i]=(hash[i]+oh[i])|0;
+  }
+  for(i=0;i<8;i++){ for(j=3;j+1;j--){ var b=(hash[i]>>(j*8))&255; result+=((b<16)?0:'')+b.toString(16); } }
+  return result;
+}
+async function sha(s){
+  try{
+    if(window.crypto&&crypto.subtle&&window.isSecureContext!==false&&window.TextEncoder){
+      const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));
+      return Array.prototype.slice.call(new Uint8Array(b)).map(function(x){return ("0"+x.toString(16)).slice(-2);}).join("");
+    }
+  }catch(e){}
+  return sha256js(s);
+}
+const clampInt=(v,max)=>{const n=Math.floor(Math.abs(+v||0));return Math.min(n,max||99999);};
+const clip=(s,n)=>String(s==null?"":s).slice(0,n);
+// Langues de dictée réellement reconnues par le navigateur
+const SPEECH=[["fr-FR","Français"],["es-ES","Español"],["pt-PT","Português"],["pt-BR","Português (Brasil)"],
+  ["en-US","English"],["de-CH","Deutsch (CH)"],["de-DE","Deutsch"],["it-IT","Italiano"],["tr-TR","Türkçe"]];
+// Langues écrites (dictée non disponible pour celles marquées type:false)
+const WLANG=[["fr","Français",true],["es","Español",true],["pt","Português",true],
+  ["pt-gw","Português / Kriol da Guiné",false],["wo","Wolof / Sénégal",false],
+  ["en","English",true],["de","Deutsch",true],["it","Italiano",true]];
+
+const T={
+ fr:{gh1:"Code d'accès",gp:"Entrez votre code personnel à 4 chiffres.",
+  gfoot:"Chaque action est enregistrée au nom de la personne connectée. Le code identifie qui travaille, il ne protège pas de données confidentielles.",
+  gbad:"Code incorrect",gwelcome:"Bienvenue",glock:"Trop d'essais. Réessayez dans {s} s.",
+  recap:"Comment s'est passée la journée ?",
+  recapHint:"Écrivez, ou appuyez sur le micro et parlez dans votre langue.",
+  recapPh:"Racontez votre journée : ce qui a bien marché, ce qui a bloqué, ce qu'il faut retenir…",
+  mic:"Parler",micStop:"Arrêter",micNo:"La dictée n'est pas disponible dans ce navigateur. Écrivez votre texte, ça marche aussi.",
+  langSpeak:"Langue",noSpeech:"dictée non disponible — à écrire",
+  recapSave:"Enregistrer le bilan",recapLocked:"Journée clôturée — ce bilan ne peut plus être modifié.",
+  noRecap:"Personne n'a encore écrit son bilan aujourd'hui.",
+  recapHist:"Bilans des jours précédents",aRecap:"a écrit le bilan du",
+  listening:"J'écoute…",
+  h1:"Pilotage de l'agence — Septembre 2026",
+  hsub:"Objectifs, chiffres du jour et plan d'action de l'agence de Biel/Bienne. Chaque geste est tracé au nom de son auteur.",
+  live:"Connecté — tout est partagé avec l'équipe",local:"Copie autonome — les données restent sur cet appareil",wait:"Connexion…",
+  logout:"Quitter",
+  today:"Objectifs du jour",todayHint:"Recalculés chaque jour selon ce qui reste à faire",
+  daysLeft:"jours d'ouverture restants",perDay:"par jour",
+  entry:"Saisie du jour",entryHint:"À remplir chaque soir avant la fermeture",
+  date:"Date",mercury:"Mercury",mgEnv:"MoneyGram envois",mgPay:"MoneyGram paiements",ria:"Ria",
+  visa:"Cartes Visa",avis:"Avis Google",save:"Enregistrer",saved:"Enregistré",
+  month:"Où en est le mois",monthHint:"Cumul du 1er septembre à aujourd'hui",
+  objective:"objectif",left:"reste",expected:"attendu",
+  tasks:"Plan d'action de septembre",
+  tasksHint:"Une case se verrouille à la fin de sa journée. Ce qui n'est pas coché reste marqué « non fait ».",
+  done:"fait",missed:"non fait",locked:"verrouillé",by:"par",
+  log:"Historique",logHint:"Qui a fait quoi, et quand",
+  scoreDone:"tâches faites",noLog:"Aucune action enregistrée pour l'instant.",
+  year:"Année 2026 mois par mois",yearHint:"Les cases vides sont à compléter — demandez les réels Mercury à la centrale",
+  corr:"Corridors à travailler",corrHint:"C'est là que se trouve le volume perdu",
+  mLost:"Mercury — destinations perdues (janv–août)",rDown:"Ria — destinations en baisse",rUp:"Ria — destinations en hausse",
+  monthN:["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"],
+  thM:"Mois",thObj:"Objectif",thReal:"Réel",thPct:"Atteinte",total:"Total",
+  proj:"projection",
+  onTrack:"dans le rythme",behind:"en retard",critical:"critique",
+  admin:"Administration",adminHint:"Réservé à l'administrateur",
+  users:"Codes d'accès",uname:"Nom",upin:"Nouveau code",usave:"Enregistrer les codes",
+  pinNote:"Laissez le code vide pour ne pas le changer. Les codes ne sont jamais affichés : seule leur empreinte est conservée.",
+  unlock:"Déverrouiller",unlockHint:"Rouvrir une case verrouillée (l'action est enregistrée)",
+  foot:"Sources : lettre d'objectifs 2026 de la direction, rapport réseau par agence (janv–août 2026) et rapports quotidiens de l'agence. Les réels Mercury de janvier à juin restent à confirmer par la centrale. Le code d'accès sert à identifier l'auteur de chaque action, ce n'est pas un dispositif de sécurité.",
+  noteMg:"MoneyGram : envois et paiements suivis séparément tant que la centrale n'a pas confirmé lesquels comptent.",
+  cumulNote:"Cumul au 2 septembre inclus dans les totaux : Mercury 181, MoneyGram 31 envois + 11 paiements, Ria 10.",
+  aTask:"a coché",aUntask:"a décoché",aEntry:"a saisi les chiffres du",aMonth:"a corrigé",aLogin:"s'est connecté",
+  aUnlock:"a déverrouillé",aUsers:"a modifié les codes d'accès"},
+ es:{gh1:"Código de acceso",gp:"Introduzca su código personal de 4 dígitos.",
+  gfoot:"Cada acción queda registrada a nombre de quien está conectado. El código identifica quién trabaja, no protege datos confidenciales.",
+  gbad:"Código incorrecto",gwelcome:"Bienvenido",glock:"Demasiados intentos. Inténtelo en {s} s.",
+  recap:"¿Qué tal fue el día?",
+  recapHint:"Escriba, o pulse el micrófono y hable en su idioma.",
+  recapPh:"Cuente su día: qué funcionó, qué se atascó, qué hay que recordar…",
+  mic:"Hablar",micStop:"Parar",micNo:"El dictado no está disponible en este navegador. Escriba su texto, funciona igual.",
+  langSpeak:"Idioma",noSpeech:"sin dictado — hay que escribir",
+  recapSave:"Guardar el balance",recapLocked:"Día cerrado — este balance ya no se puede modificar.",
+  noRecap:"Todavía nadie ha escrito su balance de hoy.",
+  recapHist:"Balances de días anteriores",aRecap:"escribió el balance del",
+  listening:"Le escucho…",
+  h1:"Pilotaje de la agencia — Septiembre 2026",
+  hsub:"Objetivos, cifras del día y plan de acción de la agencia de Biel/Bienne. Cada gesto queda a nombre de quien lo hace.",
+  live:"Conectado — todo se comparte con el equipo",local:"Copia autónoma — los datos se quedan en este aparato",wait:"Conectando…",
+  logout:"Salir",
+  today:"Objetivos de hoy",todayHint:"Se recalculan cada día según lo que falta",
+  daysLeft:"días de apertura restantes",perDay:"por día",
+  entry:"Cifras del día",entryHint:"Rellenar cada tarde antes de cerrar",
+  date:"Fecha",mercury:"Mercury",mgEnv:"MoneyGram envíos",mgPay:"MoneyGram pagos",ria:"Ria",
+  visa:"Tarjetas Visa",avis:"Reseñas Google",save:"Guardar",saved:"Guardado",
+  month:"Cómo va el mes",monthHint:"Acumulado del 1 de septiembre a hoy",
+  objective:"objetivo",left:"falta",expected:"esperado",
+  tasks:"Plan de acción de septiembre",
+  tasksHint:"Cada casilla se bloquea al terminar su día. Lo que no se marque queda como «no hecho».",
+  done:"hecho",missed:"no hecho",locked:"bloqueado",by:"por",
+  log:"Historial",logHint:"Quién hizo qué, y cuándo",
+  scoreDone:"tareas hechas",noLog:"Todavía no hay ninguna acción registrada.",
+  year:"Año 2026 mes a mes",yearHint:"Las casillas vacías hay que completarlas — pida los reales de Mercury a la central",
+  corr:"Corredores a trabajar",corrHint:"Ahí está el volumen perdido",
+  mLost:"Mercury — destinos perdidos (ene–ago)",rDown:"Ria — destinos en baja",rUp:"Ria — destinos en alza",
+  monthN:["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"],
+  thM:"Mes",thObj:"Objetivo",thReal:"Real",thPct:"Logro",total:"Total",
+  proj:"proyección",
+  onTrack:"en ritmo",behind:"con retraso",critical:"crítico",
+  admin:"Administración",adminHint:"Reservado al administrador",
+  users:"Códigos de acceso",uname:"Nombre",upin:"Código nuevo",usave:"Guardar los códigos",
+  pinNote:"Deje el código vacío para no cambiarlo. Los códigos nunca se muestran: solo se guarda su huella.",
+  unlock:"Desbloquear",unlockHint:"Reabrir una casilla bloqueada (la acción queda registrada)",
+  foot:"Fuentes: carta de objetivos 2026 de la dirección, informe de red por agencia (ene–ago 2026) e informes diarios de la agencia. Los reales de Mercury de enero a junio están pendientes de confirmar por la central. El código de acceso sirve para identificar al autor de cada acción, no es un sistema de seguridad.",
+  noteMg:"MoneyGram: envíos y pagos seguidos por separado mientras la central no confirme cuáles cuentan.",
+  cumulNote:"Acumulado al 2 de septiembre incluido en los totales: Mercury 181, MoneyGram 31 envíos + 11 pagos, Ria 10.",
+  aTask:"marcó",aUntask:"desmarcó",aEntry:"registró las cifras del",aMonth:"corrigió",aLogin:"se conectó",
+  aUnlock:"desbloqueó",aUsers:"modificó los códigos de acceso"}
+};
+
+const TASKS=[
+ {w:1,d:"03.09",fr:"Diagnostic Ria : tester le terminal, vérifier les taux, les corridors et le code CH1334",es:"Diagnóstico Ria: probar el terminal, verificar tasas, corredores y el código CH1334"},
+ {w:1,d:"03.09",fr:"Imprimer et poser les flyers Capital Visa à chaque guichet (FR / DE / ES / IT)",es:"Imprimir y colocar los flyers Capital Visa en cada guichet (FR / DE / ES / IT)"},
+ {w:1,d:"03.09",fr:"Afficher les objectifs quotidiens au guichet, visibles par toute l'équipe",es:"Colocar los objetivos diarios en el guichet, visibles para todo el equipo"},
+ {w:1,d:"03.09",fr:"Briefing équipe : chaque transaction finit par une carte Visa proposée et un avis Google demandé",es:"Briefing equipo: cada transacción termina con una tarjeta Visa ofrecida y una reseña Google pedida"},
+ {w:1,d:"03.09",fr:"Envoyer à la centrale les 3 questions (comptage MG, objectif Ria juillet, volumes réels 2025)",es:"Enviar a la central las 3 preguntas (conteo MG, objetivo Ria julio, volúmenes reales 2025)"},
+ {w:1,d:"04.09",fr:"Appeler les 8 premiers clients perdus de la liste Excel",es:"Llamar a los 8 primeros clientes perdidos de la lista Excel"},
+ {w:1,d:"04.09",fr:"Sortir la liste des clients Mercury Kenya et Sénégal",es:"Sacar la lista de clientes Mercury Kenia y Senegal"},
+ {w:1,d:"05.09",fr:"Samedi : pression maximale au guichet, carte Visa proposée à tous",es:"Sábado: máxima presión en el guichet, tarjeta Visa ofrecida a todos"},
+ {w:1,d:"05.09",wk:1,fr:"Nettoyage des vitres extérieures (une fois par semaine)",es:"Limpieza de las ventanas exteriores (una vez por semana)"},
+ {w:2,d:"07.09",fr:"Appels Mercury Kenya (−215 opérations)",es:"Llamadas Mercury Kenia (−215 operaciones)"},
+ {w:2,d:"08.09",fr:"Appels Mercury Sénégal (−160) + relevé des taux Western Union, Ria, MoneyTrans",es:"Llamadas Mercury Senegal (−160) + toma de tasas Western Union, Ria, MoneyTrans"},
+ {w:2,d:"09.09",fr:"Appels Ria Togo (−67 %) et Guinée (−56 %)",es:"Llamadas Ria Togo (−67 %) y Guinea (−56 %)"},
+ {w:2,d:"10.09",fr:"Appels Ria Portugal (−58 %) — 3e nationalité du canton, plus gros gisement",es:"Llamadas Ria Portugal (−58 %) — 3ª nacionalidad del cantón, mayor bolsa"},
+ {w:2,d:"11.09",fr:"Clôturer les 22 fiches clients perdus dans l'Excel",es:"Cerrar las 22 fichas de clientes perdidos en el Excel"},
+ {w:2,d:"12.09",fr:"Envoyer le comparatif des taux à la direction, avec preuves",es:"Enviar el comparativo de tasas a la dirección, con pruebas"},
+ {w:2,d:"12.09",wk:1,fr:"Nettoyage des vitres extérieures (une fois par semaine)",es:"Limpieza de las ventanas exteriores (una vez por semana)"},
+ {w:3,d:"14.09",fr:"Préparer la liste : 15 commerces communautaires + 12 entreprises cibles",es:"Preparar la lista: 15 comercios comunitarios + 12 empresas objetivo"},
+ {w:3,d:"15.09",fr:"Tournée terrain A : commerces africains et latinos, boutiques téléphonie, salons de coiffure",es:"Ruta terreno A: comercios africanos y latinos, locutorios, peluquerías"},
+ {w:3,d:"16.09",fr:"Tournée entreprises A : 6 sociétés (construction, nettoyage, temporaire)",es:"Ruta empresas A: 6 sociedades (construcción, limpieza, temporales)"},
+ {w:3,d:"17.09",fr:"Tournée terrain B : restaurants portugais, turcs, kosovars, italiens",es:"Ruta terreno B: restaurantes portugueses, turcos, kosovares, italianos"},
+ {w:3,d:"18.09",fr:"Tournée entreprises B : 6 sociétés + relance téléphonique de la tournée A",es:"Ruta empresas B: 6 sociedades + seguimiento telefónico de la ruta A"},
+ {w:3,d:"19.09",fr:"Bilan de mi-mois : où en sont Mercury, MoneyGram et Ria",es:"Balance de mitad de mes: dónde están Mercury, MoneyGram y Ria"},
+ {w:3,d:"19.09",wk:1,fr:"Nettoyage des vitres extérieures (une fois par semaine)",es:"Limpieza de las ventanas exteriores (una vez por semana)"},
+ {w:4,d:"21.09",fr:"Rendez-vous entreprises : proposer l'ouverture groupée de cartes Visa",es:"Citas con empresas: proponer apertura grupal de tarjetas Visa"},
+ {w:4,d:"22.09",fr:"Deuxième relance des clients qui ont dit « je vais réfléchir »",es:"Segunda llamada a los clientes que dijeron «me lo pienso»"},
+ {w:4,d:"23.09",fr:"Journée Capital Visa : objectif 5 cartes dans la journée",es:"Jornada Capital Visa: objetivo 5 tarjetas en el día"},
+ {w:4,d:"24.09",fr:"Contacter 3 associations ou églises communautaires",es:"Contactar 3 asociaciones o iglesias comunitarias"},
+ {w:4,d:"25.09",fr:"Contrôle des avis Google — si moins de 15, doubler les demandes",es:"Control de reseñas Google — si hay menos de 15, doblar las peticiones"},
+ {w:4,d:"26.09",fr:"Samedi : dernier grand jour de volume avant la clôture",es:"Sábado: último gran día de volumen antes del cierre"},
+ {w:4,d:"26.09",wk:1,fr:"Nettoyage des vitres extérieures (une fois par semaine)",es:"Limpieza de las ventanas exteriores (una vez por semana)"},
+ {w:5,d:"28.09",fr:"Sprint final Mercury — dernier effort sur l'objectif mensuel",es:"Sprint final Mercury — último esfuerzo sobre el objetivo mensual"},
+ {w:5,d:"29.09",fr:"Derniers appels aux clients dormants, clôture des fiches",es:"Últimas llamadas a clientes dormidos, cierre de fichas"},
+ {w:5,d:"30.09",fr:"Clôture du mois : chiffres par système, photos du matériel à la centrale, compte rendu",es:"Cierre de mes: cifras por sistema, fotos del material a la central, informe"},
+ {w:5,d:"30.09",fr:"Envoyer à l'administration la proposition prévue en fin de mois",es:"Enviar a administración la propuesta prevista para fin de mes"},
+ {w:5,d:"30.09",wk:1,fr:"Nettoyage des vitres extérieures (une fois par semaine)",es:"Limpieza de las ventanas exteriores (una vez por semana)"}
+];
+const WEEKS={1:{fr:"Semaine du 3 au 5 septembre — mesurer et réagir",es:"Semana del 3 al 5 de septiembre — medir y reaccionar"},
+ 2:{fr:"Semaine du 7 au 12 — reconquérir les clients perdus",es:"Semana del 7 al 12 — recuperar clientes perdidos"},
+ 3:{fr:"Semaine du 14 au 19 — terrain et entreprises",es:"Semana del 14 al 19 — terreno y empresas"},
+ 4:{fr:"Semaine du 21 au 26 — convertir",es:"Semana del 21 al 26 — convertir"},
+ 5:{fr:"Du 28 au 30 — clôturer le mois",es:"Del 28 al 30 — cerrar el mes"}};
+const CORR={mLost:[["Kenya",-215],["Sénégal",-160],["Brésil",-153],["Côte d'Ivoire",-138],["Philippines",-89]],
+ rDown:[["Togo","−67 %"],["Portugal","−58 %"],["Guinée","−56 %"],["Espagne","−42 %"],["RD Congo","−32 %"],["Macédoine du Nord","−26 %"],["Belgique","−26 %"],["Allemagne","−16 %"]],
+ rUp:[["Roumanie","+27 %"],["Italie","+20 %"],["Turquie","+18 %"],["Albanie","+18 %"],["Sénégal","+11 %"],["France","+7 %"]]};
+
+/* ===== ÉTAT ===== */
+let lang="fr"; try{const s=localStorage.getItem("cs-lang"); if(s==="es"||s==="fr")lang=s;}catch(e){}
+let DB=null, ME=null, USERS=DEFAULT_USERS.slice();
+let jours={}, taches={}, mois={}, journal={}, unlocked={}, recap={};
+const t=()=>T[lang];
+const nf=n=>(n==null||isNaN(n))?"—":Math.round(n).toLocaleString(lang==="fr"?"fr-CH":"es-ES");
+const pad2=n=>String(n).padStart(2,"0");
+const todayISO=()=>{const d=new Date();return d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate());};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const userById=id=>USERS.find(u=>u.id===id)||{name:id||"?",color:"#999"};
+
+function openDays(y,m){let n=0;const dim=new Date(y,m+1,0).getDate();for(let d=1;d<=dim;d++)if(new Date(y,m,d).getDay()!==0)n++;return n;}
+function openDaysFrom(y,m,f){let n=0;const dim=new Date(y,m+1,0).getDate();for(let d=f;d<=dim;d++)if(new Date(y,m,d).getDay()!==0)n++;return n;}
+function curTotals(){const o={mercury:START.mercury,mgEnv:START.mgEnv,mgPay:START.mgPay,ria:START.ria,visa:START.visa,avis:START.avis};
+  const p=YEAR+"-"+pad2(CUR+1)+"-";
+  for(const k in jours){if(!k.startsWith(p))continue;const v=jours[k]||{};
+    o.mercury+=+v.mercury||0;o.mgEnv+=+v.mgEnv||0;o.mgPay+=+v.mgPay||0;o.ria+=+v.ria||0;o.visa+=+v.visa||0;o.avis+=+v.avis||0;}
+  return o;}
+function realOf(sys,i){const k=YEAR+"-"+pad2(i+1);
+  if(mois[k]&&mois[k][sys]!=null&&mois[k][sys]!=="")return +mois[k][sys];
+  if(i===CUR){const c=curTotals();return sys==="mercury"?c.mercury:sys==="mg"?c.mgEnv:c.ria;}
+  return REAL0[sys][i];}
+function cumul(s){let x=0;for(let i=0;i<12;i++){const v=realOf(s,i);if(v!=null)x+=v;}return x;}
+function knownMonths(s){let n=0;for(let i=0;i<12;i++)if(realOf(s,i)!=null)n++;return n;}
+const statusOf=p=>p>=98?["p-ok",t().onTrack]:p>=85?["p-warn",t().behind]:["p-bad",t().critical];
+const barColor=p=>p>=98?"var(--ok)":p>=85?"var(--warn)":"var(--bad)";
+function taskEnd(ds){const [d,m]=ds.split(".").map(Number);return new Date(YEAR,m-1,d,23,59,59,999);}
+function isLocked(id,ds){ if(unlocked[id])return false; return new Date()>taskEnd(ds); }
+
+
+/* ===== Copie autonome : persistance locale à l'appareil ===== */
+const LK="cs-bienne-2026";
+function saveLocal(){ if(DB)return; try{localStorage.setItem(LK,JSON.stringify(
+  {jours:jours,taches:taches,mois:mois,journal:journal,unlocked:unlocked,recap:recap}));}catch(e){} }
+function loadLocal(){ try{const d=JSON.parse(localStorage.getItem(LK)||"{}");
+  jours=d.jours||{};taches=d.taches||{};mois=d.mois||{};journal=d.journal||{};
+  unlocked=d.unlocked||{};recap=d.recap||{};}catch(e){} }
+
+/* ===== JOURNAL ===== */
+async function logIt(action,detail){
+  if(!ME)return;
+  const day=todayISO(), key=day+"_"+ME.id;
+  const cur=(journal[key]&&Array.isArray(journal[key].entries))?journal[key].entries.slice():[];
+  cur.push({ts:new Date().toISOString(),a:action,d:detail||""});
+  const rec={user:ME.id,name:ME.name,day:day,entries:cur.slice(-400)};
+  journal[key]=rec;
+  if(DB){try{await DB.doc("journal/"+key).set(rec);}catch(e){}} else saveLocal();
+  renderLog();
+}
+function allEntries(){
+  const out=[];
+  for(const k in journal){const j=journal[k]; if(!j||!Array.isArray(j.entries))continue;
+    j.entries.forEach(e=>out.push({u:j.user,n:j.name,ts:e.ts,a:e.a,d:e.d}));}
+  out.sort((a,b)=>b.ts.localeCompare(a.ts)); return out;
+}
+
+/* ===== GATE ===== */
+let buf="";
+function paintCells(){
+  const cs=document.querySelectorAll("#cells .cell");
+  cs.forEach((c,i)=>{c.textContent=buf[i]||"";c.classList.toggle("on",i===buf.length||(buf.length===4&&i===3));});
+}
+function gateText(){
+  document.getElementById("g-h1").textContent=t().gh1;
+  document.getElementById("g-p").textContent=t().gp;
+  document.getElementById("g-foot").textContent=t().gfoot;
+}
+function buildPad(){
+  const p=document.getElementById("pad");
+  p.innerHTML=[1,2,3,4,5,6,7,8,9].map(n=>`<button data-k="${n}">${n}</button>`).join("")+
+    `<button class="wide" data-k="C">C</button><button data-k="0">0</button><button class="wide" data-k="B">⌫</button>`;
+  p.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;press(b.dataset.k);});
+}
+function press(k){
+  const st=document.getElementById("stage"); st.classList.remove("err");
+  if(k==="C"){buf="";paintCells();return;}
+  if(k==="B"){buf=buf.slice(0,-1);paintCells();return;}
+  if(!/^[0-9]$/.test(k)||buf.length>=4)return;
+  buf+=k; paintCells();
+  if(buf.length===4) setTimeout(tryPin,180);
+}
+function tries(){ try{return JSON.parse(localStorage.getItem("cs-try")||"{}");}catch(e){return {};} }
+function setTries(o){ try{localStorage.setItem("cs-try",JSON.stringify(o));}catch(e){} }
+async function tryPin(){
+  const st=document.getElementById("stage"), msg=document.getElementById("g-msg");
+  const tr=tries();
+  if(tr.until&&Date.now()<tr.until){
+    const s=Math.ceil((tr.until-Date.now())/1000);
+    msg.className="gate-msg bad"; msg.textContent=t().glock.replace("{s}",s);
+    buf=""; paintCells(); return;
+  }
+  const hv=await sha(SALT+buf);
+  const u=USERS.find(x=>x.h===hv);
+  if(!u){
+    const n=(tr.n||0)+1, o={n:n};
+    if(n>=MAXTRY){o.until=Date.now()+LOCKMS;o.n=0;}
+    setTries(o);
+    st.classList.add("err"); msg.className="gate-msg bad";
+    msg.textContent=n>=MAXTRY?t().glock.replace("{s}",Math.round(LOCKMS/1000))
+      :t().gbad+" ("+(MAXTRY-n)+")";
+    buf=""; setTimeout(()=>{paintCells();st.classList.remove("err");},450); return; }
+  setTries({});
+  ME=u; msg.className="gate-msg good"; msg.textContent=t().gwelcome+", "+u.name;
+  const burst=document.getElementById("burst"); burst.innerHTML="";
+  for(let i=0;i<16;i++){const s=document.createElement("span");s.className="spark";
+    const a=Math.random()*Math.PI*2, r=46+Math.random()*54;
+    s.style.setProperty("--dx",(Math.cos(a)*r).toFixed(1)+"px");
+    s.style.setProperty("--dy",(Math.sin(a)*r).toFixed(1)+"px");
+    s.style.animationDelay=(Math.random()*.16).toFixed(2)+"s";
+    s.style.width=s.style.height=(4+Math.random()*4).toFixed(1)+"px";
+    if(i%4===0)s.style.background="#E9F7F0";
+    burst.appendChild(s);}
+  st.classList.add("ok");
+  setTimeout(()=>{
+    document.getElementById("gate").classList.add("gone");
+    document.getElementById("app").hidden=false;
+    try{sessionStorage.setItem("cs-me",u.id);}catch(e){}
+    if(!DB) loadLocal();
+    renderAll(); renderEntry(); logIt("login","");
+  },1150);
+}
+document.addEventListener("keydown",e=>{
+  if(document.getElementById("gate").classList.contains("gone"))return;
+  if(/^[0-9]$/.test(e.key))press(e.key);
+  else if(e.key==="Backspace"){e.preventDefault();press("B");}
+  else if(e.key==="Escape")press("C");
+});
+
+/* ===== RENDU ===== */
+function renderStatic(){
+  document.getElementById("h1").textContent=t().h1;
+  document.getElementById("hsub").textContent=t().hsub;
+  document.getElementById("foot").textContent=t().foot;
+  document.querySelectorAll("#langsel button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.l===lang)));
+  document.documentElement.lang=lang;
+  const c=document.getElementById("uchip");
+  if(ME) c.innerHTML=`<span class="av" style="background:${ME.color}">${esc(ME.name[0])}</span>${esc(ME.name)}${ME.admin?' <span class="pill p-mut" style="background:rgba(255,255,255,.12);color:#EDEDE7">admin</span>':''}<button id="lo">${t().logout}</button>`;
+  const lo=document.getElementById("lo"); if(lo)lo.onclick=()=>location.reload();
+}
+function renderEntry(){
+  const el=document.getElementById("s-entry"); const old=el.querySelector("input[type=date]");
+  const keep=old?old.value:todayISO();
+  el.innerHTML=`<div class="shead"><h2>${t().entry}</h2><span class="hint">${t().entryHint}</span></div>
+   <div class="card p18"><div class="form">
+    <div><label for="f-date">${t().date}</label><input type="date" id="f-date" value="${keep}"></div>`+
+    ["mercury","mgEnv","mgPay","ria","visa","avis"].map(k=>
+    `<div><label for="f-${k}">${t()[k]}</label><input type="number" min="0" id="f-${k}" placeholder="0"></div>`).join("")+
+   `<div><button class="btn" id="f-save">${t().save}</button></div></div>
+    <div class="note"><span id="f-msg"></span></div></div>`;
+  const de=document.getElementById("f-date");
+  const fill=()=>{const v=jours[de.value]||{};["mercury","mgEnv","mgPay","ria","visa","avis"].forEach(k=>{
+    document.getElementById("f-"+k).value=(v[k]==null?"":v[k]);});};
+  fill(); de.addEventListener("change",fill);
+  document.getElementById("f-save").addEventListener("click",async()=>{
+    const key=de.value; if(!key)return; const rec={};
+    ["mercury","mgEnv","mgPay","ria","visa","avis"].forEach(k=>{const r=document.getElementById("f-"+k).value;
+      rec[k]=r===""?0:clampInt(r,99999);});
+    rec.by=ME?ME.id:"?"; rec.at=new Date().toISOString();
+    jours[key]=rec; renderToday();renderMonth();renderYear();
+    const m=document.getElementById("f-msg");
+    if(DB){try{await DB.doc("jours/"+key).set(rec);m.innerHTML='<span class="saved">'+t().saved+' ✓</span>';}catch(e){m.textContent="⚠ "+(e&&e.code||"error");}}
+    else m.innerHTML='<span class="saved">'+t().saved+' (local) ✓</span>';
+    logIt("entry",key+" · Mercury "+rec.mercury+" · MG "+rec.mgEnv+"/"+rec.mgPay+" · Ria "+rec.ria);
+    setTimeout(()=>{if(m)m.textContent="";},2600);
+  });
+}
+function renderToday(){
+  const c=curTotals(), now=new Date();
+  const dd=(now.getFullYear()===YEAR&&now.getMonth()===CUR)?now.getDate():3;
+  const left=Math.max(1,openDaysFrom(YEAR,CUR,dd));
+  const need=(o,d)=>Math.max(0,Math.ceil((o-d)/left));
+  const rows=[["hero",t().mercury,need(OBJ.mercury[CUR],c.mercury),OBJ.mercury[CUR]],
+    ["",t().mgEnv,need(OBJ.mg[CUR],c.mgEnv),OBJ.mg[CUR]],["",t().ria,need(OBJ.ria[CUR],c.ria),OBJ.ria[CUR]],
+    ["",t().visa,DAILY_VISA,null],["",t().avis,DAILY_AVIS,null]];
+  document.getElementById("s-today").innerHTML=
+   `<div class="shead"><h2>${t().today}</h2><span class="hint">${t().todayHint} · <strong>${left}</strong> ${t().daysLeft}</span></div>
+    <div class="today">`+rows.map(r=>`<div class="tcell ${r[0]}"><div class="k">${esc(r[1])}</div>
+     <div class="v">${nf(r[2])}</div><div class="s">${t().perDay}${r[3]?" · "+t().objective+" "+nf(r[3]):""}</div></div>`).join("")+`</div>`;
+}
+function renderMonth(){
+  const c=curTotals(), now=new Date();
+  const dd=(now.getFullYear()===YEAR&&now.getMonth()===CUR)?now.getDate():3;
+  const left=Math.max(1,openDaysFrom(YEAR,CUR,dd)), total=openDays(YEAR,CUR), elapsed=Math.max(1,total-left);
+  const items=[[t().mercury,c.mercury,OBJ.mercury[CUR]],[t().mgEnv,c.mgEnv,OBJ.mg[CUR]],[t().ria,c.ria,OBJ.ria[CUR]]];
+  document.getElementById("s-month").innerHTML=
+   `<div class="shead"><h2>${t().month}</h2><span class="hint">${t().monthHint}</span></div>
+    <div class="card p18"><div class="prog">`+items.map(([nm,done,obj])=>{
+      const pct=obj?done/obj*100:0,w=Math.min(100,pct),exp=obj*elapsed/total,pace=exp?done/exp*100:0;
+      const rest=Math.max(0,obj-done),per=Math.ceil(rest/left),[cls,lab]=statusOf(pace);
+      return `<div class="prow"><div class="nm">${esc(nm)}<span>${t().objective} ${nf(obj)}</span></div>
+        <div class="bar"><i style="width:${w.toFixed(1)}%;background:${barColor(pace)}"></i>
+        <span class="tick" style="left:${Math.min(99,exp/obj*100).toFixed(1)}%" data-l="${t().expected} ${nf(exp)}"></span></div>
+        <div class="fig">${nf(done)} <span class="pill ${cls}">${lab}</span><span>${t().left} ${nf(rest)} → ${nf(per)} ${t().perDay}</span></div></div>`;
+    }).join("")+`</div><div class="note">${t().cumulNote}<br>${t().noteMg} ${t().mgPay}: <strong class="mono">${nf(c.mgPay)}</strong>
+      &nbsp;·&nbsp; ${t().visa}: <strong class="mono">${nf(c.visa)}</strong> &nbsp;·&nbsp; ${t().avis}: <strong class="mono">${nf(c.avis)}</strong></div></div>`;
+}
+function renderTasks(){
+  const mk=YEAR+"-"+pad2(CUR+1); let html=
+   `<div class="shead"><h2>${t().tasks}</h2><span class="hint">${t().tasksHint}</span></div><div class="card p18">`;
+  let cur=0;
+  TASKS.forEach((tk,i)=>{
+    if(tk.w!==cur){if(cur)html+="</div>";cur=tk.w;html+=`<div class="wk"><h3>${esc(WEEKS[cur][lang])}</h3>`;}
+    const id=mk+"-"+i, rec=taches[id]||{}, on=!!rec.done, lock=isLocked(id,tk.d);
+    const miss=lock&&!on;
+    let meta="";
+    if(on&&rec.by){const u=userById(rec.by);
+      meta=`<span class="who"><span class="av" style="background:${u.color}">${esc(String(u.name)[0])}</span>${esc(u.name)}</span>`;}
+    if(miss) meta=`<span class="pill p-bad">${t().missed}</span>`;
+    else if(lock&&on) meta+=` <span class="pill p-ok">${t().done}</span>`;
+    if(ME&&ME.admin&&lock) meta+=` <button class="btn ghost sm" data-un="${id}">${t().unlock}</button>`;
+    html+=`<div class="task${on?" done":""}${miss?" miss":""}${tk.wk?" weekly":""}">
+      <input type="checkbox" id="tk${i}" data-id="${id}" data-lbl="${esc(tk[lang]).slice(0,90)}"${on?" checked":""}${lock?" disabled":""}>
+      <span class="d">${tk.d}</span>
+      <label class="t" for="tk${i}" style="margin:0;text-transform:none;letter-spacing:0;font-size:13.5px;color:inherit;font-weight:400">${esc(tk[lang])}</label>
+      <span class="meta">${meta}</span></div>`;
+  });
+  html+="</div></div>";
+  const el=document.getElementById("s-tasks"); el.innerHTML=html;
+  el.querySelectorAll("input[type=checkbox]").forEach(cb=>cb.addEventListener("change",async()=>{
+    const id=cb.dataset.id;
+    const rec=cb.checked?{done:true,by:ME?ME.id:"?",at:new Date().toISOString()}:{done:false,by:ME?ME.id:"?",at:new Date().toISOString()};
+    taches[id]=rec;
+    if(DB){try{await DB.doc("taches/"+id).set(rec);}catch(e){}}
+    logIt(cb.checked?"task":"untask",cb.dataset.lbl);
+    renderTasks();
+  }));
+  el.querySelectorAll("button[data-un]").forEach(b=>b.addEventListener("click",async()=>{
+    const id=b.dataset.un; unlocked[id]=true;
+    if(DB){try{await DB.doc("unlocked/"+id).set({by:ME?ME.id:"?",at:new Date().toISOString()});}catch(e){}}
+    logIt("unlock",id); renderTasks();
+  }));
+}
+/* ===== BILAN DU JOUR (écrit ou dicté) ===== */
+let recog=null, recBase="";
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition||null;
+function stopMic(){ if(recog){try{recog.stop();}catch(e){} recog=null;}
+  const b=document.getElementById("micbtn"); if(b){b.classList.remove("on");b.querySelector("span.lb").textContent=t().mic;} }
+function startMic(){
+  if(!SR)return;
+  const ta=document.getElementById("rc-text"), sel=document.getElementById("rc-lang"), b=document.getElementById("micbtn");
+  recog=new SR(); recog.lang=sel.value||"fr-FR"; recog.continuous=true; recog.interimResults=true;
+  recBase=ta.value?ta.value.replace(/\s+$/,"")+" ":"";
+  recog.onresult=e=>{let fin="",itm="";
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const r=e.results[i]; if(r.isFinal)fin+=r[0].transcript+" "; else itm+=r[0].transcript;}
+    if(fin)recBase+=fin;
+    ta.value=clip(recBase+itm,2000);};
+  recog.onend=()=>{ if(recog){recog=null; b.classList.remove("on"); b.querySelector("span.lb").textContent=t().mic;} };
+  recog.onerror=()=>{ stopMic(); };
+  try{recog.start(); b.classList.add("on"); b.querySelector("span.lb").textContent=t().listening;}catch(e){recog=null;}
+}
+function renderRecap(){
+  const day=todayISO(), mine=ME?recap[day+"_"+ME.id]:null;
+  const closed=false; // le bilan du jour reste modifiable jusqu'à minuit
+  const langOpts=SPEECH.map(([v,n])=>`<option value="${v}"${(lang==="es"&&v==="es-ES")||(lang==="fr"&&v==="fr-FR")?" selected":""}>${esc(n)}</option>`).join("");
+  const today=Object.keys(recap).filter(k=>k.startsWith(day+"_")).map(k=>recap[k]);
+  const past={}; Object.keys(recap).forEach(k=>{const r=recap[k]; if(!r||!r.day||r.day===day)return;(past[r.day]=past[r.day]||[]).push(r);});
+  const days=Object.keys(past).sort().reverse().slice(0,7);
+  const post=r=>{const u=userById(r.by);
+    const d=r.at?new Date(r.at):null;
+    const hm=d?pad2(d.getHours())+":"+pad2(d.getMinutes()):"";
+    return `<div class="rcpost"><div class="hd">
+      <span class="who"><span class="av" style="background:${u.color}">${esc(String(r.name||u.name)[0])}</span>${esc(r.name||u.name)}</span>
+      <span class="pill p-mut">${esc(r.langName||"")}</span><span style="font-size:11px;color:var(--ink3)" class="mono">${hm}</span></div>
+      <div class="tx">${esc(r.text||"")}</div></div>`;};
+  let html=`<div class="shead"><h2>${t().recap}</h2><span class="hint">${t().recapHint}</span></div>
+   <div class="card p18">
+    <div class="rcbar">
+      <div><label for="rc-lang" style="margin-bottom:3px">${t().langSpeak}</label>
+        <select id="rc-lang"${SR?"":" disabled"}>${langOpts}</select></div>
+      <button class="mic" id="micbtn"${SR?"":" disabled"}><span class="rec"></span><span class="lb">${t().mic}</span></button>
+      <span style="flex:1"></span>
+      <button class="btn" id="rc-save">${t().recapSave}</button>
+    </div>
+    <textarea id="rc-text" maxlength="2000" placeholder="${esc(t().recapPh)}">${esc(mine&&mine.text||"")}</textarea>
+    <div class="note">${SR?"":"⚠ "+esc(t().micNo)+" "}<span id="rc-msg"></span></div>`;
+  html+= today.length?today.map(post).join(""):`<div class="note">${t().noRecap}</div>`;
+  if(days.length){ html+=`<div style="margin-top:22px"></div>`;
+    days.forEach(d=>{ const [y,m,dd]=d.split("-");
+      html+=`<div class="rcday">${dd}.${m} · ${esc(t().monthN[+m-1])}</div>`+past[d].map(post).join(""); }); }
+  html+=`</div>`;
+  const el=document.getElementById("s-recap"); el.innerHTML=html;
+  const b=document.getElementById("micbtn");
+  if(b&&SR) b.addEventListener("click",()=>{ recog?stopMic():startMic(); });
+  document.getElementById("rc-save").addEventListener("click",async()=>{
+    stopMic();
+    const ta=document.getElementById("rc-text"), txt=clip(ta.value.trim(),2000);
+    if(!txt||!ME)return;
+    const sel=document.getElementById("rc-lang");
+    const ln=(SPEECH.find(s=>s[0]===(sel&&sel.value))||["","—"])[1];
+    const key=day+"_"+ME.id;
+    const rec={text:txt,lang:(sel&&sel.value)||"",langName:ln,by:ME.id,name:ME.name,day:day,at:new Date().toISOString()};
+    recap[key]=rec;
+    const m=document.getElementById("rc-msg");
+    if(DB){try{await DB.doc("recap/"+key).set(rec);m.innerHTML='<span class="saved">'+t().saved+' ✓</span>';}catch(e){m.textContent="⚠ "+(e&&e.code||"error");}}
+    else m.innerHTML='<span class="saved">'+t().saved+' (local) ✓</span>';
+    logIt("recap",day); renderRecap();
+  });
+}
+
+function renderLog(){
+  const ent=allEntries();
+  const counts={}; USERS.forEach(u=>counts[u.id]=0);
+  for(const k in taches){const r=taches[k]; if(r&&r.done&&r.by&&counts[r.by]!=null)counts[r.by]++;}
+  const verb={login:t().aLogin,task:t().aTask,untask:t().aUntask,entry:t().aEntry,month:t().aMonth,unlock:t().aUnlock,users:t().aUsers,recap:t().aRecap};
+  let html=`<div class="shead"><h2>${t().log}</h2><span class="hint">${t().logHint}</span></div>
+    <div class="scorebar">`+USERS.map(u=>`<div class="score">
+      <div class="n"><span class="av" style="background:${u.color}">${esc(u.name[0])}</span>${esc(u.name)}</div>
+      <div class="b">${counts[u.id]||0}</div><div class="s">${t().scoreDone}</div></div>`).join("")+`</div>
+    <div class="card p18"><div class="log">`;
+  if(!ent.length) html+=`<div class="note">${t().noLog}</div>`;
+  else html+=ent.slice(0,120).map(e=>{
+    const u=userById(e.u), d=new Date(e.ts);
+    const ts=pad2(d.getDate())+"."+pad2(d.getMonth()+1)+" "+pad2(d.getHours())+":"+pad2(d.getMinutes());
+    return `<div class="logrow"><span class="ts">${ts}</span>
+      <span class="who"><span class="av" style="background:${u.color}">${esc(String(u.name)[0])}</span>${esc(e.n||u.name)}</span>
+      <span class="tx">${esc(verb[e.a]||e.a)} ${esc(e.d||"")}</span></div>`;}).join("");
+  html+=`</div></div>`;
+  document.getElementById("s-log").innerHTML=html;
+}
+function renderYear(){
+  const sys=[["mercury",t().mercury],["mg","MoneyGram"],["ria","Ria"]];
+  let html=`<div class="shead"><h2>${t().year}</h2><span class="hint">${t().yearHint}</span></div>
+   <div class="tblwrap"><table><thead><tr><th>${t().thM}</th>`+
+   sys.map(s=>`<th colspan="3">${esc(s[1])}</th>`).join("")+`</tr><tr><th></th>`+
+   sys.map(()=>`<th>${t().thObj}</th><th>${t().thReal}</th><th>${t().thPct}</th>`).join("")+`</tr></thead><tbody>`;
+  for(let i=0;i<12;i++){
+    html+=`<tr${i===CUR?' class="now"':''}><td>${esc(t().monthN[i])}</td>`;
+    sys.forEach(([k])=>{const o=OBJ[k][i],r=realOf(k,i),p=r==null?null:r/o*100;
+      html+=`<td class="num">${nf(o)}</td>`;
+      html+=(i===CUR)?`<td class="num">${nf(r)}</td>`
+        :`<td class="num"><input type="number" min="0" data-m="${i}" data-s="${k}" value="${r==null?"":r}" placeholder="—"></td>`;
+      html+=`<td class="num">`+(p==null?"—":`<span class="minibar"><i style="width:${Math.min(100,p).toFixed(0)}%;background:${barColor(p)}"></i></span>${p.toFixed(0)}%`)+`</td>`;});
+    html+="</tr>";}
+  html+=`<tr class="tot"><td>${t().total}</td>`;
+  sys.forEach(([k])=>{const cu=cumul(k),ob=ANN[k].obj;
+    html+=`<td class="num">${nf(ob)}</td><td class="num">${nf(cu)}</td><td class="num">${(cu/ob*100).toFixed(0)}%</td>`;});
+  html+=`</tr></tbody></table></div>`;
+  const el=document.getElementById("s-year"); el.innerHTML=html;
+  el.querySelectorAll("input[type=number]").forEach(inp=>inp.addEventListener("change",async()=>{
+    const i=+inp.dataset.m,k=inp.dataset.s,key=YEAR+"-"+pad2(i+1);
+    const v=inp.value===""?null:clampInt(inp.value,99999);
+    mois[key]=Object.assign({},mois[key],{[k]:v});
+    if(DB){try{await DB.doc("mois/"+key).set(mois[key]);}catch(e){}}
+    logIt("month",t().monthN[i]+" · "+k+" = "+(v==null?"—":v));
+    renderYear();
+  }));
+}
+function renderCorr(){
+  const blk=(ti,rows,neg)=>`<div class="card p18"><h3 style="font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px">${esc(ti)}</h3>`+
+    rows.map(r=>`<div class="corr"><span>${esc(r[0])}</span><span class="v" style="color:${neg?"var(--bad)":"var(--ok)"}">${typeof r[1]==="number"?nf(r[1]):esc(r[1])}</span></div>`).join("")+`</div>`;
+  document.getElementById("s-corr").innerHTML=`<div class="shead"><h2>${t().corr}</h2><span class="hint">${t().corrHint}</span></div>
+    <div class="cols">${blk(t().mLost,CORR.mLost,true)}${blk(t().rDown,CORR.rDown,true)}${blk(t().rUp,CORR.rUp,false)}</div>`;
+}
+function renderAdmin(){
+  const el=document.getElementById("s-admin");
+  if(!ME||!ME.admin){el.innerHTML="";return;}
+  el.innerHTML=`<div class="shead"><h2>${t().admin}</h2><span class="hint">${t().adminHint} · ${t().unlockHint}</span></div>
+   <div class="card p18"><h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);margin-bottom:12px">${t().users}</h3>
+   <div class="form" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">`+
+   USERS.map((u,i)=>`<div><label>${t().uname}</label><input type="text" data-u="${i}" data-f="name" value="${esc(u.name)}" maxlength="24">
+     <label style="margin-top:8px">${t().upin}</label><input type="text" inputmode="numeric" pattern="[0-9]*" data-u="${i}" data-f="pin" value="" placeholder="••••" maxlength="4"></div>`).join("")+
+   `<div><button class="btn" id="usave">${t().usave}</button></div></div>
+   <div class="note">${t().pinNote}</div></div>`;
+  document.getElementById("usave").addEventListener("click",async()=>{
+    const jobs=[];
+    el.querySelectorAll("input[data-u]").forEach(inp=>{
+      const u=USERS[+inp.dataset.u], f=inp.dataset.f, v=clip(String(inp.value).trim(),24);
+      if(f==="pin"){ if(/^[0-9]{4}$/.test(v)) jobs.push(sha(SALT+v).then(h=>{u.h=h;})); }
+      else if(v) u.name=v;});
+    await Promise.all(jobs);
+    if(DB){try{await DB.doc("config/users").set({list:USERS.map(u=>({id:u.id,name:u.name,h:u.h}))});}catch(e){}}
+    logIt("users",""); renderAll();
+  });
+}
+function renderAll(){renderStatic();renderToday();renderMonth();renderTasks();renderRecap();renderLog();renderYear();renderCorr();renderAdmin();}
+
+document.getElementById("langsel").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b)return;
+  lang=b.dataset.l; try{localStorage.setItem("cs-lang",lang);}catch(_){}
+  gateText(); renderAll(); renderEntry();
+});
+function setStatus(kind){
+  const d=document.getElementById("dot"),s=document.getElementById("statxt");
+  d.className="dot "+(kind==="live"?"on":kind==="local"?"off":"");
+  s.textContent=kind==="live"?t().live:kind==="local"?t().local:t().wait;
+}
+
+gateText(); buildPad(); paintCells();
+setTimeout(()=>document.getElementById("stage").classList.remove("intro"),480);
+
+(async()=>{
+  let db=null;
+  try{ db=(window.claude&&claude.use)?await claude.use("db"):null; }catch(e){ db=null; }
+  if(!db){ if(!document.getElementById("app").hidden) setStatus("local"); return; }
+  DB=db;
+  try{ const cfg=await db.doc("config/users").get();
+    if(cfg.exists&&cfg.data()&&Array.isArray(cfg.data().list)&&cfg.data().list.length){
+      const saved=cfg.data().list;
+      USERS=DEFAULT_USERS.map(d=>{const s=saved.find(x=>x.id===d.id);return s?Object.assign({},d,{name:s.name||d.name,h:s.h||d.h}):d;});
+    }}catch(e){}
+  if(!document.getElementById("app").hidden) setStatus("live");
+  const sub=(coll,fn)=>{try{db.collection(coll).onSnapshot(s=>{
+    const o={}; s.docs.forEach(d=>{o[d.id]=d.data()||{};}); fn(o);},()=>{});}catch(e){}};
+  sub("jours",o=>{jours=o; if(ME){renderToday();renderMonth();renderYear();}});
+  sub("taches",o=>{taches=o; if(ME){renderTasks();renderLog();}});
+  sub("mois",o=>{mois=o; if(ME){renderYear();renderToday();renderMonth();}});
+  sub("journal",o=>{journal=o; if(ME)renderLog();});
+  sub("unlocked",o=>{unlocked=o; if(ME)renderTasks();});
+  sub("recap",o=>{recap=o; if(ME)renderRecap();});
+  setTimeout(()=>{ if(ME) setStatus("live"); },300);
+})();
+
+if("serviceWorker" in navigator){ window.addEventListener("load",function(){
+  navigator.serviceWorker.register("sw.js").catch(function(){}); }); }
+</script>
