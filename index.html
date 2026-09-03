@@ -209,6 +209,50 @@ td input{width:76px;padding:5px 7px;font-size:13px;text-align:right}
 .tag{display:inline-block;padding:2px 8px;border-radius:20px;font:600 10.5px/1.6 "IBM Plex Sans";
   background:var(--sunk);color:var(--ink3);white-space:nowrap}
 @media(max-width:640px){.how{margin-left:4px}}
+#pwa[hidden],#callw[hidden]{display:none!important}
+#pwa{position:fixed;inset:0;background:rgba(20,19,14,.55);display:flex;align-items:center;
+  justify-content:center;padding:18px;z-index:90;backdrop-filter:blur(3px)}
+.modal{background:var(--card);border-radius:16px;padding:22px;max-width:430px;width:100%;
+  box-shadow:0 24px 60px rgba(0,0,0,.28)}
+.mtop{display:flex;gap:11px;align-items:center;margin-bottom:6px}
+.mico{font-size:26px;line-height:1}
+.modal h3{font-size:17px;font-weight:700;margin:0}
+.msub{font-size:13px;color:var(--ink3);margin:0 0 14px;line-height:1.55}
+.msteps{margin:0 0 18px;padding-left:20px;font-size:13.5px;line-height:1.75}
+.msteps li{margin-bottom:5px}
+.mbtns{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+#callw{position:fixed;inset:0;background:var(--paper);z-index:95;overflow:auto}
+.ovbar{position:sticky;top:0;display:flex;gap:12px;align-items:center;padding:13px 18px;
+  background:var(--card);border-bottom:1px solid var(--line);font-size:14px;z-index:2}
+.ovbar .grow{flex:1}
+.ovbody{padding:18px;max-width:720px;margin:0 auto}
+.csimp{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:20px}
+.csimp h3{font-size:15px;font-weight:700;margin:0 0 4px}
+.csprog{font:600 12px/1.6 "IBM Plex Mono";color:var(--ink3);margin-bottom:10px;text-align:center}
+.cscard{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:18px}
+.csname{font-size:22px;font-weight:700;line-height:1.2}
+.csmeta{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0 14px}
+.csact{display:flex;gap:9px;flex-wrap:wrap}
+.csact .btn{text-decoration:none;display:inline-flex;align-items:center}
+.scbox{margin-top:14px}
+.scT{font:700 11px/1.6 "IBM Plex Sans";letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:5px}
+.scbox textarea{width:100%;min-height:96px;font-size:13px;line-height:1.55}
+.libsel{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:12px}
+.libsel label{font:700 10.5px/1.6 "IBM Plex Sans";letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);display:block}
+.libsel select{min-width:150px}
+.csre{margin-top:16px}
+.csrb{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.rbtn{display:flex;gap:7px;align-items:center;justify-content:center;padding:12px 10px;border-radius:11px;
+  border:2px solid var(--line2);background:var(--card);cursor:pointer;font:600 13px/1.3 "IBM Plex Sans";color:var(--ink)}
+.rbtn:hover{background:var(--sunk)}
+.dotc{width:9px;height:9px;border-radius:50%;flex:none}
+.csnav{display:flex;justify-content:space-between;margin-top:16px}
+.cta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.lrnbar{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:8px;margin:4px 0 14px}
+.lrnpill{display:flex;gap:7px;align-items:center;background:var(--sunk);border-radius:9px;padding:8px 10px;font-size:12px}
+.lrnpill b{margin-left:auto;font-family:"IBM Plex Mono";font-size:14px}
+.adv{background:var(--sunk);border-left:3px solid var(--brand);border-radius:0 9px 9px 0;
+  padding:12px 14px;font-size:13px;line-height:1.6;color:var(--ink2)}
 
 .who{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink3);white-space:nowrap}
 .av{width:19px;height:19px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;
@@ -346,6 +390,7 @@ html{-webkit-text-size-adjust:100%}
   <section id="s-month"></section>
   <section id="s-team"></section>
   <section id="s-tasks"></section>
+  <section id="s-learn"></section>
   <section id="s-log"></section>
   <section id="s-year"></section>
   <section id="s-corr"></section>
@@ -353,6 +398,8 @@ html{-webkit-text-size-adjust:100%}
   <footer id="foot"></footer>
 </div>
 </div>
+<div id="pwa" hidden></div>
+<div id="callw" hidden></div>
 
 <script>
 "use strict";
@@ -494,8 +541,42 @@ const T={
   ntFor:"pour",showPin:"Voir le code",hidePin:"Cacher",pinFind:"…",pinNo:"introuvable",
   cExtras:"Supprimer les tâches ajoutées",
   aAdd:"a ajouté la tâche",aDel:"a supprimé la tâche",aPin:"a affiché le code de",
+  pwaTitle:"Installer l'application sur votre téléphone",
+  pwaSub:"En trois gestes, l'icône reste sur l'écran d'accueil et s'ouvre comme une vraie application, sans passer par le navigateur.",
+  pwaIos:["Appuyez sur le bouton Partager, en bas de l'écran (le carré avec la flèche vers le haut).","Descendez dans la liste et appuyez sur « Sur l'écran d'accueil ».","Appuyez sur « Ajouter ». L'icône est sur votre téléphone."],
+  pwaAndroid:["Appuyez sur le menu ⋮ en haut à droite.","Appuyez sur « Ajouter à l'écran d'accueil » ou « Installer l'application ».","Confirmez. L'icône est sur votre téléphone."],
+  pwaPc:["Cliquez sur l'icône d'installation à droite de la barre d'adresse.","Confirmez : l'application s'ouvre dans sa propre fenêtre."],
+  pwaInstall:"Installer maintenant",pwaOk:"J'ai compris",pwaNever:"Ne plus afficher",pwaBtn:"Installer sur le téléphone",
+  lrn:"Appels, messages et ce qu'on apprend",
+  lrnHint:"Les mots à dire, et ce que les clients répondent vraiment",
+  lrnStart:"Ouvrir la session d'appels",
+  lrnToday:"Aujourd'hui il y a des appels au programme.",
+  lrnAdmOnly:"Ouvert en permanence pour l'administrateur.",
+  lrnClosed:"La session d'appels s'ouvre les jours où le plan prévoit des appels. Les messages types restent disponibles ci-dessous.",
+  lrnAdv:"Ce que ça nous dit :",lrnPrev:"Le mois dernier :",
+  lrnLib:"Messages types",lrnExport:"Rapport du mois",lrnSit:"Situation",lrnLang:"Langue",
+  lrnNone:"Pas encore d'appel enregistré ce mois-ci — la session d'appels remplit ça toute seule.",
+  advRate:"Le taux est la raison n°1 ({n} sur {t}, {p} %). Relevez les taux des concurrents avec photo datée et envoyez la demande chiffrée à la centrale cette semaine — le modèle est dans les messages types.",
+  advComp:"{p} % des clients sont partis chez un concurrent. À chaque appel, notez le nom du concurrent et ce qu'il donne pour 500 francs : sans ce chiffre la centrale ne bougera pas.",
+  advNoans:"{p} % ne répondent pas. Changez l'heure des appels : après 17 h, et envoyez le message WhatsApp avant d'appeler.",
+  advBack:"{p} % reviennent ({n} clients) — la méthode marche, gardez le rythme.",
+  advLater:"{n} clients à rappeler : mettez-les dans le plan avec une date, sinon ils seront perdus.",
+  advPays:"Le corridor {p} concentre {n} départs — c'est là qu'il faut le meilleur taux en premier.",
+  advKeep:"Continuez : encore quelques appels et les tendances seront lisibles.",
+  copy:"Copier",copied:"Copié ✓",chWa:"Message WhatsApp",chCall:"Au téléphone",chMail:"E-mail",
+  csTitle:"Session d'appels",csClose:"Fermer",
+  csImp:"Ouvrez votre fichier de clients",csImpH:"Le fichier Excel des clients perdus, celui que vous avez déjà.",
+  csPriv:"Le fichier reste sur cet appareil : il n'est jamais envoyé ni enregistré en ligne. Seuls le pays et la réaction sont partagés avec l'équipe.",
+  csPriv2:"Les noms et les téléphones n'ont jamais quitté cet appareil.",
+  csEmpty:"Fichier vide.",csMap:"Vérifiez les colonnes",csMapH:"{n} lignes trouvées. Corrigez si une colonne n'est pas la bonne.",
+  csNom:"Nom",csTel:"Téléphone",csPays:"Pays",csLast:"Dernier envoi",csGo:"Commencer",
+  csDone:"{n} enregistrés",csCall:"Appeler",csReact:"Qu'a répondu le client ?",
+  csPrev:"Précédent",csSkip:"Passer",csEnd:"Session terminée",
+  csEndH:"{n} réactions enregistrées. Récupérez votre fichier complété.",
+  csDl:"Télécharger l'Excel complété",csAgain:"Reprendre depuis le début",
+  rapT:"{a} — rapport d'appels {m}",rapCalls:"Appels enregistrés : {n}",rapPays:"Par corridor :",
   aTask:"a coché",aUntask:"a décoché",aEntry:"a saisi les chiffres du",aMonth:"a corrigé",aLogin:"s'est connecté",
-  aUnlock:"a déverrouillé",aUsers:"a modifié les codes d'accès"},
+  aUnlock:"a déverrouillé",aUsers:"a modifié les codes d'accès",aCall:"a enregistré une réaction"},
  es:{gh1:"Código de acceso",gp:"Introduzca su código personal de 4 dígitos.",
   gfoot:"Cada acción queda registrada a nombre de quien está conectado. El código identifica quién trabaja, no protege datos confidenciales.",
   gbad:"Código incorrecto",gwelcome:"Bienvenido",glock:"Demasiados intentos. Inténtelo en {s} s.",
@@ -566,8 +647,42 @@ const T={
   ntFor:"para",showPin:"Ver el código",hidePin:"Ocultar",pinFind:"…",pinNo:"no encontrado",
   cExtras:"Quitar las tareas añadidas",
   aAdd:"añadió la tarea",aDel:"quitó la tarea",aPin:"vio el código de",
+  pwaTitle:"Instalar la aplicación en su teléfono",
+  pwaSub:"En tres gestos el icono se queda en la pantalla de inicio y se abre como una aplicación de verdad, sin pasar por el navegador.",
+  pwaIos:["Pulse el botón Compartir, abajo en la pantalla (el cuadrado con la flecha hacia arriba).","Baje en la lista y pulse «Añadir a pantalla de inicio».","Pulse «Añadir». El icono ya está en su teléfono."],
+  pwaAndroid:["Pulse el menú ⋮ arriba a la derecha.","Pulse «Añadir a pantalla de inicio» o «Instalar aplicación».","Confirme. El icono ya está en su teléfono."],
+  pwaPc:["Pulse el icono de instalación a la derecha de la barra de direcciones.","Confirme: la aplicación se abre en su propia ventana."],
+  pwaInstall:"Instalar ahora",pwaOk:"Entendido",pwaNever:"No volver a mostrar",pwaBtn:"Instalar en el teléfono",
+  lrn:"Llamadas, mensajes y lo que vamos aprendiendo",
+  lrnHint:"Las palabras que hay que decir, y lo que los clientes responden de verdad",
+  lrnStart:"Abrir la sesión de llamadas",
+  lrnToday:"Hoy hay llamadas en el plan.",
+  lrnAdmOnly:"Abierto siempre para el administrador.",
+  lrnClosed:"La sesión de llamadas se abre los días que el plan tiene llamadas. Los mensajes tipo siguen disponibles aquí abajo.",
+  lrnAdv:"Lo que esto nos dice:",lrnPrev:"El mes pasado:",
+  lrnLib:"Mensajes tipo",lrnExport:"Informe del mes",lrnSit:"Situación",lrnLang:"Idioma",
+  lrnNone:"Todavía no hay ninguna llamada registrada este mes — la sesión de llamadas lo rellena sola.",
+  advRate:"La tasa es el motivo n.º 1 ({n} de {t}, {p} %). Tome las tasas de los competidores con foto fechada y mande la petición con cifras a la central esta semana — la plantilla está en los mensajes tipo.",
+  advComp:"El {p} % se ha ido con un competidor. En cada llamada anote el nombre del competidor y lo que da por 500 francos: sin esa cifra la central no se moverá.",
+  advNoans:"El {p} % no contesta. Cambie la hora de las llamadas: después de las 17 h, y mande el WhatsApp antes de llamar.",
+  advBack:"El {p} % vuelve ({n} clientes) — el método funciona, mantenga el ritmo.",
+  advLater:"{n} clientes para volver a llamar: métalos en el plan con fecha, si no se pierden.",
+  advPays:"El corredor {p} concentra {n} bajas — ahí es donde hace falta la mejor tasa primero.",
+  advKeep:"Siga: con unas cuantas llamadas más las tendencias se verán claras.",
+  copy:"Copiar",copied:"Copiado ✓",chWa:"Mensaje de WhatsApp",chCall:"Por teléfono",chMail:"Correo",
+  csTitle:"Sesión de llamadas",csClose:"Cerrar",
+  csImp:"Abra su fichero de clientes",csImpH:"El Excel de clientes perdidos, el que ya tiene.",
+  csPriv:"El fichero se queda en este aparato: no se envía ni se guarda en línea. Solo el país y la reacción se comparten con el equipo.",
+  csPriv2:"Los nombres y los teléfonos no han salido de este aparato.",
+  csEmpty:"Fichero vacío.",csMap:"Compruebe las columnas",csMapH:"{n} líneas encontradas. Corrija si alguna columna no es la correcta.",
+  csNom:"Nombre",csTel:"Teléfono",csPays:"País",csLast:"Último envío",csGo:"Empezar",
+  csDone:"{n} registrados",csCall:"Llamar",csReact:"¿Qué respondió el cliente?",
+  csPrev:"Anterior",csSkip:"Saltar",csEnd:"Sesión terminada",
+  csEndH:"{n} reacciones registradas. Recoja su fichero completado.",
+  csDl:"Descargar el Excel completado",csAgain:"Empezar de nuevo",
+  rapT:"{a} — informe de llamadas {m}",rapCalls:"Llamadas registradas: {n}",rapPays:"Por corredor:",
   aTask:"marcó",aUntask:"desmarcó",aEntry:"registró las cifras del",aMonth:"corrigió",aLogin:"se conectó",
-  aUnlock:"desbloqueó",aUsers:"modificó los códigos de acceso"}
+  aUnlock:"desbloqueó",aUsers:"modificó los códigos de acceso",aCall:"registró una reacción"}
 };
 
 const TASKS=[
@@ -665,7 +780,7 @@ const CORR={mLost:[["Kenya",-215],["Sénégal",-160],["Brésil",-153],["Côte d'
 /* ===== ÉTAT ===== */
 let lang="fr"; try{const s=localStorage.getItem("cs-lang"); if(s==="es"||s==="fr")lang=s;}catch(e){}
 let DB=null, ME=null, USERS=DEFAULT_USERS.slice();
-let jours={}, taches={}, mois={}, journal={}, unlocked={}, recap={}, extras={};
+let jours={}, taches={}, mois={}, journal={}, unlocked={}, recap={}, extras={}, apprend={};
 const t=()=>T[lang];
 const nf=n=>(n==null||isNaN(n))?"—":Math.round(n).toLocaleString(lang==="fr"?"fr-CH":"es-ES");
 const pad2=n=>String(n).padStart(2,"0");
@@ -712,10 +827,10 @@ const SEED={
  "2026-09-03_gino":{mgEnv:7,mgPay:2,by:"gino",name:"G."},"2026-09-03_franklin":{mgEnv:5,mgPay:0,by:"franklin",name:"F."},
  "2026-09-02":{mercury:181,name:"Agence"},"2026-09-03":{mercury:90,ria:66,name:"Agence"}};
 function saveLocal(){ if(DB)return; try{localStorage.setItem(LK,JSON.stringify(
-  {jours:jours,taches:taches,mois:mois,journal:journal,unlocked:unlocked,recap:recap,extras:extras}));}catch(e){} }
+  {jours:jours,taches:taches,mois:mois,journal:journal,unlocked:unlocked,recap:recap,extras:extras,apprend:apprend}));}catch(e){} }
 function loadLocal(){ try{const d=JSON.parse(localStorage.getItem(LK)||"{}");
   jours=d.jours||{};taches=d.taches||{};mois=d.mois||{};journal=d.journal||{};
-  unlocked=d.unlocked||{};recap=d.recap||{};extras=d.extras||{}; }catch(e){} }
+  unlocked=d.unlocked||{};recap=d.recap||{};extras=d.extras||{};apprend=d.apprend||{}; }catch(e){} }
 function seedOnce(){ try{ if(localStorage.getItem("cs-seed-2"))return; }catch(e){}
   for(const k in SEED){ if(!jours[k]) jours[k]=Object.assign({mercury:0,mgEnv:0,mgPay:0,ria:0,visa:0,avis:0},SEED[k]); }
   try{localStorage.setItem("cs-seed-2","1");}catch(e){} saveLocal(); }
@@ -801,6 +916,7 @@ async function tryPin(){
     try{sessionStorage.setItem("cs-me",u.id);}catch(e){}
     if(!DB){ loadLocal(); seedOnce(); }
     renderAll(); renderEntry(); logIt("login","");
+    setTimeout(()=>{try{showInstall(false);}catch(e){}},2200);
   },1150);
 }
 document.addEventListener("keydown",e=>{
@@ -1113,7 +1229,7 @@ function renderLog(){
   const ent=allEntries();
   const counts={}; USERS.forEach(u=>counts[u.id]=0);
   for(const k in taches){const r=taches[k]; if(r&&r.done&&r.by&&counts[r.by]!=null)counts[r.by]++;}
-  const verb={login:t().aLogin,task:t().aTask,untask:t().aUntask,entry:t().aEntry,month:t().aMonth,unlock:t().aUnlock,users:t().aUsers,recap:t().aRecap,addtask:t().aAdd,deltask:t().aDel,showpin:t().aPin};
+  const verb={login:t().aLogin,task:t().aTask,untask:t().aUntask,entry:t().aEntry,month:t().aMonth,unlock:t().aUnlock,users:t().aUsers,recap:t().aRecap,call:t().aCall,addtask:t().aAdd,deltask:t().aDel,showpin:t().aPin};
   let html=`<div class="shead"><h2>${t().log}</h2><span class="hint">${t().logHint}</span></div>
     <div class="scorebar">`+USERS.map(u=>`<div class="score">
       <div class="n"><span class="av" style="background:${u.color}">${esc(u.name[0])}</span>${esc(u.name)}</div>
@@ -1369,6 +1485,7 @@ function renderAdmin(){
     if(store==="journal") journal={}; else if(store==="recap") recap={};
     else if(store==="jours") jours={}; else if(store==="taches"){taches={};unlocked={};}
     else if(store==="extras") extras={};
+    else if(store==="apprend") apprend={};
     else if(store==="mois") mois={};
     if(!DB && typeof saveLocal==="function") saveLocal();
   };
@@ -1435,7 +1552,7 @@ function renderAdmin(){
   document.getElementById("c-export").addEventListener("click",()=>{
     const out=document.getElementById("c-out");
     out.style.display="block";
-    out.value=JSON.stringify({exporte:new Date().toISOString(),par:ME.name,jours:jours,taches:taches,extras:extras,mois:mois,recap:recap,journal:journal},null,1);
+    out.value=JSON.stringify({exporte:new Date().toISOString(),par:ME.name,jours:jours,taches:taches,extras:extras,apprend:apprend,mois:mois,recap:recap,journal:journal},null,1);
     out.select(); msg(T2.cExport);
   });
 
@@ -1461,7 +1578,395 @@ function renderAdmin(){
   });
 }
 
-function renderAll(){renderStatic();renderImportSection();renderToday();renderMonth();renderTeam();renderTasks();renderRecap();renderLog();renderYear();renderCorr();renderAdmin();}
+/* ===== AGENCE — tout ce qui est propre à Bienne est ici ===== */
+const AGENCE={nom:"Capital Services Bienne", ville:"Bienne", resp:"Franklin Morocho", codeRia:"CH1334"};
+
+/* ===== BIBLIOTHÈQUE DE MESSAGES — 5 langues ===== */
+const LG=[["fr","Français"],["es","Español"],["de","Deutsch"],["pt","Português"],["en","English"]];
+const SIT=[
+ {k:"dormant", fr:"Client qui n'envoie plus", es:"Cliente que ya no envía"},
+ {k:"rate",    fr:"Parti à cause du taux",    es:"Se fue por la tasa"},
+ {k:"comp",    fr:"Il est chez un concurrent",es:"Está con la competencia"},
+ {k:"think",   fr:"« Je vais réfléchir »",    es:"«Me lo pienso»"},
+ {k:"visa",    fr:"Proposer la carte Visa",   es:"Ofrecer la tarjeta Visa"},
+ {k:"review",  fr:"Demander l'avis Google",   es:"Pedir la reseña de Google"},
+ {k:"biz",     fr:"Entreprise / commerce",    es:"Empresa / comercio"},
+ {k:"central", fr:"Demander un meilleur taux à la centrale", es:"Pedir mejor tasa a la central"}
+];
+const SC={
+dormant:{
+ wa:{fr:"Bonjour {nom}, ici Capital Services Bienne. On ne vous a plus vu depuis un moment et on voulait prendre de vos nouvelles. Si vous envoyez toujours au {pays}, passez nous voir : on regarde ensemble le taux du jour, sans engagement. Bonne journée !",
+  es:"Buenos días {nom}, le escribe Capital Services Bienne. Hace tiempo que no le vemos y queríamos saber cómo está. Si sigue enviando a {pays}, pásese por la agencia: miramos juntos la tasa del día, sin compromiso. ¡Buen día!",
+  de:"Guten Tag {nom}, hier Capital Services Biel. Wir haben Sie länger nicht gesehen und wollten uns kurz melden. Falls Sie weiterhin nach {pays} senden: Kommen Sie vorbei, wir schauen den heutigen Kurs zusammen an – unverbindlich. Freundliche Grüsse",
+  pt:"Bom dia {nom}, aqui é a Capital Services Bienne. Há algum tempo que não o vemos e queríamos saber como está. Se continua a enviar para {pays}, passe pela agência: vemos juntos a taxa do dia, sem compromisso. Bom dia!",
+  en:"Hello {nom}, this is Capital Services Bienne. We haven't seen you in a while and wanted to check in. If you're still sending to {pays}, drop by the branch — we'll look at today's rate together, no obligation. Have a good day!"},
+ call:{fr:"1. « Bonjour, Capital Services Bienne, c'est {nom} ? »\n2. « On regardait nos clients du {pays} et on a vu qu'on ne vous avait plus vu depuis un moment — tout va bien ? »\n3. Écouter sans couper.\n4. Noter la vraie raison, pas la première réponse polie.\n5. « Passez quand vous voulez, je vous fais le point sur le taux. »",
+  es:"1. «Buenos días, Capital Services Bienne, ¿hablo con {nom}?»\n2. «Estábamos mirando nuestros clientes de {pays} y vimos que hace tiempo que no le vemos, ¿todo bien?»\n3. Escuchar sin cortar.\n4. Anotar el motivo real, no la primera respuesta educada.\n5. «Pásese cuando quiera y le miro la tasa.»",
+  de:"1. «Guten Tag, Capital Services Biel, spreche ich mit {nom}?»\n2. «Wir haben unsere Kunden für {pays} durchgesehen und gemerkt, dass Sie länger nicht da waren – alles gut?»\n3. Zuhören, nicht unterbrechen.\n4. Den echten Grund notieren, nicht die erste höfliche Antwort.\n5. «Kommen Sie vorbei, ich zeige Ihnen den Kurs.»",
+  pt:"1. «Bom dia, Capital Services Bienne, falo com {nom}?»\n2. «Estávamos a ver os clientes de {pays} e reparámos que já não o vemos há algum tempo — está tudo bem?»\n3. Ouvir sem interromper.\n4. Anotar o motivo real, não a primeira resposta educada.\n5. «Apareça quando quiser, mostro-lhe a taxa.»",
+  en:"1. 'Hello, Capital Services Bienne, is this {nom}?'\n2. 'We were going through our {pays} customers and noticed we haven't seen you in a while — is everything alright?'\n3. Listen, don't interrupt.\n4. Write down the real reason, not the first polite answer.\n5. 'Come by any time and I'll show you the rate.'"}},
+rate:{
+ wa:{fr:"Bonjour {nom}, Capital Services Bienne. Vous nous aviez dit que le taux vers le {pays} n'était pas bon. On a fait remonter le sujet et on suit les taux chaque semaine. Dites-moi le montant que vous envoyez d'habitude et je vous fais le calcul exact avant que vous vous déplaciez.",
+  es:"Buenos días {nom}, Capital Services Bienne. Nos dijo que la tasa hacia {pays} no le salía bien. Hemos pasado el tema a la dirección y seguimos las tasas cada semana. Dígame el importe que suele enviar y le hago el cálculo exacto antes de que se desplace.",
+  de:"Guten Tag {nom}, Capital Services Biel. Sie hatten gesagt, der Kurs nach {pays} sei nicht gut. Wir haben das weitergeleitet und verfolgen die Kurse wöchentlich. Sagen Sie mir den Betrag, den Sie üblicherweise senden – ich rechne es Ihnen genau aus, bevor Sie herkommen.",
+  pt:"Bom dia {nom}, Capital Services Bienne. Disse-nos que a taxa para {pays} não compensava. Levámos o assunto à direção e acompanhamos as taxas todas as semanas. Diga-me o valor que costuma enviar e faço-lhe o cálculo exato antes de se deslocar.",
+  en:"Hello {nom}, Capital Services Bienne. You told us the rate to {pays} wasn't good. We've raised it with management and we track the rates weekly. Tell me the amount you usually send and I'll do the exact calculation before you come in."},
+ call:{fr:"1. Reconnaître d'abord : « Vous avez raison, sur le {pays} on n'était pas au niveau. »\n2. Ne jamais critiquer le concurrent.\n3. Demander : « Vous envoyez combien d'habitude, et vous obtenez quoi ailleurs ? »\n4. Noter le chiffre — c'est la preuve pour la direction.\n5. « Je vous rappelle dès que le taux bouge. » Et le faire vraiment.",
+  es:"1. Reconocer primero: «Tiene razón, en {pays} no estábamos al nivel.»\n2. Nunca criticar al competidor.\n3. Preguntar: «¿Cuánto suele enviar y qué le dan en el otro sitio?»\n4. Anotar la cifra — es la prueba para la dirección.\n5. «Le llamo en cuanto la tasa cambie.» Y hacerlo de verdad.",
+  de:"1. Zuerst anerkennen: «Sie haben recht, bei {pays} waren wir nicht auf dem Niveau.»\n2. Nie über die Konkurrenz herziehen.\n3. Fragen: «Wie viel senden Sie üblicherweise, und was bekommen Sie anderswo?»\n4. Die Zahl notieren – das ist der Beleg für die Direktion.\n5. «Ich melde mich, sobald sich der Kurs ändert.» Und es auch wirklich tun.",
+  pt:"1. Reconhecer primeiro: «Tem razão, em {pays} não estávamos ao nível.»\n2. Nunca criticar a concorrência.\n3. Perguntar: «Quanto costuma enviar e quanto lhe dão no outro sítio?»\n4. Anotar o número — é a prova para a direção.\n5. «Ligo-lhe assim que a taxa mudar.» E fazê-lo mesmo.",
+  en:"1. Acknowledge first: 'You're right, on {pays} we weren't competitive.'\n2. Never run down the competitor.\n3. Ask: 'How much do you usually send, and what do you get elsewhere?'\n4. Write the figure down — that's the evidence for management.\n5. 'I'll call you as soon as the rate moves.' Then actually do it."}},
+comp:{
+ wa:{fr:"Bonjour {nom}, Capital Services Bienne. Je sais que vous envoyez ailleurs en ce moment, c'est votre droit. Je vous propose juste ceci : avant votre prochain envoi vers le {pays}, envoyez-moi le montant par WhatsApp. Je vous donne notre chiffre en deux minutes, et vous choisissez.",
+  es:"Buenos días {nom}, Capital Services Bienne. Sé que ahora envía por otro sitio, está en su derecho. Solo le propongo esto: antes de su próximo envío a {pays}, mándeme el importe por WhatsApp. Le doy nuestra cifra en dos minutos y usted elige.",
+  de:"Guten Tag {nom}, Capital Services Biel. Ich weiss, dass Sie momentan anderswo senden – das ist Ihr gutes Recht. Mein Vorschlag: Schicken Sie mir vor Ihrer nächsten Sendung nach {pays} kurz den Betrag per WhatsApp. Ich nenne Ihnen unsere Zahl in zwei Minuten, und Sie entscheiden.",
+  pt:"Bom dia {nom}, Capital Services Bienne. Sei que neste momento envia por outro lado, está no seu direito. Proponho-lhe apenas isto: antes do próximo envio para {pays}, mande-me o valor por WhatsApp. Dou-lhe o nosso número em dois minutos e o senhor escolhe.",
+  en:"Hello {nom}, Capital Services Bienne. I know you're sending elsewhere at the moment — that's your right. Here's all I'm asking: before your next transfer to {pays}, send me the amount on WhatsApp. I'll give you our figure in two minutes and you decide."},
+ call:{fr:"1. Ne pas se défendre.\n2. « Vous êtes chez qui maintenant ? » — noter le nom du concurrent.\n3. « Et vous obtenez combien pour 500 francs ? » — noter le chiffre.\n4. « Merci, c'est utile, je fais remonter. »\n5. Finir par un engagement concret : « Avant votre prochain envoi, un message et je vous donne notre chiffre. »",
+  es:"1. No defenderse.\n2. «¿Con quién está ahora?» — anotar el nombre del competidor.\n3. «¿Y cuánto le dan por 500 francos?» — anotar la cifra.\n4. «Gracias, me sirve, lo paso arriba.»\n5. Terminar con un compromiso concreto: «Antes de su próximo envío, un mensaje y le doy nuestra cifra.»",
+  de:"1. Sich nicht rechtfertigen.\n2. «Bei wem sind Sie jetzt?» – Namen der Konkurrenz notieren.\n3. «Und was bekommen Sie für 500 Franken?» – Zahl notieren.\n4. «Danke, das hilft uns, ich gebe es weiter.»\n5. Mit einer konkreten Zusage abschliessen: «Vor Ihrer nächsten Sendung eine Nachricht, und ich nenne Ihnen unsere Zahl.»",
+  pt:"1. Não se defender.\n2. «Com quem está agora?» — anotar o nome da concorrência.\n3. «E quanto lhe dão por 500 francos?» — anotar o número.\n4. «Obrigado, é útil, vou passar a informação.»\n5. Terminar com um compromisso concreto: «Antes do próximo envio, uma mensagem e dou-lhe o nosso número.»",
+  en:"1. Don't get defensive.\n2. 'Who are you with now?' — write the competitor's name down.\n3. 'And what do you get for 500 francs?' — write the figure down.\n4. 'Thanks, that helps, I'll pass it up.'\n5. Close with a concrete commitment: 'Before your next transfer, one message and I'll give you our figure.'"}},
+think:{
+ wa:{fr:"Bonjour {nom}, on s'est parlé la semaine dernière. Je ne vous relance pas pour rien : le taux vers le {pays} a bougé aujourd'hui. Si vous voulez, je vous fais le calcul sur votre montant habituel — deux minutes, ça ne vous engage à rien.",
+  es:"Buenos días {nom}, hablamos la semana pasada. No le escribo por escribir: la tasa hacia {pays} ha cambiado hoy. Si quiere, le hago el cálculo con su importe habitual — dos minutos y no le compromete a nada.",
+  de:"Guten Tag {nom}, wir haben letzte Woche gesprochen. Ich melde mich nicht ohne Grund: Der Kurs nach {pays} hat sich heute bewegt. Wenn Sie möchten, rechne ich es Ihnen mit Ihrem üblichen Betrag aus – zwei Minuten, völlig unverbindlich.",
+  pt:"Bom dia {nom}, falámos na semana passada. Não lhe escrevo por escrever: a taxa para {pays} mexeu hoje. Se quiser, faço-lhe o cálculo com o seu valor habitual — dois minutos e não o compromete a nada.",
+  en:"Hello {nom}, we spoke last week. I'm not chasing you for nothing: the rate to {pays} moved today. If you like, I'll run the numbers on your usual amount — two minutes, no commitment."},
+ call:{fr:"Règle : ne jamais rappeler sans raison nouvelle.\n1. Donner la raison en premier : « Je vous appelle parce que le taux a bougé. »\n2. Proposer un créneau précis : « Vous passez plutôt le matin ou après 16 h ? »\n3. Si c'est encore non : demander la permission de rappeler dans un mois, puis clôturer la fiche.",
+  es:"Regla: nunca volver a llamar sin un motivo nuevo.\n1. Dar el motivo primero: «Le llamo porque la tasa ha cambiado.»\n2. Proponer un momento concreto: «¿Le viene mejor por la mañana o después de las 16 h?»\n3. Si sigue siendo no: pedir permiso para llamar dentro de un mes y cerrar la ficha.",
+  de:"Regel: nie ohne neuen Grund nachfassen.\n1. Den Grund zuerst nennen: «Ich rufe an, weil sich der Kurs bewegt hat.»\n2. Ein konkretes Zeitfenster vorschlagen: «Passt es Ihnen morgens oder nach 16 Uhr?»\n3. Bleibt es nein: um Erlaubnis bitten, in einem Monat wieder anzurufen, und die Karte schliessen.",
+  pt:"Regra: nunca voltar a ligar sem um motivo novo.\n1. Dar o motivo primeiro: «Ligo porque a taxa mexeu.»\n2. Propor um horário concreto: «Prefere de manhã ou depois das 16 h?»\n3. Se continuar a ser não: pedir autorização para ligar dentro de um mês e fechar a ficha.",
+  en:"Rule: never follow up without a new reason.\n1. Give the reason first: 'I'm calling because the rate has moved.'\n2. Offer a specific slot: 'Does morning suit you better, or after 4 pm?'\n3. If it's still no: ask permission to call again in a month, then close the record."}},
+visa:{
+ call:{fr:"Au guichet, après la transaction, jamais avant : « Vous recevez votre salaire sur un compte ? Avec la carte Capital Visa vous le recevez ici, vous retirez au bancomat et vous payez partout. Je vous l'ouvre en 10 minutes, il me faut juste votre pièce d'identité. »",
+  es:"En el mostrador, después de la transacción, nunca antes: «¿Recibe su salario en una cuenta? Con la tarjeta Capital Visa lo recibe aquí, saca en el cajero y paga en todas partes. Se la abro en 10 minutos, solo necesito su documento de identidad.»",
+  de:"Am Schalter, nach der Transaktion, nie davor: «Bekommen Sie Ihren Lohn auf ein Konto? Mit der Capital-Visa-Karte erhalten Sie ihn hier, heben am Bancomat ab und zahlen überall. Ich eröffne sie in 10 Minuten, ich brauche nur Ihren Ausweis.»",
+  pt:"Ao balcão, depois da transação, nunca antes: «Recebe o seu salário numa conta? Com o cartão Capital Visa recebe-o aqui, levanta no multibanco e paga em todo o lado. Abro-lho em 10 minutos, só preciso do seu documento de identificação.»",
+  en:"At the counter, after the transaction, never before: 'Do you get your salary paid into an account? With the Capital Visa card you receive it here, withdraw at any ATM and pay anywhere. I can open it in 10 minutes, I just need your ID.'"}},
+review:{
+ call:{fr:"Juste après un client content, en lui tendant le QR : « Ça vous prend 20 secondes et ça nous aide vraiment : un avis Google. Vous voulez que je vous montre ? » Ne jamais le demander à quelqu'un qui a attendu ou qui a eu un problème.",
+  es:"Justo después de un cliente contento, dándole el QR: «Son 20 segundos y nos ayuda de verdad: una reseña en Google. ¿Quiere que se lo enseñe?» Nunca pedírselo a alguien que ha esperado o ha tenido un problema.",
+  de:"Direkt nach einem zufriedenen Kunden, mit dem QR-Code in der Hand: «Das dauert 20 Sekunden und hilft uns wirklich: eine Google-Bewertung. Soll ich es Ihnen zeigen?» Nie jemanden fragen, der gewartet hat oder ein Problem hatte.",
+  pt:"Logo a seguir a um cliente satisfeito, entregando-lhe o QR: «São 20 segundos e ajuda-nos muito: uma avaliação no Google. Quer que lhe mostre?» Nunca pedir a quem esperou ou teve um problema.",
+  en:"Right after a happy customer, handing them the QR code: 'It takes 20 seconds and it really helps us: a Google review. Want me to show you?' Never ask someone who waited or had a problem."}},
+biz:{
+ call:{fr:"Demander le patron ou les RH, jamais rester à l'accueil. 20 secondes :\n« Bonjour, Capital Services, l'agence de transfert d'argent en ville. Beaucoup de vos employés envoient de l'argent au pays. On peut venir une matinée chez vous : ouverture des cartes et envois sur place. Ça ne coûte rien à l'entreprise et ça leur fait gagner une demi-journée. »\nLaisser un flyer, proposer une date, repartir.",
+  es:"Pedir por el dueño o RRHH, nunca quedarse en recepción. 20 segundos:\n«Buenos días, Capital Services, la agencia de envío de dinero de la ciudad. Muchos de sus empleados mandan dinero a su país. Podemos ir una mañana a su empresa: apertura de tarjetas y envíos allí mismo. A la empresa no le cuesta nada y a ellos les ahorra media jornada.»\nDejar un flyer, proponer una fecha, marcharse.",
+  de:"Nach der Chefin, dem Chef oder HR fragen, nie am Empfang bleiben. 20 Sekunden:\n«Guten Tag, Capital Services, die Geldtransfer-Agentur in der Stadt. Viele Ihrer Mitarbeitenden senden Geld nach Hause. Wir können einen Morgen zu Ihnen kommen: Karteneröffnung und Überweisungen vor Ort. Für die Firma kostenlos, für sie ein halber Tag gespart.»\nFlyer dalassen, Termin vorschlagen, gehen.",
+  pt:"Pedir pelo patrão ou pelos RH, nunca ficar na receção. 20 segundos:\n«Bom dia, Capital Services, a agência de transferências da cidade. Muitos dos vossos funcionários enviam dinheiro para o país. Podemos ir uma manhã à empresa: abertura de cartões e envios no local. À empresa não custa nada e a eles poupa-lhes meio dia.»\nDeixar um flyer, propor uma data, sair.",
+  en:"Ask for the owner or HR, never stop at reception. 20 seconds:\n'Good morning, Capital Services, the money transfer branch in town. A lot of your staff send money home. We can come to your premises for a morning: card openings and transfers on site. It costs the company nothing and saves them half a day.'\nLeave a flyer, propose a date, leave."},
+ mail:{fr:"Objet : ouverture de cartes et transferts sur place pour vos employés\n\nMadame, Monsieur,\n\nCapital Services est l'agence de transfert d'argent de Bienne. Une partie de vos employés envoie régulièrement de l'argent à l'étranger et cherche un compte pour recevoir son salaire.\n\nNous proposons de venir une matinée dans vos locaux : ouverture des cartes Capital Visa et transferts sur place, sans aucun frais pour l'entreprise.\n\nJe reste à votre disposition pour convenir d'une date.\n\nCordialement,\nFranklin Morocho — Responsable d'agence, Capital Services Bienne",
+  es:"Asunto: apertura de tarjetas y envíos en sus instalaciones para sus empleados\n\nEstimada señora, estimado señor:\n\nCapital Services es la agencia de envío de dinero de Bienne. Una parte de sus empleados envía dinero al extranjero con regularidad y busca una cuenta donde recibir su salario.\n\nLes proponemos ir una mañana a sus instalaciones: apertura de tarjetas Capital Visa y envíos allí mismo, sin ningún coste para la empresa.\n\nQuedo a su disposición para fijar una fecha.\n\nUn cordial saludo,\nFranklin Morocho — Responsable de agencia, Capital Services Bienne",
+  de:"Betreff: Karteneröffnung und Überweisungen vor Ort für Ihre Mitarbeitenden\n\nSehr geehrte Damen und Herren\n\nCapital Services ist die Geldtransfer-Agentur in Biel. Ein Teil Ihrer Mitarbeitenden sendet regelmässig Geld ins Ausland und sucht ein Konto für den Lohn.\n\nWir kommen gerne einen Morgen zu Ihnen: Eröffnung der Capital-Visa-Karten und Überweisungen vor Ort, für die Firma kostenlos.\n\nGerne vereinbare ich mit Ihnen einen Termin.\n\nFreundliche Grüsse\nFranklin Morocho — Agenturleiter, Capital Services Biel",
+  pt:"Assunto: abertura de cartões e transferências nas vossas instalações\n\nExmos. Senhores,\n\nA Capital Services é a agência de transferências de dinheiro de Bienne. Uma parte dos vossos funcionários envia dinheiro para o estrangeiro regularmente e procura uma conta para receber o salário.\n\nPropomos ir uma manhã às vossas instalações: abertura dos cartões Capital Visa e transferências no local, sem qualquer custo para a empresa.\n\nFico à disposição para combinar uma data.\n\nCom os melhores cumprimentos,\nFranklin Morocho — Responsável de agência, Capital Services Bienne",
+  en:"Subject: on-site card openings and transfers for your staff\n\nDear Sir or Madam,\n\nCapital Services is the money transfer branch in Bienne. A number of your employees send money abroad regularly and are looking for an account to receive their salary.\n\nWe would come to your premises for a morning: Capital Visa card openings and transfers on site, at no cost to the company.\n\nI am available to agree on a date.\n\nKind regards,\nFranklin Morocho — Branch manager, Capital Services Bienne"}},
+central:{
+ mail:{fr:"Objet : taux — corridor {pays}, demande d'ajustement chiffrée\n\nBonjour,\n\nCorridor {pays}. Relevé de cette semaine : notre taux ___, concurrent ___ (photo datée en pièce jointe).\n\nDepuis janvier nous avons perdu ___ opérations sur ce corridor. Sur les clients rappelés cette semaine, ___ ont cité le taux comme seule raison de leur départ.\n\nDemande précise : un taux à ___ sur ce corridor. Sans cela ces clients ne reviendront pas, et l'objectif mensuel de l'agence ne sera pas tenu.\n\nMerci d'avance de votre retour,\nAgence de Bienne",
+  es:"Asunto: tasas — corredor {pays}, petición de ajuste con cifras\n\nBuenos días:\n\nCorredor {pays}. Toma de esta semana: nuestra tasa ___, competidor ___ (foto fechada adjunta).\n\nDesde enero hemos perdido ___ operaciones en este corredor. De los clientes a los que hemos llamado esta semana, ___ citaron la tasa como único motivo de su marcha.\n\nPetición concreta: una tasa de ___ en este corredor. Sin eso estos clientes no volverán y el objetivo mensual de la agencia no se cumplirá.\n\nGracias de antemano por su respuesta,\nAgencia de Bienne",
+  de:"Betreff: Kurse – Korridor {pays}, Anpassung mit Zahlen\n\nGuten Tag\n\nKorridor {pays}. Erhebung dieser Woche: unser Kurs ___, Konkurrenz ___ (datiertes Foto im Anhang).\n\nSeit Januar haben wir ___ Transaktionen auf diesem Korridor verloren. Von den diese Woche kontaktierten Kunden nannten ___ den Kurs als einzigen Grund.\n\nKonkrete Bitte: ein Kurs von ___ auf diesem Korridor. Sonst kommen diese Kunden nicht zurück und das Monatsziel der Agentur wird nicht erreicht.\n\nBesten Dank für Ihre Rückmeldung\nAgentur Biel",
+  pt:"Assunto: taxas — corredor {pays}, pedido de ajuste com números\n\nBom dia,\n\nCorredor {pays}. Levantamento desta semana: a nossa taxa ___, concorrente ___ (foto datada em anexo).\n\nDesde janeiro perdemos ___ operações neste corredor. Dos clientes contactados esta semana, ___ indicaram a taxa como único motivo.\n\nPedido concreto: uma taxa de ___ neste corredor. Sem isso estes clientes não voltam e o objetivo mensal da agência não será cumprido.\n\nObrigado desde já pela resposta,\nAgência de Bienne",
+  en:"Subject: rates — {pays} corridor, adjustment request with figures\n\nHello,\n\n{pays} corridor. This week's survey: our rate ___, competitor ___ (dated photo attached).\n\nSince January we have lost ___ transactions on this corridor. Of the customers we called this week, ___ named the rate as the only reason they left.\n\nSpecific request: a rate of ___ on this corridor. Without it these customers will not come back and the branch's monthly target will not be met.\n\nThank you in advance for your reply,\nBienne branch"}}
+};
+const REAC=[
+ {k:"back", fr:"Il revient",        es:"Vuelve",              c:"#7FD4C1"},
+ {k:"rate", fr:"C'est le taux",     es:"Es la tasa",          c:"#F5C400"},
+ {k:"comp", fr:"Chez un concurrent",es:"Con la competencia",  c:"#F2A78C"},
+ {k:"moved",fr:"N'envoie plus",     es:"Ya no envía",         c:"#C9C9C0"},
+ {k:"later",fr:"À rappeler",        es:"Volver a llamar",     c:"#8FB9F0"},
+ {k:"noans",fr:"Ne répond pas",     es:"No contesta",         c:"#C9A7F0"}
+];
+
+/* ===== POP-UP D'INSTALLATION ===== */
+let deferredPrompt=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;});
+function deviceKind(){
+  const ua=navigator.userAgent||"";
+  const ios=/iPad|iPhone|iPod/.test(ua)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+  const android=/Android/i.test(ua);
+  return {ios:ios,android:android,mobile:ios||android||/Mobi/i.test(ua)};
+}
+function isInstalled(){
+  try{ return (window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true; }catch(e){ return false; }
+}
+function showInstall(force){
+  const T2=t(), d=deviceKind();
+  if(!force){
+    if(isInstalled())return;
+    if(!d.mobile&&!deferredPrompt)return;
+    try{ if(localStorage.getItem("cs-pwa-off")==="1")return; }catch(e){}
+  }
+  const steps = d.ios?T2.pwaIos : d.android?T2.pwaAndroid : T2.pwaPc;
+  const el=document.getElementById("pwa");
+  el.innerHTML=`<div class="modal">
+    <div class="mtop"><span class="mico">📲</span><h3>${esc(T2.pwaTitle)}</h3></div>
+    <p class="msub">${esc(T2.pwaSub)}</p>
+    <ol class="msteps">${steps.map(s=>`<li>${esc(s)}</li>`).join("")}</ol>
+    <div class="mbtns">
+      ${deferredPrompt?`<button class="btn" id="pwa-go">${esc(T2.pwaInstall)}</button>`:""}
+      <button class="btn ghost" id="pwa-ok">${esc(T2.pwaOk)}</button>
+      <button class="btn ghost sm" id="pwa-never">${esc(T2.pwaNever)}</button>
+    </div></div>`;
+  el.hidden=false;
+  const close=()=>{el.hidden=true;el.innerHTML="";};
+  document.getElementById("pwa-ok").addEventListener("click",close);
+  document.getElementById("pwa-never").addEventListener("click",()=>{try{localStorage.setItem("cs-pwa-off","1");}catch(e){}close();});
+  const g=document.getElementById("pwa-go");
+  if(g) g.addEventListener("click",async()=>{ close(); try{ deferredPrompt.prompt(); await deferredPrompt.userChoice; }catch(e){} deferredPrompt=null; });
+  el.addEventListener("click",e=>{ if(e.target===el) close(); });
+}
+
+/* ===== CE QU'ON APPREND ===== */
+function apprendMois(mk){
+  const out={n:0,r:{},pays:{}};
+  for(const k in apprend){ const a=apprend[k]||{}; if(String(a.mk)!==mk) continue;
+    out.n++; out.r[a.r]=(out.r[a.r]||0)+1;
+    const p=a.pays||"—"; out.pays[p]=out.pays[p]||{}; out.pays[p][a.r]=(out.pays[p][a.r]||0)+1; }
+  return out;
+}
+function conseil(st){
+  const T2=t(); if(!st.n) return T2.lrnNone;
+  const tot=st.n, g=k=>st.r[k]||0, pc=k=>Math.round(g(k)*100/tot);
+  const li=[];
+  const top=Object.keys(st.r).sort((a,b)=>st.r[b]-st.r[a])[0];
+  if(top==="rate") li.push(T2.advRate.replace("{p}",pc("rate")).replace("{n}",g("rate")).replace("{t}",tot));
+  if(top==="comp") li.push(T2.advComp.replace("{p}",pc("comp")));
+  if(pc("noans")>=35) li.push(T2.advNoans.replace("{p}",pc("noans")));
+  if(pc("back")>=20) li.push(T2.advBack.replace("{p}",pc("back")).replace("{n}",g("back")));
+  if(g("later")>=5) li.push(T2.advLater.replace("{n}",g("later")));
+  const bad=Object.keys(st.pays).map(p=>[p,(st.pays[p].rate||0)+(st.pays[p].comp||0)]).sort((a,b)=>b[1]-a[1])[0];
+  if(bad&&bad[1]>=3) li.push(T2.advPays.replace("{p}",bad[0]).replace("{n}",bad[1]));
+  if(!li.length) li.push(T2.advKeep);
+  return li.join(" ");
+}
+function todayHasCall(){
+  const now=new Date(); if(now.getFullYear()!==YEAR||now.getMonth()!==CUR) return false;
+  const d=pad2(now.getDate())+"."+pad2(CUR+1);
+  return tasksFor(CUR).concat(extraList(YEAR+"-"+pad2(CUR+1)))
+    .some(x=>x.d===d && /appel|appeler|relance|llamad|llamar|seguimiento/i.test(String(x.fr||"")+" "+String(x.es||"")));
+}
+function renderLearn(){
+  const T2=t(), mk=YEAR+"-"+pad2(CUR+1), isAdm=!!(ME&&ME.admin);
+  const st=apprendMois(mk);
+  const prevM=(CUR+11)%12, prev=apprendMois(YEAR+"-"+pad2(prevM+1));
+  const open=todayHasCall()||isAdm;
+  let html=`<div class="shead"><h2>${T2.lrn}</h2><span class="hint">${T2.lrnHint}</span></div>`;
+  html+=`<div class="card p18">`;
+  if(open){
+    html+=`<div class="cta"><button class="btn" id="lrn-open">${T2.lrnStart}</button>
+      <span class="hint" style="margin:0">${esc(todayHasCall()?T2.lrnToday:T2.lrnAdmOnly)}</span></div>`;
+  }else{
+    html+=`<div class="note">${esc(T2.lrnClosed)}</div>`;
+  }
+  html+=`<div class="lrnbar">`+REAC.map(r=>`<div class="lrnpill"><span class="dotc" style="background:${r.c}"></span>${esc(r[lang]||r.fr)}<b>${st.r[r.k]||0}</b></div>`).join("")+`</div>`;
+  html+=`<div class="adv"><b>${esc(T2.lrnAdv)}</b> ${esc(conseil(st))}</div>`;
+  if(prev.n) html+=`<div class="note">${esc(T2.lrnPrev)} ${esc(conseil(prev))}</div>`;
+  html+=`<div style="margin-top:14px"><button class="hbtn" id="lrn-lib">${T2.lrnLib}</button>
+    <button class="hbtn" id="lrn-exp" style="margin-left:8px">${T2.lrnExport}</button>
+    <button class="hbtn" id="lrn-pwa" style="margin-left:8px">${T2.pwaBtn}</button></div>
+    <div id="lrn-libbox" hidden style="margin-top:14px"></div>
+    <textarea id="lrn-out" hidden style="margin-top:12px;min-height:150px;font-size:12px"></textarea>`;
+  html+=`</div>`;
+  const el=document.getElementById("s-learn"); el.innerHTML=html;
+  const b1=document.getElementById("lrn-open"); if(b1) b1.addEventListener("click",openCall);
+  document.getElementById("lrn-lib").addEventListener("click",()=>{
+    const box=document.getElementById("lrn-libbox");
+    if(!box.hidden){box.hidden=true;return;}
+    box.hidden=false; box.innerHTML=libHTML(); wireLib(box);
+  });
+  document.getElementById("lrn-pwa").addEventListener("click",()=>showInstall(true));
+  document.getElementById("lrn-exp").addEventListener("click",()=>{
+    const o=document.getElementById("lrn-out"); o.hidden=false; o.value=rapport(mk,st); o.select();
+  });
+}
+function libHTML(){
+  const T2=t();
+  let h=`<div class="libsel"><label>${T2.lrnSit}</label><select id="lb-sit">`+
+    SIT.map(s=>`<option value="${s.k}">${esc(s[lang]||s.fr)}</option>`).join("")+`</select>
+    <label>${T2.lrnLang}</label><select id="lb-lang">`+
+    LG.map(l=>`<option value="${l[0]}"${l[0]===lang?" selected":""}>${l[1]}</option>`).join("")+`</select></div>
+    <div id="lb-body"></div>`;
+  return h;
+}
+function libBody(){
+  const T2=t(), sit=document.getElementById("lb-sit").value, lg=document.getElementById("lb-lang").value;
+  const o=SC[sit]||{}; let h="";
+  const blk=(key,label)=>{ const tx=(o[key]||{})[lg]; if(!tx) return "";
+    return `<div class="scbox"><div class="scT">${esc(label)}</div>
+      <textarea readonly>${esc(tx)}</textarea>
+      <button class="hbtn" data-cp="${key}">${T2.copy}</button></div>`; };
+  h+=blk("wa",T2.chWa)+blk("call",T2.chCall)+blk("mail",T2.chMail);
+  document.getElementById("lb-body").innerHTML=h||`<div class="note">—</div>`;
+  document.querySelectorAll("#lb-body button[data-cp]").forEach(b=>b.addEventListener("click",()=>{
+    const ta=b.parentNode.querySelector("textarea"); ta.select();
+    try{document.execCommand("copy");}catch(e){}
+    try{navigator.clipboard.writeText(ta.value);}catch(e){}
+    b.textContent=t().copied; setTimeout(()=>{b.textContent=t().copy;},1600);
+  }));
+}
+function wireLib(box){
+  box.querySelector("#lb-sit").addEventListener("change",libBody);
+  box.querySelector("#lb-lang").addEventListener("change",libBody);
+  libBody();
+}
+function rapport(mk,st){
+  const T2=t(), tot=st.n||0;
+  let s=T2.rapT.replace("{a}",AGENCE.nom).replace("{m}",T2.monthN[CUR]+" "+YEAR)+"\n\n";
+  s+=T2.rapCalls.replace("{n}",tot)+"\n";
+  REAC.forEach(r=>{ s+="  - "+(r[lang]||r.fr)+" : "+(st.r[r.k]||0)+"\n"; });
+  s+="\n"+T2.rapPays+"\n";
+  Object.keys(st.pays).forEach(p=>{
+    const o=st.pays[p], parts=REAC.filter(r=>o[r.k]).map(r=>(r[lang]||r.fr)+" "+o[r.k]);
+    s+="  - "+p+" : "+parts.join(", ")+"\n"; });
+  s+="\n"+T2.lrnAdv+" "+conseil(st)+"\n";
+  return s;
+}
+
+/* ===== SESSION D'APPELS ===== */
+let CS={rows:[],hdr:[],map:{},i:0,wb:null,ws:null,name:"",done:0};
+function openCall(){
+  const T2=t();
+  const el=document.getElementById("callw");
+  el.innerHTML=`<div class="ovl">
+    <div class="ovbar"><strong>${esc(T2.csTitle)}</strong>
+      <span class="grow"></span>
+      <button class="btn ghost sm" id="cs-x">${T2.csClose}</button></div>
+    <div class="ovbody" id="cs-body"></div></div>`;
+  el.hidden=false;
+  document.getElementById("cs-x").addEventListener("click",()=>{el.hidden=true;el.innerHTML="";renderLearn();});
+  csStep1();
+}
+function csStep1(){
+  const T2=t();
+  document.getElementById("cs-body").innerHTML=`
+    <div class="csimp">
+      <h3>${esc(T2.csImp)}</h3>
+      <p class="hint" style="margin:0 0 12px">${esc(T2.csImpH)}</p>
+      <input type="file" id="cs-file" accept=".xlsx,.xls,.csv">
+      <div class="note" style="margin-top:12px">🔒 ${esc(T2.csPriv)}</div>
+    </div>`;
+  document.getElementById("cs-file").addEventListener("change",async e=>{
+    const f=e.target.files&&e.target.files[0]; if(!f)return;
+    if(typeof XLSX==="undefined"){ alert(t().impLib); return; }
+    const buf=await f.arrayBuffer();
+    const wb=XLSX.read(buf,{type:"array"});
+    const ws=wb.Sheets[wb.SheetNames[0]];
+    const aoa=XLSX.utils.sheet_to_json(ws,{header:1,defval:""});
+    if(!aoa.length){ alert(t().csEmpty); return; }
+    CS={rows:aoa.slice(1).filter(r=>r.join("").trim()!==""),hdr:aoa[0].map(x=>String(x)),map:{},i:0,wb:wb,ws:ws,name:f.name,done:0};
+    csAuto(); csStep2();
+  });
+}
+function csAuto(){
+  const h=CS.hdr.map(x=>x.toLowerCase());
+  const find=re=>{ for(let i=0;i<h.length;i++){ if(re.test(h[i])) return i; } return -1; };
+  CS.map.nom=find(/nom|name|client|apellido|nombre|beneficiario/);
+  CS.map.tel=find(/tel|phone|natel|mobile|portable|m[oó]vil/);
+  CS.map.pays=find(/pays|country|destino|destin|corridor|corredor|pais|país/);
+  CS.map.last=find(/dernier|last|derni|fecha|date|env[ií]o/);
+}
+function csStep2(){
+  const T2=t();
+  const sel=(k,lb)=>`<div><label>${esc(lb)}</label><select data-m="${k}">
+    <option value="-1">—</option>`+CS.hdr.map((x,i)=>`<option value="${i}"${CS.map[k]===i?" selected":""}>${esc(x||("col "+(i+1)))}</option>`).join("")+`</select></div>`;
+  document.getElementById("cs-body").innerHTML=`
+    <div class="csimp">
+      <h3>${esc(T2.csMap)}</h3>
+      <p class="hint" style="margin:0 0 12px">${esc(T2.csMapH.replace("{n}",CS.rows.length))}</p>
+      <div class="form">${sel("nom",T2.csNom)}${sel("tel",T2.csTel)}${sel("pays",T2.csPays)}${sel("last",T2.csLast)}</div>
+      <div style="margin-top:14px"><button class="btn" id="cs-go">${esc(T2.csGo)}</button></div>
+    </div>`;
+  document.querySelectorAll("#cs-body select[data-m]").forEach(s=>s.addEventListener("change",()=>{CS.map[s.dataset.m]=+s.value;}));
+  document.getElementById("cs-go").addEventListener("click",()=>{CS.i=0;csCard();});
+}
+function csVal(row,k){ const i=CS.map[k]; return (i==null||i<0)?"":String(row[i]==null?"":row[i]).trim(); }
+function csCard(){
+  const T2=t();
+  if(CS.i>=CS.rows.length){ csDone(); return; }
+  const row=CS.rows[CS.i];
+  const nom=csVal(row,"nom")||"—", tel=csVal(row,"tel"), pays=csVal(row,"pays")||"—", last=csVal(row,"last");
+  const tel2=tel.replace(/[^0-9+]/g,"");
+  const wa=tel2?("https://wa.me/"+tel2.replace(/^\+/,"").replace(/^0/,"41")):"";
+  document.getElementById("cs-body").innerHTML=`
+    <div class="csprog">${CS.i+1} / ${CS.rows.length} &nbsp;·&nbsp; ${esc(T2.csDone.replace("{n}",CS.done))}</div>
+    <div class="cscard">
+      <div class="csname">${esc(nom)}</div>
+      <div class="csmeta">${pays?`<span class="tag">${esc(pays)}</span>`:""}${last?`<span class="tag">${esc(T2.csLast)}: ${esc(last)}</span>`:""}${tel?`<span class="tag">${esc(tel)}</span>`:""}</div>
+      <div class="csact">
+        ${tel?`<a class="btn" href="tel:${esc(tel2)}">📞 ${esc(T2.csCall)}</a>`:""}
+        ${wa?`<a class="btn ghost" id="cs-wa" href="#" target="_blank" rel="noopener">💬 WhatsApp</a>`:""}
+      </div>
+      <div class="libsel" style="margin-top:14px">
+        <label>${T2.lrnSit}</label><select id="cs-sit">`+
+          SIT.slice(0,4).map(s=>`<option value="${s.k}">${esc(s[lang]||s.fr)}</option>`).join("")+`</select>
+        <label>${T2.lrnLang}</label><select id="cs-lg">`+
+          LG.map(l=>`<option value="${l[0]}"${l[0]===lang?" selected":""}>${l[1]}</option>`).join("")+`</select>
+      </div>
+      <div class="scbox"><div class="scT">💬 WhatsApp</div><textarea id="cs-watx"></textarea>
+        <button class="hbtn" id="cs-cp">${T2.copy}</button></div>
+      <div class="scbox"><div class="scT">📞 ${esc(T2.chCall)}</div><textarea id="cs-catx" readonly></textarea></div>
+      <div class="csre"><div class="scT">${esc(T2.csReact)}</div><div class="csrb">`+
+        REAC.map(r=>`<button class="rbtn" data-r="${r.k}" style="border-color:${r.c}"><span class="dotc" style="background:${r.c}"></span>${esc(r[lang]||r.fr)}</button>`).join("")+
+      `</div></div>
+      <div class="csnav">
+        <button class="btn ghost sm" id="cs-prev"${CS.i?"":" disabled"}>← ${esc(T2.csPrev)}</button>
+        <button class="btn ghost sm" id="cs-skip">${esc(T2.csSkip)} →</button>
+      </div>
+    </div>`;
+  const fill=()=>{
+    const s=document.getElementById("cs-sit").value, lg=document.getElementById("cs-lg").value;
+    const rep=x=>String(x||"").replace(/\{nom\}/g,nom==="—"?"":nom).replace(/\{pays\}/g,pays==="—"?"":pays);
+    document.getElementById("cs-watx").value=rep(((SC[s]||{}).wa||{})[lg]||"");
+    document.getElementById("cs-catx").value=rep(((SC[s]||{}).call||{})[lg]||"");
+    const a=document.getElementById("cs-wa");
+    if(a) a.href=wa+"?text="+encodeURIComponent(document.getElementById("cs-watx").value);
+  };
+  document.getElementById("cs-sit").addEventListener("change",fill);
+  document.getElementById("cs-lg").addEventListener("change",fill);
+  fill();
+  document.getElementById("cs-cp").addEventListener("click",()=>{
+    const ta=document.getElementById("cs-watx"); ta.select();
+    try{document.execCommand("copy");}catch(e){}
+    try{navigator.clipboard.writeText(ta.value);}catch(e){}
+    const b=document.getElementById("cs-cp"); b.textContent=t().copied; setTimeout(()=>{b.textContent=t().copy;},1600);
+  });
+  document.querySelectorAll("#cs-body button[data-r]").forEach(b=>b.addEventListener("click",()=>csSave(b.dataset.r,pays)));
+  document.getElementById("cs-prev").addEventListener("click",()=>{ if(CS.i>0){CS.i--;csCard();} });
+  document.getElementById("cs-skip").addEventListener("click",()=>{ CS.i++; csCard(); });
+}
+async function csSave(r,pays){
+  const day=todayISO(), mk=YEAR+"-"+pad2(CUR+1);
+  const key=day.replace(/-/g,"")+"_"+Date.now().toString(36);
+  const rec={mk:mk,day:day,pays:pays||"—",r:r,by:ME?ME.id:"",at:new Date().toISOString()};
+  apprend[key]=rec;
+  if(DB){try{await DB.doc("apprend/"+key).set(rec);}catch(e){}} else saveLocal();
+  const lab=(REAC.find(x=>x.k===r)||{}).fr||r;
+  CS.rows[CS.i]._r=lab; CS.rows[CS.i]._d=day;
+  CS.done++; CS.i++; csCard();
+}
+function csDone(){
+  const T2=t();
+  document.getElementById("cs-body").innerHTML=`
+    <div class="csimp">
+      <h3>${esc(T2.csEnd)}</h3>
+      <p class="hint">${esc(T2.csEndH.replace("{n}",CS.done))}</p>
+      <button class="btn" id="cs-dl">⬇ ${esc(T2.csDl)}</button>
+      <button class="btn ghost" id="cs-again" style="margin-left:8px">${esc(T2.csAgain)}</button>
+      <div class="note" style="margin-top:14px">${esc(T2.csPriv2)}</div>
+    </div>`;
+  document.getElementById("cs-again").addEventListener("click",()=>{CS.i=0;csCard();});
+  document.getElementById("cs-dl").addEventListener("click",()=>{
+    const hdr=CS.hdr.slice(); hdr.push("Réaction","Date appel");
+    const aoa=[hdr].concat(CS.rows.map(r=>{ const o=r.slice(0,CS.hdr.length);
+      while(o.length<CS.hdr.length)o.push("");
+      o.push(r._r||"",r._d||""); return o; }));
+    const ws=XLSX.utils.aoa_to_sheet(aoa), wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,"Appels");
+    XLSX.writeFile(wb,(CS.name||"clients").replace(/\.[^.]+$/,"")+"_"+todayISO()+".xlsx");
+  });
+}
+
+function renderAll(){renderStatic();renderImportSection();renderToday();renderMonth();renderTeam();renderTasks();renderLearn();renderRecap();renderLog();renderYear();renderCorr();renderAdmin();}
 
 document.getElementById("monthsel").addEventListener("change",e=>{
   CUR=+e.target.value; try{localStorage.setItem("cs-mois",String(CUR));}catch(_){}
@@ -1501,6 +2006,7 @@ setTimeout(()=>document.getElementById("stage").classList.remove("intro"),480);
   sub("unlocked",o=>{unlocked=o; if(ME)renderTasks();});
   sub("recap",o=>{recap=o; if(ME)renderRecap();});
   sub("extras",o=>{extras=o; if(ME)renderTasks();});
+  sub("apprend",o=>{apprend=o; if(ME)renderLearn();});
   setTimeout(()=>{ if(ME) setStatus("live"); },300);
 })();
 </script>
