@@ -483,6 +483,13 @@ const T={
   noRecap:"Personne n'a encore écrit son bilan aujourd'hui.",
   recapHist:"Bilans des jours précédents",aRecap:"a écrit le bilan du",
   listening:"J'écoute…",
+  micWait:"Activation du micro…",
+  micDenied:"Le micro est bloqué pour ce site. Ouvrez le cadenas 🔒 à gauche de l'adresse, autorisez le microphone, puis réessayez. En attendant, écrivez : ça marche aussi.",
+  micNoSpeech:"Je n'ai rien entendu. Rapprochez-vous du micro et réessayez, ou écrivez directement.",
+  micNoDev:"Aucun micro trouvé sur cet appareil. Écrivez votre texte, ça marche aussi.",
+  micNet:"La dictée a besoin d'Internet et la connexion n'a pas répondu. Réessayez, ou écrivez.",
+  micFail:"La dictée n'a pas démarré. Écrivez votre texte, ça marche aussi.",
+  micStopped:"Dictée arrêtée.",
   h1:"Pilotage de l'agence",
   hsub:"Objectifs, chiffres du jour et plan d'action de l'agence de Biel/Bienne. Chaque geste est tracé au nom de son auteur.",
   live:"Connecté — tout est partagé avec l'équipe",local:"Copie autonome — les données restent sur cet appareil",wait:"Connexion…",
@@ -589,6 +596,13 @@ const T={
   noRecap:"Todavía nadie ha escrito su balance de hoy.",
   recapHist:"Balances de días anteriores",aRecap:"escribió el balance del",
   listening:"Le escucho…",
+  micWait:"Activando el micrófono…",
+  micDenied:"El micrófono está bloqueado para este sitio. Abra el candado 🔒 a la izquierda de la dirección, permita el micrófono y vuelva a intentarlo. Mientras tanto escriba: funciona igual.",
+  micNoSpeech:"No he oído nada. Acérquese al micrófono y vuelva a intentarlo, o escriba directamente.",
+  micNoDev:"No se ha encontrado ningún micrófono en este aparato. Escriba su texto, funciona igual.",
+  micNet:"El dictado necesita Internet y la conexión no ha respondido. Vuelva a intentarlo, o escriba.",
+  micFail:"El dictado no ha arrancado. Escriba su texto, funciona igual.",
+  micStopped:"Dictado parado.",
   h1:"Pilotaje de la agencia",
   hsub:"Objetivos, cifras del día y plan de acción de la agencia de Biel/Bienne. Cada gesto queda a nombre de quien lo hace.",
   live:"Conectado — todo se comparte con el equipo",local:"Copia autónoma — los datos se quedan en este aparato",wait:"Conectando…",
@@ -1158,25 +1172,79 @@ async function findPin(h){
   return null;
 }
 /* ===== BILAN DU JOUR (écrit ou dicté) ===== */
-let recog=null, recBase="";
+let recog=null, recBase="", micOn=false, micWatch=null, micTimer=null, recapDirty=false;
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition||null;
-function stopMic(){ if(recog){try{recog.stop();}catch(e){} recog=null;}
-  const b=document.getElementById("micbtn"); if(b){b.classList.remove("on");b.querySelector("span.lb").textContent=t().mic;} }
-function startMic(){
-  if(!SR)return;
-  const ta=document.getElementById("rc-text"), sel=document.getElementById("rc-lang"), b=document.getElementById("micbtn");
-  recog=new SR(); recog.lang=sel.value||"fr-FR"; recog.continuous=true; recog.interimResults=true;
-  recBase=ta.value?ta.value.replace(/\s+$/,"")+" ":"";
-  recog.onresult=e=>{let fin="",itm="";
-    for(let i=e.resultIndex;i<e.results.length;i++){
-      const r=e.results[i]; if(r.isFinal)fin+=r[0].transcript+" "; else itm+=r[0].transcript;}
-    if(fin)recBase+=fin;
-    ta.value=clip(recBase+itm,2000);};
-  recog.onend=()=>{ if(recog){recog=null; b.classList.remove("on"); b.querySelector("span.lb").textContent=t().mic;} };
-  recog.onerror=()=>{ stopMic(); };
-  try{recog.start(); b.classList.add("on"); b.querySelector("span.lb").textContent=t().listening;}catch(e){recog=null;}
+function micMsg(txt,bad){
+  const m=document.getElementById("rc-msg");
+  if(m) m.innerHTML = txt ? '<span style="'+(bad?"color:var(--bad);font-weight:600":"color:var(--ink3)")+'">'+esc(txt)+'</span>' : "";
 }
+function micFace(state){
+  const b=document.getElementById("micbtn"); if(!b) return;
+  b.classList.toggle("on", state==="on");
+  const lb=b.querySelector(".lb");
+  if(lb) lb.textContent = state==="on" ? t().micStop : state==="wait" ? t().micWait : t().mic;
+}
+function killRecog(){
+  if(micWatch){clearTimeout(micWatch);micWatch=null;}
+  if(micTimer){clearTimeout(micTimer);micTimer=null;}
+  if(recog){
+    try{recog.onstart=null;recog.onresult=null;recog.onerror=null;recog.onend=null;}catch(e){}
+    try{recog.abort();}catch(e){}
+    try{recog.stop();}catch(e){}
+    recog=null;
+  }
+}
+function stopMic(msg,bad){
+  micOn=false; killRecog();
+  try{ micFace("off"); micMsg(msg||"",!!bad); }catch(e){}
+  if(recapDirty){ recapDirty=false; try{renderRecap();}catch(e){} }
+}
+async function startMic(){
+  if(micOn){ stopMic(t().micStopped,false); return; }
+  if(!SR){ micFace("off"); micMsg(t().micNo,true); return; }
+  micOn=true; micFace("wait"); micMsg("",false);
+  try{
+    if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
+      const st=await navigator.mediaDevices.getUserMedia({audio:true});
+      try{ st.getTracks().forEach(tr=>tr.stop()); }catch(e){}
+    }
+  }catch(e){
+    const n=(e&&e.name)||"";
+    stopMic(n==="NotFoundError"?t().micNoDev:t().micDenied,true); return;
+  }
+  if(!micOn) return;
+  const ta=document.getElementById("rc-text"), sel=document.getElementById("rc-lang");
+  if(!ta){ stopMic("",false); return; }
+  recBase = ta.value ? ta.value.replace(/\s+$/,"")+" " : "";
+  try{
+    recog=new SR();
+    recog.lang=(sel&&sel.value)||"fr-FR";
+    recog.continuous=true; recog.interimResults=true;
+    recog.onstart=()=>{ if(micWatch){clearTimeout(micWatch);micWatch=null;} micFace("on"); micMsg(t().listening,false); };
+    recog.onresult=e=>{ try{
+      let fin="",itm="";
+      for(let i=e.resultIndex;i<e.results.length;i++){
+        const r=e.results[i]; if(r.isFinal) fin+=r[0].transcript+" "; else itm+=r[0].transcript; }
+      if(fin) recBase+=fin;
+      const t2=document.getElementById("rc-text"); if(t2) t2.value=clip(recBase+itm,2000);
+    }catch(err){} };
+    recog.onerror=ev=>{ const c=(ev&&ev.error)||"";
+      const m = (c==="not-allowed"||c==="service-not-allowed") ? t().micDenied
+              : c==="no-speech"    ? t().micNoSpeech
+              : c==="audio-capture"? t().micNoDev
+              : c==="network"      ? t().micNet
+              : c==="aborted"      ? "" : t().micFail;
+      stopMic(m, !!m); };
+    recog.onend=()=>{ if(micOn) stopMic(t().micStopped,false); };
+    recog.start();
+    micWatch=setTimeout(()=>{ if(micOn) stopMic(t().micFail,true); },7000);
+    micTimer=setTimeout(()=>{ if(micOn) stopMic(t().micStopped,false); },120000);
+  }catch(e){ stopMic(t().micFail,true); }
+}
+window.addEventListener("keydown",e=>{ if(e.key==="Escape"&&micOn) stopMic(t().micStopped,false); });
+window.addEventListener("pagehide",()=>{ if(micOn) stopMic("",false); });
 function renderRecap(){
+  if(micOn){ recapDirty=true; return; }
   const day=todayISO(), mine=ME?recap[day+"_"+ME.id]:null;
   const closed=false; // le bilan du jour reste modifiable jusqu'à minuit
   const langOpts=SPEECH.map(([v,n])=>`<option value="${v}"${(lang==="es"&&v==="es-ES")||(lang==="fr"&&v==="fr-FR")?" selected":""}>${esc(n)}</option>`).join("");
@@ -1195,7 +1263,7 @@ function renderRecap(){
     <div class="rcbar">
       <div><label for="rc-lang" style="margin-bottom:3px">${t().langSpeak}</label>
         <select id="rc-lang"${SR?"":" disabled"}>${langOpts}</select></div>
-      <button class="mic" id="micbtn"${SR?"":" disabled"}><span class="rec"></span><span class="lb">${t().mic}</span></button>
+      <button class="mic" id="micbtn"><span class="rec"></span><span class="lb">${t().mic}</span></button>
       <span style="flex:1"></span>
       <button class="btn" id="rc-save">${t().recapSave}</button>
     </div>
@@ -1208,7 +1276,9 @@ function renderRecap(){
   html+=`</div>`;
   const el=document.getElementById("s-recap2"); el.innerHTML=html;
   const b=document.getElementById("micbtn");
-  if(b&&SR) b.addEventListener("click",()=>{ recog?stopMic():startMic(); });
+  if(b) b.addEventListener("click",()=>{ try{ startMic(); }catch(e){ try{stopMic(t().micFail,true);}catch(_){} } });
+  const sl=document.getElementById("rc-lang");
+  if(sl) sl.addEventListener("change",()=>{ if(micOn) stopMic(t().micStopped,false); });
   document.getElementById("rc-save").addEventListener("click",async()=>{
     stopMic();
     const ta=document.getElementById("rc-text"), txt=clip(ta.value.trim(),2000);
