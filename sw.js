@@ -1,5 +1,5 @@
 /* Cache simple : la page marche hors ligne une fois ouverte une première fois. */
-var CACHE = "pilotage-v5";
+var CACHE = "pilotage-v6";
 var FILES = ['./', './index.html', './manifest.json',
              './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 

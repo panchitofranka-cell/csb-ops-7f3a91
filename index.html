@@ -197,6 +197,18 @@ td input{width:76px;padding:5px 7px;font-size:13px;text-align:right}
 .task.miss{background:rgba(170,42,32,.06)}
 .task .meta{flex:none;display:flex;gap:6px;align-items:center;padding-top:1px}
 .task.weekly .t::before{content:"↻ ";color:var(--brand-ink);font-weight:700}
+.hbtn{font:600 11px/1.5 "IBM Plex Sans";padding:3px 9px;border-radius:20px;border:1px solid var(--line2);
+  background:transparent;color:var(--brand-ink);cursor:pointer;white-space:nowrap}
+.hbtn:hover{background:var(--sunk)}
+.how{margin:0 4px 12px 59px;padding:12px 14px;background:var(--sunk);border-left:3px solid var(--brand);
+  border-radius:0 9px 9px 0;font-size:12.5px;line-height:1.62;color:var(--ink2)}
+.newtask{background:var(--sunk);border:1px dashed var(--line2);border-radius:11px;padding:15px;margin-bottom:18px}
+.newtask textarea{width:100%;min-height:66px;font-size:13px;line-height:1.5}
+.pinv{font-family:"IBM Plex Mono";font-size:13.5px;font-weight:600;letter-spacing:.16em;min-width:56px;
+  display:inline-block;text-align:center;color:var(--ink)}
+.tag{display:inline-block;padding:2px 8px;border-radius:20px;font:600 10.5px/1.6 "IBM Plex Sans";
+  background:var(--sunk);color:var(--ink3);white-space:nowrap}
+@media(max-width:640px){.how{margin-left:4px}}
 
 .who{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink3);white-space:nowrap}
 .av{width:19px;height:19px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;
@@ -452,7 +464,7 @@ const T={
   onTrack:"dans le rythme",behind:"en retard",critical:"critique",
   admin:"Administration",adminHint:"Réservé à l'administrateur — codes d'accès, déverrouillage et remise à zéro",
   users:"Codes d'accès",uname:"Nom",upin:"Nouveau code",usave:"Enregistrer les codes",
-  pinNote:"Laissez le code vide pour ne pas le changer. Les codes ne sont jamais affichés : seule leur empreinte est conservée.",
+  pinNote:"Laissez le champ vide pour ne pas changer un code. Les codes ne sont enregistrés nulle part : l'œil les retrouve en les recalculant, et seul l'administrateur peut le faire.",
   unlock:"Déverrouiller",unlockHint:"Rouvrir une case verrouillée (l'action est enregistrée)",
   opid:"ID rapport",imp:"Importer un rapport Excel",
   impHint:"Déposez le rapport détaillé MoneyGram ou le rapport Ria. Les opérations sont comptées par caissier grâce à l'identifiant du rapport (colonne « ID rapport » ci-dessus).",
@@ -473,6 +485,15 @@ const T={
   foot:"Sources : lettre d'objectifs 2026 de la direction, rapport réseau par agence (janv–août 2026) et rapports quotidiens de l'agence. Les réels Mercury de janvier à juin restent à confirmer par la centrale. Le code d'accès sert à identifier l'auteur de chaque action, ce n'est pas un dispositif de sécurité.",
   noteMg:"MoneyGram : envois et paiements suivis séparément tant que la centrale n'a pas confirmé lesquels comptent.",
   cumulNote:"Chaque mois repart de zéro. Déposez les rapports Excel en haut de page pour remplir les chiffres.",
+  howBtn:"Comment faire",howHide:"Fermer",
+  ntTitle:"Ajouter une tâche",ntDay:"Jour",ntTxt:"Ce qu'il faut faire",ntHow:"Comment le faire",
+  ntWho:"Pour qui",ntAll:"Toute l'équipe",ntAdd:"Ajouter la tâche",ntOk:"Tâche ajoutée",
+  ntErr:"Écrivez au moins ce qu'il faut faire.",ntDel:"Supprimer",ntDelAsk:"Supprimer cette tâche ?",
+  ntPh:"Ex. : appeler les clients Mercury du Cameroun",
+  ntHowPh:"Les étapes concrètes, comme vous les expliqueriez à quelqu'un qui commence. Facultatif, mais c'est ce qui fait qu'une tâche est faite ou pas.",
+  ntFor:"pour",showPin:"Voir le code",hidePin:"Cacher",pinFind:"…",pinNo:"introuvable",
+  cExtras:"Supprimer les tâches ajoutées",
+  aAdd:"a ajouté la tâche",aDel:"a supprimé la tâche",aPin:"a affiché le code de",
   aTask:"a coché",aUntask:"a décoché",aEntry:"a saisi les chiffres du",aMonth:"a corrigé",aLogin:"s'est connecté",
   aUnlock:"a déverrouillé",aUsers:"a modifié les codes d'accès"},
  es:{gh1:"Código de acceso",gp:"Introduzca su código personal de 4 dígitos.",
@@ -515,7 +536,7 @@ const T={
   onTrack:"en ritmo",behind:"con retraso",critical:"crítico",
   admin:"Administración",adminHint:"Reservado al administrador — códigos de acceso, desbloqueo y reinicio",
   users:"Códigos de acceso",uname:"Nombre",upin:"Código nuevo",usave:"Guardar los códigos",
-  pinNote:"Deje el código vacío para no cambiarlo. Los códigos nunca se muestran: solo se guarda su huella.",
+  pinNote:"Deje el campo vacío para no cambiar un código. Los códigos no se guardan en ninguna parte: el ojito los recupera recalculándolos, y solo el administrador puede hacerlo.",
   unlock:"Desbloquear",unlockHint:"Reabrir una casilla bloqueada (la acción queda registrada)",
   opid:"ID informe",imp:"Importar un informe Excel",
   impHint:"Suelte aquí el informe detallado de MoneyGram o el informe de Ria. Las operaciones se cuentan por cajero gracias al identificador del informe (columna «ID informe» de arriba).",
@@ -536,46 +557,55 @@ const T={
   foot:"Fuentes: carta de objetivos 2026 de la dirección, informe de red por agencia (ene–ago 2026) e informes diarios de la agencia. Los reales de Mercury de enero a junio están pendientes de confirmar por la central. El código de acceso sirve para identificar al autor de cada acción, no es un sistema de seguridad.",
   noteMg:"MoneyGram: envíos y pagos seguidos por separado mientras la central no confirme cuáles cuentan.",
   cumulNote:"Cada mes empieza de cero. Suelte los informes Excel arriba del todo para rellenar las cifras.",
+  howBtn:"Cómo hacerlo",howHide:"Cerrar",
+  ntTitle:"Añadir una tarea",ntDay:"Día",ntTxt:"Lo que hay que hacer",ntHow:"Cómo hacerlo",
+  ntWho:"Para quién",ntAll:"Todo el equipo",ntAdd:"Añadir la tarea",ntOk:"Tarea añadida",
+  ntErr:"Escriba al menos lo que hay que hacer.",ntDel:"Quitar",ntDelAsk:"¿Quitar esta tarea?",
+  ntPh:"Ej.: llamar a los clientes Mercury de Camerún",
+  ntHowPh:"Los pasos concretos, como se los explicaría a alguien que empieza. Es opcional, pero es lo que hace que una tarea se haga o no.",
+  ntFor:"para",showPin:"Ver el código",hidePin:"Ocultar",pinFind:"…",pinNo:"no encontrado",
+  cExtras:"Quitar las tareas añadidas",
+  aAdd:"añadió la tarea",aDel:"quitó la tarea",aPin:"vio el código de",
   aTask:"marcó",aUntask:"desmarcó",aEntry:"registró las cifras del",aMonth:"corrigió",aLogin:"se conectó",
   aUnlock:"desbloqueó",aUsers:"modificó los códigos de acceso"}
 };
 
 const TASKS=[
- {w:1,d:"03.09",fr:"Diagnostic Ria : tester le terminal, vérifier les taux, les corridors et le code CH1334",es:"Diagnóstico Ria: probar el terminal, verificar tasas, corredores y el código CH1334"},
- {w:1,d:"03.09",fr:"Imprimer et poser les flyers Capital Visa à chaque guichet (FR / DE / ES / IT)",es:"Imprimir y colocar los flyers Capital Visa en cada guichet (FR / DE / ES / IT)"},
- {w:1,d:"03.09",fr:"Afficher les objectifs quotidiens au guichet, visibles par toute l'équipe",es:"Colocar los objetivos diarios en el guichet, visibles para todo el equipo"},
- {w:1,d:"03.09",fr:"Briefing équipe : chaque transaction finit par une carte Visa proposée et un avis Google demandé",es:"Briefing equipo: cada transacción termina con una tarjeta Visa ofrecida y una reseña Google pedida"},
- {w:1,d:"03.09",fr:"Envoyer à la centrale les 3 questions (comptage MG, objectif Ria juillet, volumes réels 2025)",es:"Enviar a la central las 3 preguntas (conteo MG, objetivo Ria julio, volúmenes reales 2025)"},
- {w:1,d:"04.09",fr:"Appeler les 8 premiers clients perdus de la liste Excel",es:"Llamar a los 8 primeros clientes perdidos de la lista Excel"},
- {w:1,d:"04.09",fr:"Sortir la liste des clients Mercury Kenya et Sénégal",es:"Sacar la lista de clientes Mercury Kenia y Senegal"},
- {w:1,d:"05.09",fr:"Samedi : pression maximale au guichet, carte Visa proposée à tous",es:"Sábado: máxima presión en el guichet, tarjeta Visa ofrecida a todos"},
- {w:1,d:"05.09",wk:1,fr:"Nettoyage des vitres extérieures (une fois par semaine)",es:"Limpieza de las ventanas exteriores (una vez por semana)"},
- {w:2,d:"07.09",fr:"Appels Mercury Kenya (−215 opérations)",es:"Llamadas Mercury Kenia (−215 operaciones)"},
- {w:2,d:"08.09",fr:"Appels Mercury Sénégal (−160) + relevé des taux Western Union, Ria, MoneyTrans",es:"Llamadas Mercury Senegal (−160) + toma de tasas Western Union, Ria, MoneyTrans"},
- {w:2,d:"09.09",fr:"Appels Ria Togo (−67 %) et Guinée (−56 %)",es:"Llamadas Ria Togo (−67 %) y Guinea (−56 %)"},
- {w:2,d:"10.09",fr:"Appels Ria Portugal (−58 %) — 3e nationalité du canton, plus gros gisement",es:"Llamadas Ria Portugal (−58 %) — 3ª nacionalidad del cantón, mayor bolsa"},
- {w:2,d:"11.09",fr:"Clôturer les 22 fiches clients perdus dans l'Excel",es:"Cerrar las 22 fichas de clientes perdidos en el Excel"},
- {w:2,d:"12.09",fr:"Envoyer le comparatif des taux à la direction, avec preuves",es:"Enviar el comparativo de tasas a la dirección, con pruebas"},
- {w:2,d:"12.09",wk:1,fr:"Nettoyage des vitres extérieures (une fois par semaine)",es:"Limpieza de las ventanas exteriores (una vez por semana)"},
- {w:3,d:"14.09",fr:"Préparer la liste : 15 commerces communautaires + 12 entreprises cibles",es:"Preparar la lista: 15 comercios comunitarios + 12 empresas objetivo"},
- {w:3,d:"15.09",fr:"Tournée terrain A : commerces africains et latinos, boutiques téléphonie, salons de coiffure",es:"Ruta terreno A: comercios africanos y latinos, locutorios, peluquerías"},
- {w:3,d:"16.09",fr:"Tournée entreprises A : 6 sociétés (construction, nettoyage, temporaire)",es:"Ruta empresas A: 6 sociedades (construcción, limpieza, temporales)"},
- {w:3,d:"17.09",fr:"Tournée terrain B : restaurants portugais, turcs, kosovars, italiens",es:"Ruta terreno B: restaurantes portugueses, turcos, kosovares, italianos"},
- {w:3,d:"18.09",fr:"Tournée entreprises B : 6 sociétés + relance téléphonique de la tournée A",es:"Ruta empresas B: 6 sociedades + seguimiento telefónico de la ruta A"},
- {w:3,d:"19.09",fr:"Bilan de mi-mois : où en sont Mercury, MoneyGram et Ria",es:"Balance de mitad de mes: dónde están Mercury, MoneyGram y Ria"},
- {w:3,d:"19.09",wk:1,fr:"Nettoyage des vitres extérieures (une fois par semaine)",es:"Limpieza de las ventanas exteriores (una vez por semana)"},
- {w:4,d:"21.09",fr:"Rendez-vous entreprises : proposer l'ouverture groupée de cartes Visa",es:"Citas con empresas: proponer apertura grupal de tarjetas Visa"},
- {w:4,d:"22.09",fr:"Deuxième relance des clients qui ont dit « je vais réfléchir »",es:"Segunda llamada a los clientes que dijeron «me lo pienso»"},
- {w:4,d:"23.09",fr:"Journée Capital Visa : objectif 5 cartes dans la journée",es:"Jornada Capital Visa: objetivo 5 tarjetas en el día"},
- {w:4,d:"24.09",fr:"Contacter 3 associations ou églises communautaires",es:"Contactar 3 asociaciones o iglesias comunitarias"},
- {w:4,d:"25.09",fr:"Contrôle des avis Google — si moins de 15, doubler les demandes",es:"Control de reseñas Google — si hay menos de 15, doblar las peticiones"},
- {w:4,d:"26.09",fr:"Samedi : dernier grand jour de volume avant la clôture",es:"Sábado: último gran día de volumen antes del cierre"},
- {w:4,d:"26.09",wk:1,fr:"Nettoyage des vitres extérieures (une fois par semaine)",es:"Limpieza de las ventanas exteriores (una vez por semana)"},
- {w:5,d:"28.09",fr:"Sprint final Mercury — dernier effort sur l'objectif mensuel",es:"Sprint final Mercury — último esfuerzo sobre el objetivo mensual"},
- {w:5,d:"29.09",fr:"Derniers appels aux clients dormants, clôture des fiches",es:"Últimas llamadas a clientes dormidos, cierre de fichas"},
- {w:5,d:"30.09",fr:"Clôture du mois : chiffres par système, photos du matériel à la centrale, compte rendu",es:"Cierre de mes: cifras por sistema, fotos del material a la central, informe"},
- {w:5,d:"30.09",fr:"Envoyer à l'administration le bilan du mois et les propositions",es:"Enviar a administración el balance del mes y las propuestas"},
- {w:5,d:"30.09",wk:1,fr:"Nettoyage des vitres extérieures (une fois par semaine)",es:"Limpieza de las ventanas exteriores (una vez por semana)"}
+ {w:1,d:"03.09",fr:"Diagnostic Ria : tester le terminal, vérifier les taux, les corridors et le code CH1334",es:"Diagnóstico Ria: probar el terminal, verificar tasas, corredores y el código CH1334",hf:"Faire deux envois test de 20 CHF (Portugal, Togo). Noter le taux affiché et le comparer sur place à Western Union et MoneyTrans. Vérifier que le code CH1334 sort sur le reçu. Si un corridor est refusé, photographier l'écran et l'envoyer le jour même à la centrale.",hs:"Hacer dos envíos de prueba de 20 CHF (Portugal, Togo). Anotar la tasa y compararla en el momento con Western Union y MoneyTrans. Comprobar que el código CH1334 sale en el recibo. Si un corredor se rechaza, fotografiar la pantalla y mandarla el mismo día a la central."},
+ {w:1,d:"03.09",fr:"Imprimer et poser les flyers Capital Visa à chaque guichet (FR / DE / ES / IT)",es:"Imprimir y colocar los flyers Capital Visa en cada guichet (FR / DE / ES / IT)",hf:"Imprimer en A4 couleur : FR et DE au guichet 1, ES et IT au guichet 2. Un présentoir face au client, pas à côté de la caisse. Un exemplaire sur la porte d'entrée. Remplacer dès qu'un flyer est sale. Photo du montage envoyée à l'administration.",hs:"Imprimir en A4 color: FR y DE en el guichet 1, ES e IT en el guichet 2. Un expositor mirando al cliente, no al lado de la caja. Un ejemplar en la puerta de entrada. Cambiarlo en cuanto se ensucie. Foto del montaje a administración."},
+ {w:1,d:"03.09",fr:"Afficher les objectifs quotidiens au guichet, visibles par toute l'équipe",es:"Colocar los objetivos diarios en el guichet, visibles para todo el equipo",hf:"Reprendre les trois chiffres de la section « Objectifs d'aujourd'hui » de cette application et les écrire au feutre sur le tableau, en gros. Les réécrire chaque matin à l'ouverture, avec le chiffre de la veille à côté pour comparer.",hs:"Coger las tres cifras de la sección «Objetivos de hoy» de esta aplicación y escribirlas con rotulador en la pizarra, en grande. Reescribirlas cada mañana al abrir, con la cifra del día anterior al lado para comparar."},
+ {w:1,d:"03.09",fr:"Briefing équipe : chaque transaction finit par une carte Visa proposée et un avis Google demandé",es:"Briefing equipo: cada transacción termina con una tarjeta Visa ofrecida y una reseña Google pedida",hf:"10 minutes avant l'ouverture. Deux phrases à dire à chaque client : « Vous voulez une carte Visa pour recevoir votre salaire ? » et « Si vous êtes content, laissez-nous un avis Google, ça prend 20 secondes ». Chacun note le soir combien de cartes il a proposées.",hs:"10 minutos antes de abrir. Dos frases para decir a cada cliente: «¿Quiere una tarjeta Visa para recibir su salario?» y «Si está contento, déjenos una reseña en Google, son 20 segundos». Cada uno anota por la tarde cuántas tarjetas ofreció."},
+ {w:1,d:"03.09",fr:"Envoyer à la centrale les 3 questions (comptage MG, objectif Ria juillet, volumes réels 2025)",es:"Enviar a la central las 3 preguntas (conteo MG, objetivo Ria julio, volúmenes reales 2025)",hf:"Un seul e-mail, trois questions numérotées : 1) MoneyGram, envois seuls ou envois + paiements pour l'objectif ? 2) Objectif Ria juillet : 559 (RH) ou 580 (lettre) ? 3) Volumes réels Mercury de janvier à juin. Demander une réponse écrite et garder le fil.",hs:"Un solo correo, tres preguntas numeradas: 1) MoneyGram, ¿solo envíos o envíos + pagos para el objetivo? 2) Objetivo Ria julio: ¿559 (RRHH) o 580 (carta)? 3) Volúmenes reales de Mercury de enero a junio. Pedir respuesta por escrito y guardar el hilo."},
+ {w:1,d:"04.09",fr:"Appeler les 8 premiers clients perdus de la liste Excel",es:"Llamar a los 8 primeros clientes perdidos de la lista Excel",hf:"Ouvrir la liste Excel, trier par date du dernier envoi. Appeler en fin de matinée ou après 17 h. Ouverture : « Bonjour, c'est Capital Services Bienne, on ne vous a plus vu depuis mars, tout va bien ? » Écouter la raison et la noter. Si c'est le taux, proposer de rappeler dès qu'il bouge.",hs:"Abrir la lista Excel, ordenar por fecha del último envío. Llamar a media mañana o después de las 17 h. Apertura: «Buenos días, es Capital Services Bienne, no le vemos desde marzo, ¿todo bien?» Escuchar el motivo y anotarlo. Si es la tasa, ofrecer volver a llamar en cuanto cambie."},
+ {w:1,d:"04.09",fr:"Sortir la liste des clients Mercury Kenya et Sénégal",es:"Sacar la lista de clientes Mercury Kenia y Senegal",hf:"Sortir de Mercury la liste des clients qui envoyaient vers le Kenya et le Sénégal en 2025 et plus rien en 2026. Coller dans l'Excel : nom, téléphone, dernier envoi, montant habituel. C'est la liste d'appels des deux semaines suivantes.",hs:"Sacar de Mercury la lista de clientes que enviaban a Kenia y Senegal en 2025 y nada en 2026. Pegarla en el Excel: nombre, teléfono, último envío, importe habitual. Esa es la lista de llamadas de las dos semanas siguientes."},
+ {w:1,d:"05.09",fr:"Samedi : pression maximale au guichet, carte Visa proposée à tous",es:"Sábado: máxima presión en el guichet, tarjeta Visa ofrecida a todos",hf:"Le samedi fait le tiers de la semaine. Les deux caissiers au guichet, pas de tâche administrative. Carte Visa proposée à tout le monde, sans exception. Avis Google demandé à chaque client qui repart content. Chiffres saisis le soir même.",hs:"El sábado hace un tercio de la semana. Los dos cajeros en el guichet, nada de trabajo administrativo. Tarjeta Visa ofrecida a todo el mundo, sin excepción. Reseña de Google pedida a cada cliente que se va contento. Cifras metidas esa misma tarde."},
+ {w:1,d:"05.09",wk:1,fr:"Nettoyage des vitres extérieures (une fois par semaine)",es:"Limpieza de las ventanas exteriores (una vez por semana)",hf:"Le samedi avant l'ouverture ou après la fermeture. Vitrine extérieure, porte et plaque d'enseigne. Raclette et produit, pas de chiffon sec. Une vitrine sale fait perdre des clients avant même qu'ils entrent.",hs:"El sábado antes de abrir o después de cerrar. Escaparate exterior, puerta y placa del rótulo. Rasqueta y producto, nada de trapo seco. Un escaparate sucio pierde clientes antes de que entren."},
+ {w:2,d:"07.09",fr:"Appels Mercury Kenya (−215 opérations)",es:"Llamadas Mercury Kenia (−215 operaciones)",hf:"215 opérations perdues : c'est le plus gros trou de l'année. Prendre la liste sortie le 4 et appeler 15 personnes dans la journée. Question clé : « Vous envoyez toujours au Kenya ? Par qui ? » Noter le concurrent et son taux : c'est la preuve à envoyer à la direction.",hs:"215 operaciones perdidas: es el agujero más grande del año. Coger la lista del día 4 y llamar a 15 personas en el día. Pregunta clave: «¿Sigue enviando a Kenia? ¿Con quién?» Anotar el competidor y su tasa: es la prueba que hay que mandar a dirección."},
+ {w:2,d:"08.09",fr:"Appels Mercury Sénégal (−160) + relevé des taux Western Union, Ria, MoneyTrans",es:"Llamadas Mercury Senegal (−160) + toma de tasas Western Union, Ria, MoneyTrans",hf:"Le matin, 15 appels Sénégal. L'après-midi, relever les taux affichés chez Western Union, Ria et MoneyTrans à Bienne pour les cinq corridors qui baissent. Photo de chaque affichage, avec la date. Sans preuve, la demande de meilleur taux ne passera pas.",hs:"Por la mañana, 15 llamadas a Senegal. Por la tarde, anotar las tasas expuestas en Western Union, Ria y MoneyTrans en Bienne para los cinco corredores que caen. Foto de cada cartel, con la fecha. Sin pruebas, la petición de mejor tasa no pasa."},
+ {w:2,d:"09.09",fr:"Appels Ria Togo (−67 %) et Guinée (−56 %)",es:"Llamadas Ria Togo (−67 %) y Guinea (−56 %)",hf:"Togo −67 % et Guinée −56 % : ce sont des baisses de taux, pas des clients partis. Appeler et demander franchement : « On a vu que vous n'envoyez plus, c'est le taux ? » Si oui, noter le montant habituel — ça chiffre la perte pour la direction.",hs:"Togo −67 % y Guinea −56 %: son bajadas de tasa, no clientes que se han ido. Llamar y preguntar claro: «Hemos visto que ya no envía, ¿es por la tasa?» Si es que sí, anotar el importe habitual — eso pone cifras a la pérdida para dirección."},
+ {w:2,d:"10.09",fr:"Appels Ria Portugal (−58 %) — 3e nationalité du canton, plus gros gisement",es:"Llamadas Ria Portugal (−58 %) — 3ª nacionalidad del cantón, mayor bolsa",hf:"Le portugais est la 3e nationalité du canton : c'est le plus gros gisement de la liste. Appeler, mais aussi passer dans les cafés et restaurants portugais avec des flyers. Demander à parler au patron, pas au serveur.",hs:"El portugués es la 3ª nacionalidad del cantón: es la bolsa más grande de la lista. Llamar, pero también pasar por los cafés y restaurantes portugueses con flyers. Pedir hablar con el dueño, no con el camarero."},
+ {w:2,d:"11.09",fr:"Clôturer les 22 fiches clients perdus dans l'Excel",es:"Cerrar las 22 fichas de clientes perdidos en el Excel",hf:"Chaque fiche doit finir avec une des quatre réponses : revient, ne revient pas, à rappeler, injoignable. Une fiche sans réponse ne sert à rien. Les « à rappeler » partent dans l'agenda de la semaine du 21.",hs:"Cada ficha tiene que acabar con una de cuatro respuestas: vuelve, no vuelve, volver a llamar, ilocalizable. Una ficha sin respuesta no sirve de nada. Los «volver a llamar» se pasan a la agenda de la semana del 21."},
+ {w:2,d:"12.09",fr:"Envoyer le comparatif des taux à la direction, avec preuves",es:"Enviar el comparativo de tasas a la dirección, con pruebas",hf:"Un tableau simple : corridor, notre taux, taux du concurrent, écart, nombre de clients perdus. Les photos en pièce jointe. Terminer par une demande précise, pas générale : « sur ces cinq corridors, il nous faut X ». Copie à l'administration.",hs:"Una tabla sencilla: corredor, nuestra tasa, tasa del competidor, diferencia, número de clientes perdidos. Las fotos adjuntas. Terminar con una petición concreta, no general: «en estos cinco corredores necesitamos X». Copia a administración."},
+ {w:2,d:"12.09",wk:1,fr:"Nettoyage des vitres extérieures (une fois par semaine)",es:"Limpieza de las ventanas exteriores (una vez por semana)",hf:"Le samedi avant l'ouverture ou après la fermeture. Vitrine extérieure, porte et plaque d'enseigne. Raclette et produit, pas de chiffon sec.",hs:"El sábado antes de abrir o después de cerrar. Escaparate exterior, puerta y placa del rótulo. Rasqueta y producto, nada de trapo seco."},
+ {w:3,d:"14.09",fr:"Préparer la liste : 15 commerces communautaires + 12 entreprises cibles",es:"Preparar la lista: 15 comercios comunitarios + 12 empresas objetivo",hf:"Commerces : épiceries africaines et latinos, boutiques de téléphonie, coiffeurs, restaurants. Entreprises : construction, nettoyage, travail temporaire — celles qui emploient des étrangers. Pour chacune : nom, adresse, nom du patron si connu. La liste se prépare la veille.",hs:"Comercios: tiendas africanas y latinas, locutorios, peluquerías, restaurantes. Empresas: construcción, limpieza, trabajo temporal — las que emplean extranjeros. De cada una: nombre, dirección, nombre del dueño si se sabe. La lista se prepara la víspera."},
+ {w:3,d:"15.09",fr:"Tournée terrain A : commerces africains et latinos, boutiques téléphonie, salons de coiffure",es:"Ruta terreno A: comercios africanos y latinos, locutorios, peluquerías",hf:"Y aller entre 14 h et 16 h, jamais à l'heure du repas. Demander le patron, se présenter en 20 secondes, laisser un présentoir de flyers sur le comptoir et repartir. Ne pas vendre sur place : le but est que les flyers restent. Noter qui a accepté.",hs:"Ir entre las 14 h y las 16 h, nunca a la hora de comer. Preguntar por el dueño, presentarse en 20 segundos, dejar un expositor de flyers en el mostrador y marcharse. No vender allí: el objetivo es que los flyers se queden. Anotar quién aceptó."},
+ {w:3,d:"16.09",fr:"Tournée entreprises A : 6 sociétés (construction, nettoyage, temporaire)",es:"Ruta empresas A: 6 sociedades (construcción, limpieza, temporales)",hf:"Demander le responsable RH ou le patron. Argument : « vos employés étrangers envoient de l'argent et ouvrent des comptes — on peut le faire pour tout le monde, sur place, en une matinée ». Laisser une carte et un flyer, et proposer une date.",hs:"Pedir el responsable de RRHH o el dueño. Argumento: «sus empleados extranjeros envían dinero y abren cuentas — podemos hacerlo para todos, allí mismo, en una mañana». Dejar una tarjeta y un flyer, y proponer una fecha."},
+ {w:3,d:"17.09",fr:"Tournée terrain B : restaurants portugais, turcs, kosovars, italiens",es:"Ruta terreno B: restaurantes portugueses, turcos, kosovares, italianos",hf:"Mêmes règles que la tournée A, autres quartiers. Les restaurants sont plus réceptifs entre 15 h et 17 h. Repasser dans deux commerces de la tournée A pour vérifier que les flyers sont toujours en place.",hs:"Mismas reglas que la ruta A, otros barrios. Los restaurantes son más receptivos entre las 15 h y las 17 h. Volver a pasar por dos comercios de la ruta A para comprobar que los flyers siguen puestos."},
+ {w:3,d:"18.09",fr:"Tournée entreprises B : 6 sociétés + relance téléphonique de la tournée A",es:"Ruta empresas B: 6 sociedades + seguimiento telefónico de la ruta A",hf:"Le matin, six nouvelles sociétés. L'après-midi, rappeler celles de la tournée A : « je passais pour savoir si vos employés avaient des questions ». Un deuxième contact vaut plus que le premier.",hs:"Por la mañana, seis empresas nuevas. Por la tarde, llamar a las de la ruta A: «llamaba para saber si sus empleados tenían preguntas». Un segundo contacto vale más que el primero."},
+ {w:3,d:"19.09",fr:"Bilan de mi-mois : où en sont Mercury, MoneyGram et Ria",es:"Balance de mitad de mes: dónde están Mercury, MoneyGram y Ria",hf:"Ouvrir la section « Comment va le mois » : si un système est sous 45 % à la moitié du mois, il ne se rattrapera pas tout seul. Décider ce jour-là où va l'effort des deux semaines restantes et l'écrire dans le bilan du jour.",hs:"Abrir la sección «Cómo va el mes»: si un sistema está por debajo del 45 % a mitad de mes, no se recupera solo. Decidir ese día dónde va el esfuerzo de las dos semanas que quedan y escribirlo en el balance del día."},
+ {w:3,d:"19.09",wk:1,fr:"Nettoyage des vitres extérieures (une fois par semaine)",es:"Limpieza de las ventanas exteriores (una vez por semana)",hf:"Le samedi avant l'ouverture ou après la fermeture. Vitrine extérieure, porte et plaque d'enseigne.",hs:"El sábado antes de abrir o después de cerrar. Escaparate exterior, puerta y placa del rótulo."},
+ {w:4,d:"21.09",fr:"Rendez-vous entreprises : proposer l'ouverture groupée de cartes Visa",es:"Citas con empresas: proponer apertura grupal de tarjetas Visa",hf:"Proposer une matinée dans leurs locaux : on ouvre les cartes sur place, avec les pièces d'identité. Dix cartes en une matinée valent une semaine au guichet. Fixer la date par écrit avant de partir.",hs:"Proponer una mañana en sus locales: abrimos las tarjetas allí mismo, con los documentos de identidad. Diez tarjetas en una mañana valen una semana en el guichet. Fijar la fecha por escrito antes de irse."},
+ {w:4,d:"22.09",fr:"Deuxième relance des clients qui ont dit « je vais réfléchir »",es:"Segunda llamada a los clientes que dijeron «me lo pienso»",hf:"« Je vais réfléchir » veut dire non, sauf si on rappelle. Rappeler cinq jours après en donnant une raison nouvelle : une promotion, un taux qui a bougé, une date de passage. Sans raison nouvelle, ne pas rappeler.",hs:"«Me lo pienso» quiere decir no, salvo que se vuelva a llamar. Volver a llamar cinco días después con un motivo nuevo: una promoción, una tasa que ha cambiado, una fecha de visita. Sin motivo nuevo, no llamar."},
+ {w:4,d:"23.09",fr:"Journée Capital Visa : objectif 5 cartes dans la journée",es:"Jornada Capital Visa: objetivo 5 tarjetas en el día",hf:"Objectif écrit au tableau le matin : 5 cartes. Un des deux caissiers ne fait que ça pendant les heures creuses. Dossiers préparés à l'avance (formulaire + copie de pièce). Compter à 12 h et à 16 h pour savoir s'il faut forcer.",hs:"Objetivo escrito en la pizarra por la mañana: 5 tarjetas. Uno de los dos cajeros solo hace eso en las horas flojas. Carpetas preparadas por adelantado (formulario + copia del documento). Contar a las 12 h y a las 16 h para saber si hay que apretar."},
+ {w:4,d:"24.09",fr:"Contacter 3 associations ou églises communautaires",es:"Contactar 3 asociaciones o iglesias comunitarias",hf:"Les églises africaines et latino-américaines et les associations de compatriotes réunissent cent personnes d'un coup. Demander le responsable, proposer un stand après l'office ou une annonce. C'est gratuit et ça touche plus de monde qu'une journée de tournée.",hs:"Las iglesias africanas y latinoamericanas y las asociaciones de paisanos reúnen a cien personas de golpe. Pedir el responsable, proponer una mesa después del culto o un anuncio. Es gratis y llega a más gente que un día de ruta."},
+ {w:4,d:"25.09",fr:"Contrôle des avis Google — si moins de 15, doubler les demandes",es:"Control de reseñas Google — si hay menos de 15, doblar las peticiones",hf:"Compter les avis sur la fiche Google de l'agence et saisir le nombre dans « Avis Google ». Sous 15, chaque client satisfait doit repartir avec la demande faite — le QR code posé au guichet enlève l'excuse du « je le ferai plus tard ».",hs:"Contar las reseñas en la ficha de Google de la agencia y meter el número en «Reseñas Google». Por debajo de 15, cada cliente contento tiene que irse con la petición hecha — el código QR en el mostrador quita la excusa del «ya lo haré luego»."},
+ {w:4,d:"26.09",fr:"Samedi : dernier grand jour de volume avant la clôture",es:"Sábado: último gran día de volumen antes del cierre",hf:"Dernier samedi complet avant la clôture. Regarder ce qui manque dans « Comment va le mois » et concentrer toute la journée là-dessus. Les deux caissiers au guichet.",hs:"Último sábado completo antes del cierre. Mirar lo que falta en «Cómo va el mes» y concentrar todo el día en eso. Los dos cajeros en el guichet."},
+ {w:4,d:"26.09",wk:1,fr:"Nettoyage des vitres extérieures (une fois par semaine)",es:"Limpieza de las ventanas exteriores (una vez por semana)",hf:"Le samedi avant l'ouverture ou après la fermeture. Vitrine extérieure, porte et plaque d'enseigne.",hs:"El sábado antes de abrir o después de cerrar. Escaparate exterior, puerta y placa del rótulo."},
+ {w:5,d:"28.09",fr:"Sprint final Mercury — dernier effort sur l'objectif mensuel",es:"Sprint final Mercury — último esfuerzo sobre el objetivo mensual",hf:"Mercury est le produit de la maison et c'est lui qui pèse le plus. Reprendre la liste des clients qui envoient d'habitude en fin de mois et les appeler un par un : « votre envoi habituel, vous le faites cette semaine ? »",hs:"Mercury es el producto de la casa y es el que más pesa. Coger la lista de los clientes que suelen enviar a final de mes y llamarlos uno a uno: «su envío de siempre, ¿lo hace esta semana?»"},
+ {w:5,d:"29.09",fr:"Derniers appels aux clients dormants, clôture des fiches",es:"Últimas llamadas a clientes dormidos, cierre de fichas",hf:"Dernier passage sur les fiches restées ouvertes. Celles qu'on n'a pas jointes en trois essais passent en « injoignable » et sortent de la liste : elles font perdre du temps le mois prochain.",hs:"Última pasada por las fichas que quedan abiertas. Las que no se han localizado en tres intentos pasan a «ilocalizable» y salen de la lista: hacen perder tiempo el mes que viene."},
+ {w:5,d:"30.09",fr:"Clôture du mois : chiffres par système, photos du matériel à la centrale, compte rendu",es:"Cierre de mes: cifras por sistema, fotos del material a la central, informe",hf:"Trois chiffres par système, arrêtés le dernier jour ouvré. Photos du matériel et de l'affichage envoyées à la centrale. Compte rendu court : ce qui a marché, ce qui a bloqué, ce qu'il faut de la centrale pour le mois suivant.",hs:"Tres cifras por sistema, cerradas el último día laborable. Fotos del material y de la cartelería a la central. Informe corto: lo que ha funcionado, lo que se ha atascado, lo que hace falta de la central para el mes siguiente."},
+ {w:5,d:"30.09",fr:"Envoyer à l'administration le bilan du mois et les propositions",es:"Enviar a administración el balance del mes y las propuestas",hf:"Le bilan seul ne sert à rien : joindre deux ou trois demandes précises (taux, cartes Ria, cadeaux, matériel). Une demande chiffrée et datée obtient une réponse ; une demande générale, non.",hs:"El balance solo no sirve: adjuntar dos o tres peticiones concretas (tasas, tarjetas Ria, regalos, material). Una petición con cifras y fecha consigue respuesta; una general, no."},
+ {w:5,d:"30.09",wk:1,fr:"Nettoyage des vitres extérieures (une fois par semaine)",es:"Limpieza de las ventanas exteriores (una vez por semana)",hf:"Le samedi avant l'ouverture ou après la fermeture. Vitrine extérieure, porte et plaque d'enseigne.",hs:"El sábado antes de abrir o después de cerrar. Escaparate exterior, puerta y placa del rótulo."}
 ];
 const WEEKS={1:{fr:"Semaine du 3 au 5 septembre — mesurer et réagir",es:"Semana del 3 al 5 de septiembre — medir y reaccionar"},
  2:{fr:"Semaine du 7 au 12 — reconquérir les clients perdus",es:"Semana del 7 al 12 — recuperar clientes perdidos"},
@@ -600,13 +630,13 @@ function tasksFor(m){
   for(let d=1;d<=dim;d++){
     const dt=new Date(YEAR,m,d), dow=dt.getDay(); if(dow===0) continue;
     const w=weekOf(YEAR,m,d);
-    if(d===firstOpen) out.push({w:w,d:lbl(d),fr:"Afficher les objectifs du mois au guichet",es:"Colocar los objetivos del mes en el guichet"});
-    if(dow===1) out.push({w:w,d:lbl(d),fr:"Point hebdomadaire : où en sont Mercury, MoneyGram et Ria",es:"Punto semanal: dónde están Mercury, MoneyGram y Ria"});
-    if(d===mid) out.push({w:w,d:lbl(d),fr:"Bilan de mi-mois et rattrapage si nécessaire",es:"Balance de mitad de mes y recuperación si hace falta"});
+    if(d===firstOpen) out.push({w:w,d:lbl(d),fr:"Afficher les objectifs du mois au guichet",es:"Colocar los objetivos del mes en el guichet",hf:"Reprendre les trois chiffres de la section « Objectifs d'aujourd'hui » et les écrire au feutre sur le tableau, en gros, visibles par toute l'équipe.",hs:"Coger las tres cifras de la sección «Objetivos de hoy» y escribirlas con rotulador en la pizarra, en grande, visibles para todo el equipo."});
+    if(dow===1) out.push({w:w,d:lbl(d),fr:"Point hebdomadaire : où en sont Mercury, MoneyGram et Ria",es:"Punto semanal: dónde están Mercury, MoneyGram y Ria",hf:"Cinq minutes le lundi matin. Ouvrir « Comment va le mois » : quel système est en retard, combien il manque par jour, qui fait quoi cette semaine.",hs:"Cinco minutos el lunes por la mañana. Abrir «Cómo va el mes»: qué sistema va con retraso, cuánto falta por día, quién hace qué esta semana."});
+    if(d===mid) out.push({w:w,d:lbl(d),fr:"Bilan de mi-mois et rattrapage si nécessaire",es:"Balance de mitad de mes y recuperación si hace falta",hf:"Sous 45 % à la moitié du mois, un système ne se rattrape pas tout seul. Décider ce jour-là où va l'effort des deux semaines restantes et l'écrire dans le bilan du jour.",hs:"Por debajo del 45 % a mitad de mes, un sistema no se recupera solo. Decidir ese día dónde va el esfuerzo de las dos semanas que quedan y escribirlo en el balance del día."});
     if(dow===6) out.push({w:w,d:lbl(d),wk:1,fr:"Nettoyage des vitres extérieures (une fois par semaine)",es:"Limpieza de las ventanas exteriores (una vez por semana)"});
     if(d===lastOpen){
-      out.push({w:w,d:lbl(d),fr:"Clôture du mois : chiffres par système et compte rendu",es:"Cierre de mes: cifras por sistema e informe"});
-      out.push({w:w,d:lbl(d),fr:"Importer les rapports Excel du mois (MoneyGram et Ria)",es:"Importar los informes Excel del mes (MoneyGram y Ria)"});
+      out.push({w:w,d:lbl(d),fr:"Clôture du mois : chiffres par système et compte rendu",es:"Cierre de mes: cifras por sistema e informe",hf:"Trois chiffres par système arrêtés le dernier jour ouvré, puis compte rendu court : ce qui a marché, ce qui a bloqué, ce qu'il faut de la centrale pour le mois suivant.",hs:"Tres cifras por sistema cerradas el último día laborable, y después informe corto: lo que ha funcionado, lo que se ha atascado, lo que hace falta de la central para el mes siguiente."});
+      out.push({w:w,d:lbl(d),fr:"Importer les rapports Excel du mois (MoneyGram et Ria)",es:"Importar los informes Excel del mes (MoneyGram y Ria)",hf:"Télécharger le rapport détaillé MoneyGram et le rapport de transactions Ria, puis les déposer dans « Importer un rapport » en haut de la page : les chiffres se répartissent seuls par caissier et par jour.",hs:"Descargar el informe detallado de MoneyGram y el informe de transacciones de Ria, y soltarlos en «Importar un informe» arriba de la página: las cifras se reparten solas por cajero y por día."});
     }
   }
   out.sort((a,b)=>a.d.localeCompare(b.d));
@@ -621,6 +651,13 @@ function weeksFor(m){
   return o;
 }
 
+const CORRHOW={
+ mLost:{fr:"Ce sont des clients qui envoyaient en 2025 et qui n'envoient plus rien en 2026 — ils ne sont pas partis de Bienne, ils envoient ailleurs. La méthode : sortir la liste nominative depuis Mercury, appeler 15 personnes par jour en fin de matinée ou après 17 h, demander par qui ils envoient maintenant et à quel taux, et noter la réponse. Cinq corridors, deux semaines d'appels : c'est le plus gros gisement de l'année.",
+  es:"Son clientes que enviaban en 2025 y que ya no envían nada en 2026 — no se han ido de Bienne, envían por otro sitio. El método: sacar la lista con nombres desde Mercury, llamar a 15 personas al día a media mañana o después de las 17 h, preguntar con quién envían ahora y a qué tasa, y anotar la respuesta. Cinco corredores, dos semanas de llamadas: es la bolsa más grande del año."},
+ rDown:{fr:"Une baisse de 50 % ou plus sur un corridor n'est presque jamais une question de service : c'est le taux ou un problème de terminal. La méthode : faire un envoi test, relever le taux du concurrent le même jour avec photo, puis appeler cinq clients du corridor pour confirmer la raison. Le tout part à la direction dans un tableau : corridor, notre taux, taux concurrent, écart, clients perdus. Une demande chiffrée obtient une réponse ; une demande générale, non.",
+  es:"Una caída del 50 % o más en un corredor casi nunca es cuestión de servicio: es la tasa o un problema del terminal. El método: hacer un envío de prueba, anotar la tasa del competidor ese mismo día con foto, y llamar a cinco clientes del corredor para confirmar el motivo. Todo eso va a dirección en una tabla: corredor, nuestra tasa, tasa del competidor, diferencia, clientes perdidos. Una petición con cifras consigue respuesta; una general, no."},
+ rUp:{fr:"Ceux-là marchent : il ne faut pas les corriger, il faut les charger. La méthode : sur ces destinations, proposer systématiquement la carte Capital Visa et l'avis Google, parce que le client est déjà content. C'est aussi là qu'on demande à un client de ramener quelqu'un — un client satisfait d'un corridor qui monte est le meilleur vendeur de l'agence.",
+  es:"Estos funcionan: no hay que corregirlos, hay que cargarlos. El método: en estos destinos, ofrecer siempre la tarjeta Capital Visa y la reseña de Google, porque el cliente ya está contento. Ahí es también donde se pide a un cliente que traiga a alguien — un cliente satisfecho de un corredor que sube es el mejor vendedor de la agencia."}};
 const CORR={mLost:[["Kenya",-215],["Sénégal",-160],["Brésil",-153],["Côte d'Ivoire",-138],["Philippines",-89]],
  rDown:[["Togo","−67 %"],["Portugal","−58 %"],["Guinée","−56 %"],["Espagne","−42 %"],["RD Congo","−32 %"],["Macédoine du Nord","−26 %"],["Belgique","−26 %"],["Allemagne","−16 %"]],
  rUp:[["Roumanie","+27 %"],["Italie","+20 %"],["Turquie","+18 %"],["Albanie","+18 %"],["Sénégal","+11 %"],["France","+7 %"]]};
@@ -628,7 +665,7 @@ const CORR={mLost:[["Kenya",-215],["Sénégal",-160],["Brésil",-153],["Côte d'
 /* ===== ÉTAT ===== */
 let lang="fr"; try{const s=localStorage.getItem("cs-lang"); if(s==="es"||s==="fr")lang=s;}catch(e){}
 let DB=null, ME=null, USERS=DEFAULT_USERS.slice();
-let jours={}, taches={}, mois={}, journal={}, unlocked={}, recap={};
+let jours={}, taches={}, mois={}, journal={}, unlocked={}, recap={}, extras={};
 const t=()=>T[lang];
 const nf=n=>(n==null||isNaN(n))?"—":Math.round(n).toLocaleString(lang==="fr"?"fr-CH":"es-ES");
 const pad2=n=>String(n).padStart(2,"0");
@@ -675,10 +712,10 @@ const SEED={
  "2026-09-03_gino":{mgEnv:7,mgPay:2,by:"gino",name:"G."},"2026-09-03_franklin":{mgEnv:5,mgPay:0,by:"franklin",name:"F."},
  "2026-09-02":{mercury:181,name:"Agence"},"2026-09-03":{mercury:90,ria:66,name:"Agence"}};
 function saveLocal(){ if(DB)return; try{localStorage.setItem(LK,JSON.stringify(
-  {jours:jours,taches:taches,mois:mois,journal:journal,unlocked:unlocked,recap:recap}));}catch(e){} }
+  {jours:jours,taches:taches,mois:mois,journal:journal,unlocked:unlocked,recap:recap,extras:extras}));}catch(e){} }
 function loadLocal(){ try{const d=JSON.parse(localStorage.getItem(LK)||"{}");
   jours=d.jours||{};taches=d.taches||{};mois=d.mois||{};journal=d.journal||{};
-  unlocked=d.unlocked||{};recap=d.recap||{}; }catch(e){} }
+  unlocked=d.unlocked||{};recap=d.recap||{};extras=d.extras||{}; }catch(e){} }
 function seedOnce(){ try{ if(localStorage.getItem("cs-seed-2"))return; }catch(e){}
   for(const k in SEED){ if(!jours[k]) jours[k]=Object.assign({mercury:0,mgEnv:0,mgPay:0,ria:0,visa:0,avis:0},SEED[k]); }
   try{localStorage.setItem("cs-seed-2","1");}catch(e){} saveLocal(); }
@@ -887,43 +924,122 @@ function renderMonth(){
     }).join("")+`</div><div class="note">${t().cumulNote}<br>${t().noteMg} ${t().mgPay}: <strong class="mono">${nf(c.mgPay)}</strong>
       &nbsp;·&nbsp; ${t().visa}: <strong class="mono">${nf(c.visa)}</strong> &nbsp;·&nbsp; ${t().avis}: <strong class="mono">${nf(c.avis)}</strong></div></div>`;
 }
+function howOf(tk){ return lang==="fr" ? (tk.hf||tk.hs||"") : (tk.hs||tk.hf||""); }
+function extraList(mk){
+  const out=[];
+  for(const k in extras){ const e=extras[k]||{}; if(String(e.mk)!==mk) continue;
+    out.push({w:+e.w||1,d:e.d||"",fr:e.txt||"",es:e.txt||"",hf:e.how||"",hs:e.how||"",assign:e.assign||"",_x:k}); }
+  return out;
+}
+function newTaskForm(){
+  const T2=t(), dim=new Date(YEAR,CUR+1,0).getDate(), now=new Date();
+  const selD=(now.getFullYear()===YEAR&&now.getMonth()===CUR)?now.getDate():1;
+  let days="";
+  for(let d=1;d<=dim;d++){ const lbl=pad2(d)+"."+pad2(CUR+1);
+    days+='<option value="'+lbl+'"'+(d===selD?" selected":"")+'>'+lbl+'</option>'; }
+  const who='<option value="">'+esc(T2.ntAll)+'</option>'+
+    USERS.map(u=>'<option value="'+u.id+'">'+esc(u.name)+'</option>').join("");
+  return `<div class="newtask">
+    <h3 class="ah">${T2.ntTitle}</h3>
+    <div class="form">
+      <div><label for="nt-d">${T2.ntDay}</label><select id="nt-d">${days}</select></div>
+      <div style="min-width:200px"><label for="nt-txt">${T2.ntTxt}</label>
+        <input type="text" id="nt-txt" maxlength="140" placeholder="${esc(T2.ntPh)}"></div>
+      <div><label for="nt-who">${T2.ntWho}</label><select id="nt-who">${who}</select></div>
+    </div>
+    <div style="margin-top:12px"><label for="nt-how">${T2.ntHow}</label>
+      <textarea id="nt-how" maxlength="700" placeholder="${esc(T2.ntHowPh)}"></textarea></div>
+    <div style="display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap">
+      <button class="btn" id="nt-add">${T2.ntAdd}</button><span id="nt-msg" class="saved"></span></div>
+  </div>`;
+}
 function renderTasks(){
-  const mk=YEAR+"-"+pad2(CUR+1); let html=
-   `<div class="shead"><h2>${t().tasks}</h2><span class="hint">${t().tasksHint}</span></div><div class="card p18">`;
-  const LIST=tasksFor(CUR), WK=weeksFor(CUR);
-  let cur=0;
+  const mk=YEAR+"-"+pad2(CUR+1), T2=t(), isAdm=!!(ME&&ME.admin);
+  let html=`<div class="shead"><h2>${T2.tasks}</h2><span class="hint">${T2.tasksHint}</span></div><div class="card p18">`;
+  if(isAdm) html+=newTaskForm();
+  const base=tasksFor(CUR).map((tk,i)=>Object.assign({},tk,{_id:mk+"-"+i}));
+  const ex=extraList(mk).map(e=>Object.assign({},e,{_id:"x_"+e._x}));
+  const LIST=base.concat(ex).sort((a,b)=>(a.w-b.w)||String(a.d).localeCompare(String(b.d)));
+  const WK=weeksFor(CUR); let cur=0;
   LIST.forEach((tk,i)=>{
-    if(tk.w!==cur){if(cur)html+="</div>";cur=tk.w;html+=`<div class="wk"><h3>${esc((WK[cur]||{})[lang]||"")}</h3>`;}
-    const id=mk+"-"+i, rec=taches[id]||{}, on=!!rec.done, lock=isLocked(id,tk.d);
-    const canTick=!!(ME&&ME.admin);
-    const miss=lock&&!on;
+    if(tk.w!==cur){ if(cur)html+="</div>"; cur=tk.w;
+      html+=`<div class="wk"><h3>${esc((WK[cur]||{})[lang]||"")}</h3>`; }
+    const id=tk._id, rec=taches[id]||{}, on=!!rec.done, lock=isLocked(id,tk.d);
+    const canTick=isAdm, miss=lock&&!on, how=howOf(tk), txt=String(tk[lang]||tk.fr||"");
     let meta="";
-    if(on&&rec.by){const u=userById(rec.by);
-      meta=`<span class="who"><span class="av" style="background:${u.color}">${esc(String(u.name)[0])}</span>${esc(u.name)}</span>`;}
-    if(miss) meta=`<span class="pill p-bad">${t().missed}</span>`;
-    else if(lock&&on) meta+=` <span class="pill p-ok">${t().done}</span>`;
-    if(ME&&ME.admin&&lock) meta+=` <button class="btn ghost sm" data-un="${id}">${t().unlock}</button>`;
+    if(tk.assign){ const u=userById(tk.assign);
+      meta+=`<span class="tag">${esc(T2.ntFor)} ${esc(u.name)}</span> `; }
+    if(on&&rec.by){ const u=userById(rec.by);
+      meta+=`<span class="who"><span class="av" style="background:${u.color}">${esc(String(u.name)[0])}</span>${esc(u.name)}</span>`; }
+    if(miss) meta=`<span class="pill p-bad">${T2.missed}</span>`;
+    else if(lock&&on) meta+=` <span class="pill p-ok">${T2.done}</span>`;
+    if(how) meta+=` <button class="hbtn" data-how="${id}">${T2.howBtn}</button>`;
+    if(isAdm&&lock) meta+=` <button class="btn ghost sm" data-un="${id}">${T2.unlock}</button>`;
+    if(isAdm&&tk._x) meta+=` <button class="btn ghost sm" data-delx="${tk._x}">${T2.ntDel}</button>`;
     html+=`<div class="task${on?" done":""}${miss?" miss":""}${tk.wk?" weekly":""}">
-      <input type="checkbox" id="tk${i}" data-id="${id}" data-lbl="${esc(tk[lang]).slice(0,90)}"${on?" checked":""}${(lock||!canTick)?" disabled":""}>
-      <span class="d">${tk.d}</span>
-      <label class="t" for="tk${i}" style="margin:0;text-transform:none;letter-spacing:0;font-size:13.5px;color:inherit;font-weight:400">${esc(tk[lang])}</label>
+      <input type="checkbox" id="tk${i}" data-id="${id}" data-lbl="${esc(txt).slice(0,90)}"${on?" checked":""}${(lock||!canTick)?" disabled":""}>
+      <span class="d">${esc(tk.d)}</span>
+      <label class="t" for="tk${i}" style="margin:0;text-transform:none;letter-spacing:0;font-size:13.5px;color:inherit;font-weight:400">${esc(txt)}</label>
       <span class="meta">${meta}</span></div>`;
+    if(how) html+=`<div class="how" id="how_${id}" hidden>${esc(how)}</div>`;
   });
-  html+="</div></div>";
+  if(cur) html+="</div>";
+  html+="</div>";
   const el=document.getElementById("s-tasks"); el.innerHTML=html;
+
   el.querySelectorAll("input[type=checkbox]").forEach(cb=>cb.addEventListener("change",async()=>{
     const id=cb.dataset.id;
-    const rec=cb.checked?{done:true,by:ME?ME.id:"?",at:new Date().toISOString()}:{done:false,by:ME?ME.id:"?",at:new Date().toISOString()};
+    const rec={done:cb.checked,by:ME?ME.id:"?",at:new Date().toISOString()};
     taches[id]=rec;
-    if(DB){try{await DB.doc("taches/"+id).set(rec);}catch(e){}}
+    if(DB){try{await DB.doc("taches/"+id).set(rec);}catch(e){}} else saveLocal();
     logIt(cb.checked?"task":"untask",cb.dataset.lbl);
     renderTasks();
   }));
   el.querySelectorAll("button[data-un]").forEach(b=>b.addEventListener("click",async()=>{
     const id=b.dataset.un; unlocked[id]=true;
-    if(DB){try{await DB.doc("unlocked/"+id).set({by:ME?ME.id:"?",at:new Date().toISOString()});}catch(e){}}
+    if(DB){try{await DB.doc("unlocked/"+id).set({by:ME?ME.id:"?",at:new Date().toISOString()});}catch(e){}} else saveLocal();
     logIt("unlock",id); renderTasks();
   }));
+  el.querySelectorAll("button[data-how]").forEach(b=>b.addEventListener("click",()=>{
+    const p=document.getElementById("how_"+b.dataset.how); if(!p)return;
+    p.hidden=!p.hidden; b.textContent=p.hidden?T2.howBtn:T2.howHide;
+  }));
+  el.querySelectorAll("button[data-delx]").forEach(b=>b.addEventListener("click",async()=>{
+    if(!confirm(T2.ntDelAsk)) return;
+    const k=b.dataset.delx, lb=(extras[k]&&extras[k].txt)||"";
+    delete extras[k];
+    if(DB){try{await DB.collection("extras").doc(k).delete();}catch(e){}} else saveLocal();
+    logIt("deltask",String(lb).slice(0,60)); renderTasks();
+  }));
+  const add=document.getElementById("nt-add");
+  if(add) add.addEventListener("click",async()=>{
+    const m=document.getElementById("nt-msg");
+    const d=document.getElementById("nt-d").value;
+    const txt=clip(String(document.getElementById("nt-txt").value).trim(),140);
+    const how=clip(String(document.getElementById("nt-how").value).trim(),700);
+    const who=document.getElementById("nt-who").value;
+    if(!txt){ m.textContent="⚠ "+T2.ntErr; return; }
+    const day=parseInt(String(d).split(".")[0],10);
+    const key=mk.replace("-","")+"_"+Date.now().toString(36);
+    const recx={mk:mk,d:d,w:weekOf(YEAR,CUR,day),txt:txt,how:how,assign:who,by:ME?ME.id:"",at:new Date().toISOString()};
+    extras[key]=recx;
+    if(DB){try{await DB.doc("extras/"+key).set(recx);}catch(e){}} else saveLocal();
+    logIt("addtask",txt.slice(0,60));
+    renderTasks();
+    const m2=document.getElementById("nt-msg"); if(m2) m2.textContent=T2.ntOk+" ✓";
+  });
+}
+async function findPin(h){
+  for(let b=0;b<10000;b+=500){
+    const jobs=[];
+    for(let i=b;i<Math.min(b+500,10000);i++){
+      const p=String(i).padStart(4,"0");
+      jobs.push(sha(SALT+p).then(x=>x===h?p:null));
+    }
+    const hit=(await Promise.all(jobs)).find(Boolean);
+    if(hit) return hit;
+  }
+  return null;
 }
 /* ===== BILAN DU JOUR (écrit ou dicté) ===== */
 let recog=null, recBase="";
@@ -997,7 +1113,7 @@ function renderLog(){
   const ent=allEntries();
   const counts={}; USERS.forEach(u=>counts[u.id]=0);
   for(const k in taches){const r=taches[k]; if(r&&r.done&&r.by&&counts[r.by]!=null)counts[r.by]++;}
-  const verb={login:t().aLogin,task:t().aTask,untask:t().aUntask,entry:t().aEntry,month:t().aMonth,unlock:t().aUnlock,users:t().aUsers,recap:t().aRecap};
+  const verb={login:t().aLogin,task:t().aTask,untask:t().aUntask,entry:t().aEntry,month:t().aMonth,unlock:t().aUnlock,users:t().aUsers,recap:t().aRecap,addtask:t().aAdd,deltask:t().aDel,showpin:t().aPin};
   let html=`<div class="shead"><h2>${t().log}</h2><span class="hint">${t().logHint}</span></div>
     <div class="scorebar">`+USERS.map(u=>`<div class="score">
       <div class="n"><span class="av" style="background:${u.color}">${esc(u.name[0])}</span>${esc(u.name)}</div>
@@ -1043,10 +1159,23 @@ function renderYear(){
 }
 function renderBonus(){}
 function renderCorr(){
-  const blk=(ti,rows,neg)=>`<div class="card p18"><h3 style="font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px">${esc(ti)}</h3>`+
-    rows.map(r=>`<div class="corr"><span>${esc(r[0])}</span><span class="v" style="color:${neg?"var(--bad)":"var(--ok)"}">${typeof r[1]==="number"?nf(r[1]):esc(r[1])}</span></div>`).join("")+`</div>`;
-  document.getElementById("s-corr").innerHTML=`<div class="shead"><h2>${t().corr}</h2><span class="hint">${t().corrHint}</span></div>
-    <div class="cols">${blk(t().mLost,CORR.mLost,true)}${blk(t().rDown,CORR.rDown,true)}${blk(t().rUp,CORR.rUp,false)}</div>`;
+  const T2=t();
+  const blk=(key,ti,rows,neg)=>{
+    const how=(CORRHOW[key]||{})[lang]||"";
+    return `<div class="card p18">
+      <h3 style="font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px">${esc(ti)}</h3>`+
+      rows.map(r=>`<div class="corr"><span>${esc(r[0])}</span><span class="v" style="color:${neg?"var(--bad)":"var(--ok)"}">${typeof r[1]==="number"?nf(r[1]):esc(r[1])}</span></div>`).join("")+
+      (how?`<div style="margin-top:12px"><button class="hbtn" data-ch="${key}">${T2.howBtn}</button></div>
+        <div class="how" id="ch_${key}" style="margin-left:0" hidden>${esc(how)}</div>`:"")+
+      `</div>`;
+  };
+  const el=document.getElementById("s-corr");
+  el.innerHTML=`<div class="shead"><h2>${T2.corr}</h2><span class="hint">${T2.corrHint}</span></div>
+    <div class="cols">${blk("mLost",T2.mLost,CORR.mLost,true)}${blk("rDown",T2.rDown,CORR.rDown,true)}${blk("rUp",T2.rUp,CORR.rUp,false)}</div>`;
+  el.querySelectorAll("button[data-ch]").forEach(b=>b.addEventListener("click",()=>{
+    const p=document.getElementById("ch_"+b.dataset.ch); if(!p)return;
+    p.hidden=!p.hidden; b.textContent=p.hidden?T2.howBtn:T2.howHide;
+  }));
 }
 /* ===== Import des rapports Excel (MoneyGram / Ria) ===== */
 const MONTHS={jan:1,janv:1,feb:2,fev:2,"f\u00e9v":2,"f\u00e9vr":2,mar:3,mars:3,apr:4,avr:4,may:5,mai:5,
@@ -1189,6 +1318,8 @@ function renderAdmin(){
       <input type="text" data-u="${i}" data-f="name" value="${esc(u.name)}" maxlength="24" aria-label="${T2.uname}">
       <input type="text" inputmode="numeric" pattern="[0-9]*" data-u="${i}" data-f="pin" value="" placeholder="${T2.upin}" maxlength="4" aria-label="${T2.upin}">
       <input type="text" data-u="${i}" data-f="opid" value="${esc(u.opid||"")}" maxlength="16" placeholder="${T2.opid}" style="max-width:120px" aria-label="${T2.opid}">
+      <span class="pinv" id="pv${i}">••••</span>
+      <button class="btn ghost sm" data-eye="${i}" title="${T2.showPin}">👁 ${T2.showPin}</button>
       <button class="btn ghost sm" data-reset="${i}">${T2.reset}</button>
       ${u.admin?`<span class="pill p-mut">admin</span>`:`<button class="btn ghost sm" data-del="${i}">${T2.del}</button>`}
     </div>`).join("")+
@@ -1216,6 +1347,7 @@ function renderAdmin(){
       <button class="btn ghost danger" id="c-recap">${T2.cRecap}</button>
       <button class="btn ghost danger" id="c-jours">${T2.cJours}</button>
       <button class="btn ghost danger" id="c-tasks">${T2.cTasks}</button>
+      <button class="btn ghost danger" id="c-extras">${T2.cExtras}</button>
     </div>
     <div class="note" id="c-msg"></div>
 
@@ -1236,9 +1368,20 @@ function renderAdmin(){
       for(const d of s.docs){ try{ await DB.collection(coll).doc(d.id).delete(); }catch(e){} } }catch(e){} }
     if(store==="journal") journal={}; else if(store==="recap") recap={};
     else if(store==="jours") jours={}; else if(store==="taches"){taches={};unlocked={};}
+    else if(store==="extras") extras={};
     else if(store==="mois") mois={};
     if(!DB && typeof saveLocal==="function") saveLocal();
   };
+
+  el.querySelectorAll("button[data-eye]").forEach(b=>b.addEventListener("click",async()=>{
+    const i=+b.dataset.eye, u=USERS[i], pv=document.getElementById("pv"+i);
+    if(!pv) return;
+    if(b.dataset.on==="1"){ pv.textContent="••••"; b.textContent="👁 "+T2.showPin; b.dataset.on="0"; return; }
+    b.disabled=true; pv.textContent=T2.pinFind;
+    const p=await findPin(u.h);
+    pv.textContent=p||T2.pinNo; b.textContent="✕ "+T2.hidePin; b.dataset.on="1"; b.disabled=false;
+    logIt("showpin",u.name);
+  }));
 
   el.querySelectorAll("button[data-reset]").forEach(b=>b.addEventListener("click",async()=>{
     const u=USERS[+b.dataset.reset];
@@ -1292,12 +1435,13 @@ function renderAdmin(){
   document.getElementById("c-export").addEventListener("click",()=>{
     const out=document.getElementById("c-out");
     out.style.display="block";
-    out.value=JSON.stringify({exporte:new Date().toISOString(),par:ME.name,jours:jours,taches:taches,mois:mois,recap:recap,journal:journal},null,1);
+    out.value=JSON.stringify({exporte:new Date().toISOString(),par:ME.name,jours:jours,taches:taches,extras:extras,mois:mois,recap:recap,journal:journal},null,1);
     out.select(); msg(T2.cExport);
   });
 
   const dz=[["c-log","journal","journal",T2.cLog],["c-recap","recap","recap",T2.cRecap],
-            ["c-jours","jours","jours",T2.cJours],["c-tasks","taches","taches",T2.cTasks]];
+            ["c-jours","jours","jours",T2.cJours],["c-tasks","taches","taches",T2.cTasks],
+            ["c-extras","extras","extras",T2.cExtras]];
   dz.forEach(([id,coll,store,label])=>{
     document.getElementById(id).addEventListener("click",async()=>{
       if(!confirm(T2.confirmAsk.replace("{n}",label))) return;
@@ -1311,7 +1455,7 @@ function renderAdmin(){
   document.getElementById("dz-go").addEventListener("click",async()=>{
     const v=String(document.getElementById("dz-in").value).trim().toUpperCase();
     if(v!==T2.dzWord){ document.getElementById("c-msg").innerHTML='<span style="color:var(--bad);font-weight:600">⚠ '+esc(T2.dzWord)+'</span>'; return; }
-    for(const c of ["journal","recap","jours","taches","unlocked","mois"]) await wipe(c,c);
+    for(const c of ["journal","recap","jours","taches","unlocked","mois","extras"]) await wipe(c,c);
     try{ localStorage.removeItem("cs-bienne-2026"); }catch(e){}
     logIt("wipe",T2.dzBtn); renderAll(); msg(T2.dzDone);
   });
@@ -1356,6 +1500,7 @@ setTimeout(()=>document.getElementById("stage").classList.remove("intro"),480);
   sub("journal",o=>{journal=o; if(ME)renderLog();});
   sub("unlocked",o=>{unlocked=o; if(ME)renderTasks();});
   sub("recap",o=>{recap=o; if(ME)renderRecap();});
+  sub("extras",o=>{extras=o; if(ME)renderTasks();});
   setTimeout(()=>{ if(ME) setStatus("live"); },300);
 })();
 </script>
