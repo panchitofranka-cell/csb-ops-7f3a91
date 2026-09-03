@@ -12,11 +12,15 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https://cdnjs.cloudflare.com; manifest-src 'self'; worker-src 'self'; form-action 'none'; base-uri 'none'">
 <title>Pilotage Bienne 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js">
+if("serviceWorker" in navigator){ window.addEventListener("load",function(){
+  navigator.serviceWorker.register("sw.js").catch(function(){}); }); }
+</script>
 <style>
 :root{
   --paper:#F4F4F1; --card:#FFFFFF; --sunk:#EBEBE6; --line:#DCDCD5; --line2:#C9C9C0;
@@ -208,6 +212,19 @@ td input{width:76px;padding:5px 7px;font-size:13px;text-align:right}
 .score .n{display:flex;align-items:center;gap:7px;font-weight:600;font-size:13px}
 .score .b{font-family:"IBM Plex Mono";font-size:22px;font-weight:600;margin-top:6px}
 .score .s{font-size:11.5px;color:var(--ink3)}
+
+/* admin */
+.ah{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--brand-ink);font-weight:700;margin-bottom:12px}
+.ulist{display:grid;gap:9px}
+.urow{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.urow input[type=text]{flex:1;min-width:110px}
+.ctrl{display:flex;gap:9px;flex-wrap:wrap}
+.btn.danger{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 35%,var(--line2))}
+@supports not (color:color-mix(in srgb,red 10%,white)){.btn.danger{border-color:var(--line2)}}
+.danger-zone{margin-top:22px;border:1px solid var(--bad);border-radius:9px;padding:14px;background:var(--bad-bg)}
+.dz-t{font:700 13px/1.2 "IBM Plex Sans";color:var(--bad)}
+.dz-d{font-size:12.5px;color:var(--ink2);margin-top:5px;line-height:1.5}
+.btn.danger-btn{background:var(--bad);color:#fff}
 /* recap */
 .rcbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
 .rcbar select{width:auto;min-width:170px}
@@ -298,6 +315,7 @@ html{-webkit-text-size-adjust:100%}
     <div class="mark">Capital <b>Services</b><small>Agence de Biel/Bienne</small></div>
     <div class="spacer"></div>
     <div class="userchip" id="uchip"></div>
+    <select id="monthsel" aria-label="Mois" style="width:auto;min-width:112px"></select>
     <div class="seg" role="group" id="langsel">
       <button data-l="fr" aria-pressed="true">Français</button>
       <button data-l="es" aria-pressed="false">Español</button>
@@ -309,11 +327,13 @@ html{-webkit-text-size-adjust:100%}
   </div>
 </header>
 <div class="wrap">
+  <section id="s-recap2"></section>
+  <section id="s-import"></section>
   <section id="s-today"></section>
   <section id="s-entry"></section>
   <section id="s-month"></section>
+  <section id="s-team"></section>
   <section id="s-tasks"></section>
-  <section id="s-recap"></section>
   <section id="s-log"></section>
   <section id="s-year"></section>
   <section id="s-corr"></section>
@@ -325,7 +345,10 @@ html{-webkit-text-size-adjust:100%}
 <script>
 "use strict";
 /* ===== RÉFÉRENCE ===== */
-const YEAR=2026, CUR=8, DAILY_VISA=2, DAILY_AVIS=1;
+const YEAR=2026, DAILY_VISA=2, DAILY_AVIS=1;
+const NOW=new Date();
+let CUR=(NOW.getFullYear()===YEAR)?NOW.getMonth():8;
+try{const sv=localStorage.getItem("cs-mois"); if(sv!==null&&+sv>=0&&+sv<12) CUR=+sv;}catch(e){}
 const OBJ={mercury:[2084,2033,2453,2117,2230,1963,2253,2197,2298,2379,2364,2936],
   mg:[508,477,623,504,560,534,577,458,512,522,460,508],
   ria:[460,508,619,649,605,524,580,547,568,608,535,686]};
@@ -333,12 +356,12 @@ const REAL0={mercury:[null,null,null,null,null,null,2464,null,null,null,null,nul
   mg:[428,452,485,427,469,456,455,418,null,null,null,null],
   ria:[368,365,420,390,406,480,423,407,null,null,null,null]};
 const ANN={mercury:{obj:27307},mg:{obj:6242},ria:{obj:6889}};
-const START={days:2,mercury:181,mgEnv:31,mgPay:11,ria:10,visa:0,avis:0};
+const START={days:0,mercury:0,mgEnv:0,mgPay:0,ria:0,visa:0,avis:0};
 const SALT="CSB26|";
 const DEFAULT_USERS=[
-  {id:"gino",    name:"G.",     h:"d58f52af905728ab82d8616e852ada6a3911dd602dd38ae7f88d0d5e06272893", admin:false, color:"#7FD4C1"},
-  {id:"franklin",name:"F.", h:"90618e66ac3a775df13b13d3ee2f42e1aa74c6dda5bd19fb69005ec5c4ed85b6", admin:false, color:"#F5C400"},
-  {id:"admin",   name:"A.",    h:"61a720b0e45000519ecee8e80045a8be120b6442d8fb43a4fcb07078021846e6", admin:true,  color:"#C9A7F0"}
+  {id:"gino",    name:"G.",     h:"d58f52af905728ab82d8616e852ada6a3911dd602dd38ae7f88d0d5e06272893", admin:false, color:"#7FD4C1", opid:"gpere014"},
+  {id:"franklin",name:"F.", h:"90618e66ac3a775df13b13d3ee2f42e1aa74c6dda5bd19fb69005ec5c4ed85b6", admin:false, color:"#F5C400", opid:"fmoro005"},
+  {id:"admin",   name:"A.",    h:"61a720b0e45000519ecee8e80045a8be120b6442d8fb43a4fcb07078021846e6", admin:true,  color:"#C9A7F0", opid:""}
 ];
 const MAXTRY=5, LOCKMS=60000;
 
@@ -401,18 +424,21 @@ const T={
   noRecap:"Personne n'a encore écrit son bilan aujourd'hui.",
   recapHist:"Bilans des jours précédents",aRecap:"a écrit le bilan du",
   listening:"J'écoute…",
-  h1:"Pilotage de l'agence — Septembre 2026",
+  h1:"Pilotage de l'agence",
   hsub:"Objectifs, chiffres du jour et plan d'action de l'agence de Biel/Bienne. Chaque geste est tracé au nom de son auteur.",
   live:"Connecté — tout est partagé avec l'équipe",local:"Copie autonome — les données restent sur cet appareil",wait:"Connexion…",
   logout:"Quitter",
   today:"Objectifs du jour",todayHint:"Recalculés chaque jour selon ce qui reste à faire",
   daysLeft:"jours d'ouverture restants",perDay:"par jour",
-  entry:"Saisie du jour",entryHint:"À remplir chaque soir avant la fermeture",
+  entry:"Saisie du jour",entryHint:"Chacun saisit ce qu'il a fait — les chiffres s'additionnent",
+  entryNote:"Chaque personne saisit ses propres opérations. L'administrateur peut saisir pour n'importe qui.",
+  who2:"Personne",sends:"envois",pays:"paiements",share:"Part",unassigned:"Agence (non attribué)",
+  team:"Ce que chacun a fait ce mois-ci",teamHint:"Cumul du mois, par caissier",
   date:"Date",mercury:"Mercury",mgEnv:"MoneyGram envois",mgPay:"MoneyGram paiements",ria:"Ria",
   visa:"Cartes Visa",avis:"Avis Google",save:"Enregistrer",saved:"Enregistré",
-  month:"Où en est le mois",monthHint:"Cumul du 1er septembre à aujourd'hui",
+  month:"Où en est le mois",monthHint:"Cumul du mois en cours",
   objective:"objectif",left:"reste",expected:"attendu",
-  tasks:"Plan d'action de septembre",
+  tasks:"Plan d'action du mois",
   tasksHint:"Une case se verrouille à la fin de sa journée. Ce qui n'est pas coché reste marqué « non fait ».",
   done:"fait",missed:"non fait",locked:"verrouillé",by:"par",
   log:"Historique",logHint:"Qui a fait quoi, et quand",
@@ -424,13 +450,29 @@ const T={
   thM:"Mois",thObj:"Objectif",thReal:"Réel",thPct:"Atteinte",total:"Total",
   proj:"projection",
   onTrack:"dans le rythme",behind:"en retard",critical:"critique",
-  admin:"Administration",adminHint:"Réservé à l'administrateur",
+  admin:"Administration",adminHint:"Réservé à l'administrateur — codes d'accès, déverrouillage et remise à zéro",
   users:"Codes d'accès",uname:"Nom",upin:"Nouveau code",usave:"Enregistrer les codes",
   pinNote:"Laissez le code vide pour ne pas le changer. Les codes ne sont jamais affichés : seule leur empreinte est conservée.",
   unlock:"Déverrouiller",unlockHint:"Rouvrir une case verrouillée (l'action est enregistrée)",
+  opid:"ID rapport",imp:"Importer un rapport Excel",
+  impHint:"Déposez le rapport détaillé MoneyGram ou le rapport Ria. Les opérations sont comptées par caissier grâce à l'identifiant du rapport (colonne « ID rapport » ci-dessus).",
+  impLines:"lignes",impApply:"Appliquer au tableau",impAuto:"Application automatique en cours…",
+  impHint2:"Déposez le fichier : les chiffres se rangent tout seuls, par caissier et par jour",impNo:"Rapport non reconnu. Utilisez le rapport détaillé MoneyGram ou le rapport de transaction Ria.",
+  impUnknown:"Identifiants non attribués",impReading:"Lecture du fichier…",impLib:"Bibliothèque de lecture Excel indisponible.",
+  impDone:"{n} lignes enregistrées",
+  reset:"Réinitialiser",del:"Retirer",resetOk:"Code d'origine rétabli",resetZero:"Code remis à 0000",
+  delAsk:"Retirer {n} de la liste ?",addUser:"Ajouter une personne",addBtn:"Ajouter",
+  addErr:"Il faut un nom et un code de 4 chiffres.",
+  control:"Contrôle total",
+  cUnlock:"Déverrouiller tout le mois",cExport:"Exporter les données",
+  cLog:"Effacer l'historique",cRecap:"Effacer les bilans",cJours:"Effacer les chiffres",cTasks:"Décocher tout le plan",
+  confirmAsk:"Confirmer : {n} ? Cette action est définitive.",
+  dzTitle:"Tout remettre à zéro",
+  dzHint:"Efface les chiffres, le plan, les bilans et l'historique. Les codes d'accès sont conservés. Écrivez {w} pour confirmer.",
+  dzWord:"EFFACER",dzBtn:"Tout effacer",dzDone:"Tout a été effacé",
   foot:"Sources : lettre d'objectifs 2026 de la direction, rapport réseau par agence (janv–août 2026) et rapports quotidiens de l'agence. Les réels Mercury de janvier à juin restent à confirmer par la centrale. Le code d'accès sert à identifier l'auteur de chaque action, ce n'est pas un dispositif de sécurité.",
   noteMg:"MoneyGram : envois et paiements suivis séparément tant que la centrale n'a pas confirmé lesquels comptent.",
-  cumulNote:"Cumul au 2 septembre inclus dans les totaux : Mercury 181, MoneyGram 31 envois + 11 paiements, Ria 10.",
+  cumulNote:"Chaque mois repart de zéro. Déposez les rapports Excel en haut de page pour remplir les chiffres.",
   aTask:"a coché",aUntask:"a décoché",aEntry:"a saisi les chiffres du",aMonth:"a corrigé",aLogin:"s'est connecté",
   aUnlock:"a déverrouillé",aUsers:"a modifié les codes d'accès"},
  es:{gh1:"Código de acceso",gp:"Introduzca su código personal de 4 dígitos.",
@@ -445,18 +487,21 @@ const T={
   noRecap:"Todavía nadie ha escrito su balance de hoy.",
   recapHist:"Balances de días anteriores",aRecap:"escribió el balance del",
   listening:"Le escucho…",
-  h1:"Pilotaje de la agencia — Septiembre 2026",
+  h1:"Pilotaje de la agencia",
   hsub:"Objetivos, cifras del día y plan de acción de la agencia de Biel/Bienne. Cada gesto queda a nombre de quien lo hace.",
   live:"Conectado — todo se comparte con el equipo",local:"Copia autónoma — los datos se quedan en este aparato",wait:"Conectando…",
   logout:"Salir",
   today:"Objetivos de hoy",todayHint:"Se recalculan cada día según lo que falta",
   daysLeft:"días de apertura restantes",perDay:"por día",
-  entry:"Cifras del día",entryHint:"Rellenar cada tarde antes de cerrar",
+  entry:"Cifras del día",entryHint:"Cada uno mete lo suyo — las cifras se van sumando",
+  entryNote:"Cada persona mete sus propias operaciones. El administrador puede meter las de cualquiera.",
+  who2:"Persona",sends:"envíos",pays:"pagos",share:"Parte",unassigned:"Agencia (sin asignar)",
+  team:"Lo que ha hecho cada uno este mes",teamHint:"Acumulado del mes, por cajero",
   date:"Fecha",mercury:"Mercury",mgEnv:"MoneyGram envíos",mgPay:"MoneyGram pagos",ria:"Ria",
   visa:"Tarjetas Visa",avis:"Reseñas Google",save:"Guardar",saved:"Guardado",
-  month:"Cómo va el mes",monthHint:"Acumulado del 1 de septiembre a hoy",
+  month:"Cómo va el mes",monthHint:"Acumulado del mes en curso",
   objective:"objetivo",left:"falta",expected:"esperado",
-  tasks:"Plan de acción de septiembre",
+  tasks:"Plan de acción del mes",
   tasksHint:"Cada casilla se bloquea al terminar su día. Lo que no se marque queda como «no hecho».",
   done:"hecho",missed:"no hecho",locked:"bloqueado",by:"por",
   log:"Historial",logHint:"Quién hizo qué, y cuándo",
@@ -468,13 +513,29 @@ const T={
   thM:"Mes",thObj:"Objetivo",thReal:"Real",thPct:"Logro",total:"Total",
   proj:"proyección",
   onTrack:"en ritmo",behind:"con retraso",critical:"crítico",
-  admin:"Administración",adminHint:"Reservado al administrador",
+  admin:"Administración",adminHint:"Reservado al administrador — códigos de acceso, desbloqueo y reinicio",
   users:"Códigos de acceso",uname:"Nombre",upin:"Código nuevo",usave:"Guardar los códigos",
   pinNote:"Deje el código vacío para no cambiarlo. Los códigos nunca se muestran: solo se guarda su huella.",
   unlock:"Desbloquear",unlockHint:"Reabrir una casilla bloqueada (la acción queda registrada)",
+  opid:"ID informe",imp:"Importar un informe Excel",
+  impHint:"Suelte aquí el informe detallado de MoneyGram o el informe de Ria. Las operaciones se cuentan por cajero gracias al identificador del informe (columna «ID informe» de arriba).",
+  impLines:"líneas",impApply:"Aplicar a la tabla",impAuto:"Aplicando automáticamente…",
+  impHint2:"Suelte el archivo: las cifras se colocan solas, por cajero y por día",impNo:"Informe no reconocido. Use el informe detallado de MoneyGram o el informe de transacciones de Ria.",
+  impUnknown:"Identificadores sin asignar",impReading:"Leyendo el archivo…",impLib:"La librería para leer Excel no está disponible.",
+  impDone:"{n} líneas guardadas",
+  reset:"Restablecer",del:"Quitar",resetOk:"Código original restablecido",resetZero:"Código puesto a 0000",
+  delAsk:"¿Quitar a {n} de la lista?",addUser:"Añadir una persona",addBtn:"Añadir",
+  addErr:"Hace falta un nombre y un código de 4 cifras.",
+  control:"Control total",
+  cUnlock:"Desbloquear todo el mes",cExport:"Exportar los datos",
+  cLog:"Borrar el historial",cRecap:"Borrar los balances",cJours:"Borrar las cifras",cTasks:"Desmarcar todo el plan",
+  confirmAsk:"Confirmar: ¿{n}? Esta acción es definitiva.",
+  dzTitle:"Reiniciarlo todo",
+  dzHint:"Borra las cifras, el plan, los balances y el historial. Los códigos de acceso se conservan. Escriba {w} para confirmar.",
+  dzWord:"BORRAR",dzBtn:"Borrar todo",dzDone:"Todo ha sido borrado",
   foot:"Fuentes: carta de objetivos 2026 de la dirección, informe de red por agencia (ene–ago 2026) e informes diarios de la agencia. Los reales de Mercury de enero a junio están pendientes de confirmar por la central. El código de acceso sirve para identificar al autor de cada acción, no es un sistema de seguridad.",
   noteMg:"MoneyGram: envíos y pagos seguidos por separado mientras la central no confirme cuáles cuentan.",
-  cumulNote:"Acumulado al 2 de septiembre incluido en los totales: Mercury 181, MoneyGram 31 envíos + 11 pagos, Ria 10.",
+  cumulNote:"Cada mes empieza de cero. Suelte los informes Excel arriba del todo para rellenar las cifras.",
   aTask:"marcó",aUntask:"desmarcó",aEntry:"registró las cifras del",aMonth:"corrigió",aLogin:"se conectó",
   aUnlock:"desbloqueó",aUsers:"modificó los códigos de acceso"}
 };
@@ -513,7 +574,7 @@ const TASKS=[
  {w:5,d:"28.09",fr:"Sprint final Mercury — dernier effort sur l'objectif mensuel",es:"Sprint final Mercury — último esfuerzo sobre el objetivo mensual"},
  {w:5,d:"29.09",fr:"Derniers appels aux clients dormants, clôture des fiches",es:"Últimas llamadas a clientes dormidos, cierre de fichas"},
  {w:5,d:"30.09",fr:"Clôture du mois : chiffres par système, photos du matériel à la centrale, compte rendu",es:"Cierre de mes: cifras por sistema, fotos del material a la central, informe"},
- {w:5,d:"30.09",fr:"Envoyer à l'administration la proposition prévue en fin de mois",es:"Enviar a administración la propuesta prevista para fin de mes"},
+ {w:5,d:"30.09",fr:"Envoyer à l'administration le bilan du mois et les propositions",es:"Enviar a administración el balance del mes y las propuestas"},
  {w:5,d:"30.09",wk:1,fr:"Nettoyage des vitres extérieures (une fois par semaine)",es:"Limpieza de las ventanas exteriores (una vez por semana)"}
 ];
 const WEEKS={1:{fr:"Semaine du 3 au 5 septembre — mesurer et réagir",es:"Semana del 3 al 5 de septiembre — medir y reaccionar"},
@@ -521,6 +582,45 @@ const WEEKS={1:{fr:"Semaine du 3 au 5 septembre — mesurer et réagir",es:"Sema
  3:{fr:"Semaine du 14 au 19 — terrain et entreprises",es:"Semana del 14 al 19 — terreno y empresas"},
  4:{fr:"Semaine du 21 au 26 — convertir",es:"Semana del 21 al 26 — convertir"},
  5:{fr:"Du 28 au 30 — clôturer le mois",es:"Del 28 al 30 — cerrar el mes"}};
+/* ===== Plan mensuel : septembre détaillé, autres mois = plan standard ===== */
+const TASKS_SEP = TASKS;
+function weekOf(y,m,d){ const first=new Date(y,m,1).getDay(); return Math.floor((d + ((first+6)%7) - 1)/7)+1; }
+function weekRange(y,m,w){
+  const dim=new Date(y,m+1,0).getDate(); let a=null,b=null;
+  for(let d=1;d<=dim;d++){ if(weekOf(y,m,d)===w){ if(a===null)a=d; b=d; } }
+  return [a,b];
+}
+function tasksFor(m){
+  if(m===8) return TASKS_SEP;
+  const dim=new Date(YEAR,m+1,0).getDate(), out=[];
+  const lbl=d=>pad2(d)+"."+pad2(m+1);
+  let firstOpen=null,lastOpen=null,mid=null;
+  for(let d=1;d<=dim;d++){ const dow=new Date(YEAR,m,d).getDay(); if(dow===0)continue;
+    if(firstOpen===null)firstOpen=d; lastOpen=d; if(d<=15)mid=d; }
+  for(let d=1;d<=dim;d++){
+    const dt=new Date(YEAR,m,d), dow=dt.getDay(); if(dow===0) continue;
+    const w=weekOf(YEAR,m,d);
+    if(d===firstOpen) out.push({w:w,d:lbl(d),fr:"Afficher les objectifs du mois au guichet",es:"Colocar los objetivos del mes en el guichet"});
+    if(dow===1) out.push({w:w,d:lbl(d),fr:"Point hebdomadaire : où en sont Mercury, MoneyGram et Ria",es:"Punto semanal: dónde están Mercury, MoneyGram y Ria"});
+    if(d===mid) out.push({w:w,d:lbl(d),fr:"Bilan de mi-mois et rattrapage si nécessaire",es:"Balance de mitad de mes y recuperación si hace falta"});
+    if(dow===6) out.push({w:w,d:lbl(d),wk:1,fr:"Nettoyage des vitres extérieures (une fois par semaine)",es:"Limpieza de las ventanas exteriores (una vez por semana)"});
+    if(d===lastOpen){
+      out.push({w:w,d:lbl(d),fr:"Clôture du mois : chiffres par système et compte rendu",es:"Cierre de mes: cifras por sistema e informe"});
+      out.push({w:w,d:lbl(d),fr:"Importer les rapports Excel du mois (MoneyGram et Ria)",es:"Importar los informes Excel del mes (MoneyGram y Ria)"});
+    }
+  }
+  out.sort((a,b)=>a.d.localeCompare(b.d));
+  return out;
+}
+function weeksFor(m){
+  if(m===8) return WEEKS;
+  const o={}, ws=new Set(tasksFor(m).map(t=>t.w));
+  ws.forEach(w=>{ const [a,b]=weekRange(YEAR,m,w);
+    o[w]={fr:"Semaine du "+a+" au "+b+" "+T.fr.monthN[m].toLowerCase(),
+          es:"Semana del "+a+" al "+b+" de "+T.es.monthN[m].toLowerCase()}; });
+  return o;
+}
+
 const CORR={mLost:[["Kenya",-215],["Sénégal",-160],["Brésil",-153],["Côte d'Ivoire",-138],["Philippines",-89]],
  rDown:[["Togo","−67 %"],["Portugal","−58 %"],["Guinée","−56 %"],["Espagne","−42 %"],["RD Congo","−32 %"],["Macédoine du Nord","−26 %"],["Belgique","−26 %"],["Allemagne","−16 %"]],
  rUp:[["Roumanie","+27 %"],["Italie","+20 %"],["Turquie","+18 %"],["Albanie","+18 %"],["Sénégal","+11 %"],["France","+7 %"]]};
@@ -543,6 +643,19 @@ function curTotals(){const o={mercury:START.mercury,mgEnv:START.mgEnv,mgPay:STAR
   for(const k in jours){if(!k.startsWith(p))continue;const v=jours[k]||{};
     o.mercury+=+v.mercury||0;o.mgEnv+=+v.mgEnv||0;o.mgPay+=+v.mgPay||0;o.ria+=+v.ria||0;o.visa+=+v.visa||0;o.avis+=+v.avis||0;}
   return o;}
+function uidOfKey(k){const i=k.indexOf("_");return i<0?"":k.slice(i+1);}
+function byUser(){
+  const p=YEAR+"-"+pad2(CUR+1)+"-", out={};
+  USERS.forEach(u=>{out[u.id]={mercury:0,mgEnv:0,mgPay:0,ria:0,visa:0,avis:0,jours:0};});
+  out.__={mercury:0,mgEnv:0,mgPay:0,ria:0,visa:0,avis:0,jours:0};
+  for(const k in jours){ if(!k.startsWith(p)) continue;
+    const uid=uidOfKey(k)||"__", v=jours[k]||{};
+    if(!out[uid]||typeof out[uid]!=="object") out[uid]={mercury:0,mgEnv:0,mgPay:0,ria:0,visa:0,avis:0,jours:0};
+    const o=out[uid];
+    o.mercury+=+v.mercury||0;o.mgEnv+=+v.mgEnv||0;o.mgPay+=+v.mgPay||0;
+    o.ria+=+v.ria||0;o.visa+=+v.visa||0;o.avis+=+v.avis||0;o.jours+=1; }
+  return out;
+}
 function realOf(sys,i){const k=YEAR+"-"+pad2(i+1);
   if(mois[k]&&mois[k][sys]!=null&&mois[k][sys]!=="")return +mois[k][sys];
   if(i===CUR){const c=curTotals();return sys==="mercury"?c.mercury:sys==="mg"?c.mgEnv:c.ria;}
@@ -555,13 +668,20 @@ function taskEnd(ds){const [d,m]=ds.split(".").map(Number);return new Date(YEAR,
 function isLocked(id,ds){ if(unlocked[id])return false; return new Date()>taskEnd(ds); }
 
 
-/* ===== Copie autonome : persistance locale à l'appareil ===== */
 const LK="cs-bienne-2026";
+const SEED={
+ "2026-09-01_gino":{mgEnv:10,mgPay:2,by:"gino",name:"G."},"2026-09-01_franklin":{mgEnv:7,mgPay:0,by:"franklin",name:"F."},
+ "2026-09-02_gino":{mgEnv:8,mgPay:3,by:"gino",name:"G."},"2026-09-02_franklin":{mgEnv:6,mgPay:5,by:"franklin",name:"F."},
+ "2026-09-03_gino":{mgEnv:7,mgPay:2,by:"gino",name:"G."},"2026-09-03_franklin":{mgEnv:5,mgPay:0,by:"franklin",name:"F."},
+ "2026-09-02":{mercury:181,name:"Agence"},"2026-09-03":{mercury:90,ria:66,name:"Agence"}};
 function saveLocal(){ if(DB)return; try{localStorage.setItem(LK,JSON.stringify(
   {jours:jours,taches:taches,mois:mois,journal:journal,unlocked:unlocked,recap:recap}));}catch(e){} }
 function loadLocal(){ try{const d=JSON.parse(localStorage.getItem(LK)||"{}");
   jours=d.jours||{};taches=d.taches||{};mois=d.mois||{};journal=d.journal||{};
-  unlocked=d.unlocked||{};recap=d.recap||{};}catch(e){} }
+  unlocked=d.unlocked||{};recap=d.recap||{}; }catch(e){} }
+function seedOnce(){ try{ if(localStorage.getItem("cs-seed-2"))return; }catch(e){}
+  for(const k in SEED){ if(!jours[k]) jours[k]=Object.assign({mercury:0,mgEnv:0,mgPay:0,ria:0,visa:0,avis:0},SEED[k]); }
+  try{localStorage.setItem("cs-seed-2","1");}catch(e){} saveLocal(); }
 
 /* ===== JOURNAL ===== */
 async function logIt(action,detail){
@@ -642,7 +762,7 @@ async function tryPin(){
     document.getElementById("gate").classList.add("gone");
     document.getElementById("app").hidden=false;
     try{sessionStorage.setItem("cs-me",u.id);}catch(e){}
-    if(!DB) loadLocal();
+    if(!DB){ loadLocal(); seedOnce(); }
     renderAll(); renderEntry(); logIt("login","");
   },1150);
 }
@@ -655,42 +775,88 @@ document.addEventListener("keydown",e=>{
 
 /* ===== RENDU ===== */
 function renderStatic(){
-  document.getElementById("h1").textContent=t().h1;
+  document.getElementById("h1").textContent=t().h1+" — "+t().monthN[CUR]+" "+YEAR;
   document.getElementById("hsub").textContent=t().hsub;
   document.getElementById("foot").textContent=t().foot;
   document.querySelectorAll("#langsel button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.l===lang)));
   document.documentElement.lang=lang;
+  const ms=document.getElementById("monthsel");
+  if(ms){ ms.innerHTML=t().monthN.map((n,i)=>`<option value="${i}"${i===CUR?" selected":""}>${esc(n)} ${YEAR}</option>`).join(""); }
   const c=document.getElementById("uchip");
   if(ME) c.innerHTML=`<span class="av" style="background:${ME.color}">${esc(ME.name[0])}</span>${esc(ME.name)}${ME.admin?' <span class="pill p-mut" style="background:rgba(255,255,255,.12);color:#EDEDE7">admin</span>':''}<button id="lo">${t().logout}</button>`;
   const lo=document.getElementById("lo"); if(lo)lo.onclick=()=>location.reload();
 }
+function renderTeam(){
+  const T2=t(), bu=byUser();
+  const cols=[["mercury",T2.mercury],["mgEnv","MG "+T2.sends],["mgPay","MG "+T2.pays],["ria","Ria"],["visa",T2.visa],["avis",T2.avis]];
+  const tot={};cols.forEach(([k])=>tot[k]=0);
+  USERS.forEach(u=>{const o=bu[u.id];if(o)cols.forEach(([k])=>tot[k]+=o[k]||0);});
+  const gt=tot.mercury+tot.mgEnv+tot.ria;
+  let html=`<div class="shead"><h2>${T2.team}</h2><span class="hint">${T2.teamHint}</span></div>
+    <div class="tblwrap"><table style="min-width:640px"><thead><tr><th>${T2.who2}</th>`+
+    cols.map(c=>`<th>${esc(c[1])}</th>`).join("")+`<th>${T2.share}</th></tr></thead><tbody>`;
+  USERS.forEach(u=>{
+    const o=bu[u.id]||{mercury:0,mgEnv:0,mgPay:0,ria:0,visa:0,avis:0,jours:0};
+    const mine=o.mercury+o.mgEnv+o.ria, pct=gt?mine/gt*100:0;
+    html+=`<tr><td><span class="who"><span class="av" style="background:${u.color}">${esc(String(u.name)[0]||"?")}</span>${esc(u.name)}</span></td>`+
+      cols.map(([k])=>`<td class="num">${nf(o[k])}</td>`).join("")+
+      `<td class="num"><span class="minibar"><i style="width:${pct.toFixed(0)}%;background:${u.color}"></i></span>${pct.toFixed(0)}%</td></tr>`;
+  });
+  const na=bu.__;
+  if(na && (na.mercury||na.mgEnv||na.ria||na.mgPay)){
+    cols.forEach(([k])=>tot[k]+=na[k]||0);
+    html+=`<tr><td><span class="who"><span class="av" style="background:var(--line2)">·</span>${T2.unassigned}</span></td>`+
+      cols.map(([k])=>`<td class="num">${nf(na[k])}</td>`).join("")+`<td class="num">—</td></tr>`;
+  }
+  const gt2=tot.mercury+tot.mgEnv+tot.ria;
+  html+=`<tr class="tot"><td>${T2.total}</td>`+cols.map(([k])=>`<td class="num">${nf(tot[k])}</td>`).join("")+
+    `<td class="num">${nf(gt2)}</td></tr></tbody></table></div>`;
+  document.getElementById("s-team").innerHTML=html;
+}
+
 function renderEntry(){
-  const el=document.getElementById("s-entry"); const old=el.querySelector("input[type=date]");
-  const keep=old?old.value:todayISO();
-  el.innerHTML=`<div class="shead"><h2>${t().entry}</h2><span class="hint">${t().entryHint}</span></div>
+  const el=document.getElementById("s-entry"), T2=t();
+  const oldD=el.querySelector("#f-date"), oldU=el.querySelector("#f-who");
+  const keep=oldD?oldD.value:todayISO();
+  const canPick=!!(ME&&ME.admin);
+  const keepU=oldU?oldU.value:(ME?ME.id:"");
+  const whoSel=canPick
+    ? `<div><label for="f-who">${T2.who2}</label><select id="f-who">`+
+      USERS.map(u=>`<option value="${u.id}"${u.id===keepU?" selected":""}>${esc(u.name)}</option>`).join("")+`</select></div>`
+    : `<div><label>${T2.who2}</label><input type="text" value="${esc(ME?ME.name:"")}" disabled></div>`;
+  el.innerHTML=`<div class="shead"><h2>${T2.entry}</h2><span class="hint">${T2.entryHint}</span></div>
    <div class="card p18"><div class="form">
-    <div><label for="f-date">${t().date}</label><input type="date" id="f-date" value="${keep}"></div>`+
+    <div><label for="f-date">${T2.date}</label><input type="date" id="f-date" value="${keep}"></div>
+    ${whoSel}`+
     ["mercury","mgEnv","mgPay","ria","visa","avis"].map(k=>
-    `<div><label for="f-${k}">${t()[k]}</label><input type="number" min="0" id="f-${k}" placeholder="0"></div>`).join("")+
-   `<div><button class="btn" id="f-save">${t().save}</button></div></div>
-    <div class="note"><span id="f-msg"></span></div></div>`;
+    `<div><label for="f-${k}">${T2[k]}</label><input type="number" min="0" id="f-${k}" placeholder="0"></div>`).join("")+
+   `<div><button class="btn" id="f-save">${T2.save}</button></div></div>
+    <div class="note">${T2.entryNote}<br><span id="f-msg"></span></div></div>`;
   const de=document.getElementById("f-date");
-  const fill=()=>{const v=jours[de.value]||{};["mercury","mgEnv","mgPay","ria","visa","avis"].forEach(k=>{
-    document.getElementById("f-"+k).value=(v[k]==null?"":v[k]);});};
+  const uid=()=>canPick?document.getElementById("f-who").value:(ME?ME.id:"");
+  const fill=()=>{const v=jours[de.value+"_"+uid()]||{};
+    ["mercury","mgEnv","mgPay","ria","visa","avis"].forEach(k=>{
+      document.getElementById("f-"+k).value=(v[k]==null?"":v[k]);});};
   fill(); de.addEventListener("change",fill);
+  if(canPick) document.getElementById("f-who").addEventListener("change",fill);
   document.getElementById("f-save").addEventListener("click",async()=>{
-    const key=de.value; if(!key)return; const rec={};
-    ["mercury","mgEnv","mgPay","ria","visa","avis"].forEach(k=>{const r=document.getElementById("f-"+k).value;
-      rec[k]=r===""?0:clampInt(r,99999);});
-    rec.by=ME?ME.id:"?"; rec.at=new Date().toISOString();
-    jours[key]=rec; renderToday();renderMonth();renderYear();
+    const d=de.value, u=uid(); if(!d||!u)return;
+    const key=d+"_"+u, rec={};
+    ["mercury","mgEnv","mgPay","ria","visa","avis"].forEach(k=>{
+      const r=document.getElementById("f-"+k).value; rec[k]=r===""?0:clampInt(r,99999);});
+    const target=userById(u);
+    rec.by=u; rec.name=target.name; rec.at=new Date().toISOString(); rec.saisiPar=ME?ME.id:"";
+    jours[key]=rec;
+    renderToday();renderMonth();renderTeam();renderYear();
     const m=document.getElementById("f-msg");
-    if(DB){try{await DB.doc("jours/"+key).set(rec);m.innerHTML='<span class="saved">'+t().saved+' ✓</span>';}catch(e){m.textContent="⚠ "+(e&&e.code||"error");}}
-    else m.innerHTML='<span class="saved">'+t().saved+' (local) ✓</span>';
-    logIt("entry",key+" · Mercury "+rec.mercury+" · MG "+rec.mgEnv+"/"+rec.mgPay+" · Ria "+rec.ria);
+    if(DB){try{await DB.doc("jours/"+key).set(rec);m.innerHTML='<span class="saved">'+T2.saved+' ✓</span>';}
+      catch(e){m.textContent="⚠ "+(e&&e.code||"error");}}
+    else { if(typeof saveLocal==="function") saveLocal(); m.innerHTML='<span class="saved">'+T2.saved+' ✓</span>'; }
+    logIt("entry",target.name+" · "+d+" · Mercury "+rec.mercury+" · MG "+rec.mgEnv+"/"+rec.mgPay+" · Ria "+rec.ria);
     setTimeout(()=>{if(m)m.textContent="";},2600);
   });
 }
+
 function renderToday(){
   const c=curTotals(), now=new Date();
   const dd=(now.getFullYear()===YEAR&&now.getMonth()===CUR)?now.getDate():3;
@@ -724,10 +890,12 @@ function renderMonth(){
 function renderTasks(){
   const mk=YEAR+"-"+pad2(CUR+1); let html=
    `<div class="shead"><h2>${t().tasks}</h2><span class="hint">${t().tasksHint}</span></div><div class="card p18">`;
+  const LIST=tasksFor(CUR), WK=weeksFor(CUR);
   let cur=0;
-  TASKS.forEach((tk,i)=>{
-    if(tk.w!==cur){if(cur)html+="</div>";cur=tk.w;html+=`<div class="wk"><h3>${esc(WEEKS[cur][lang])}</h3>`;}
+  LIST.forEach((tk,i)=>{
+    if(tk.w!==cur){if(cur)html+="</div>";cur=tk.w;html+=`<div class="wk"><h3>${esc((WK[cur]||{})[lang]||"")}</h3>`;}
     const id=mk+"-"+i, rec=taches[id]||{}, on=!!rec.done, lock=isLocked(id,tk.d);
+    const canTick=!!(ME&&ME.admin);
     const miss=lock&&!on;
     let meta="";
     if(on&&rec.by){const u=userById(rec.by);
@@ -736,7 +904,7 @@ function renderTasks(){
     else if(lock&&on) meta+=` <span class="pill p-ok">${t().done}</span>`;
     if(ME&&ME.admin&&lock) meta+=` <button class="btn ghost sm" data-un="${id}">${t().unlock}</button>`;
     html+=`<div class="task${on?" done":""}${miss?" miss":""}${tk.wk?" weekly":""}">
-      <input type="checkbox" id="tk${i}" data-id="${id}" data-lbl="${esc(tk[lang]).slice(0,90)}"${on?" checked":""}${lock?" disabled":""}>
+      <input type="checkbox" id="tk${i}" data-id="${id}" data-lbl="${esc(tk[lang]).slice(0,90)}"${on?" checked":""}${(lock||!canTick)?" disabled":""}>
       <span class="d">${tk.d}</span>
       <label class="t" for="tk${i}" style="margin:0;text-transform:none;letter-spacing:0;font-size:13.5px;color:inherit;font-weight:400">${esc(tk[lang])}</label>
       <span class="meta">${meta}</span></div>`;
@@ -806,7 +974,7 @@ function renderRecap(){
     days.forEach(d=>{ const [y,m,dd]=d.split("-");
       html+=`<div class="rcday">${dd}.${m} · ${esc(t().monthN[+m-1])}</div>`+past[d].map(post).join(""); }); }
   html+=`</div>`;
-  const el=document.getElementById("s-recap"); el.innerHTML=html;
+  const el=document.getElementById("s-recap2"); el.innerHTML=html;
   const b=document.getElementById("micbtn");
   if(b&&SR) b.addEventListener("click",()=>{ recog?stopMic():startMic(); });
   document.getElementById("rc-save").addEventListener("click",async()=>{
@@ -873,35 +1041,288 @@ function renderYear(){
     renderYear();
   }));
 }
+function renderBonus(){}
 function renderCorr(){
   const blk=(ti,rows,neg)=>`<div class="card p18"><h3 style="font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px">${esc(ti)}</h3>`+
     rows.map(r=>`<div class="corr"><span>${esc(r[0])}</span><span class="v" style="color:${neg?"var(--bad)":"var(--ok)"}">${typeof r[1]==="number"?nf(r[1]):esc(r[1])}</span></div>`).join("")+`</div>`;
   document.getElementById("s-corr").innerHTML=`<div class="shead"><h2>${t().corr}</h2><span class="hint">${t().corrHint}</span></div>
     <div class="cols">${blk(t().mLost,CORR.mLost,true)}${blk(t().rDown,CORR.rDown,true)}${blk(t().rUp,CORR.rUp,false)}</div>`;
 }
+/* ===== Import des rapports Excel (MoneyGram / Ria) ===== */
+const MONTHS={jan:1,janv:1,feb:2,fev:2,"f\u00e9v":2,"f\u00e9vr":2,mar:3,mars:3,apr:4,avr:4,may:5,mai:5,
+  jun:6,juin:6,jul:7,juil:7,aug:8,"ao\u00fb":8,aout:8,"ao\u00fbt":8,sep:9,sept:9,oct:10,nov:11,dec:12,"d\u00e9c":12};
+function parseDate(v){
+  if(v==null)return null; const s=String(v).trim();
+  let m=s.match(/^(\d{4})-([A-Za-z\u00C0-\u00FF]+)-(\d{1,2})/);
+  if(m){ const mm=MONTHS[m[2].toLowerCase().replace(/\.$/,"")]; if(mm) return m[1]+"-"+pad2(mm)+"-"+pad2(+m[3]); }
+  m=s.match(/^(\d{1,2})[./](\d{1,2})[./](\d{4})/);
+  if(m) return m[3]+"-"+pad2(+m[2])+"-"+pad2(+m[1]);
+  m=s.match(/^(\d{4})-(\d{2})-(\d{2})/); if(m) return m[1]+"-"+m[2]+"-"+m[3];
+  return null;
+}
+function opMap(){ const o={}; USERS.forEach(u=>{ if(u.opid) o[String(u.opid).toLowerCase()]=u.id; }); return o; }
+
+function analyseRows(rows){
+  const flat=rows.map(r=>r.map(c=>c==null?"":String(c)));
+  const join=flat.map(r=>r.join(" | "));
+  const ops=opMap();
+  // --- Ria : rapport résumé
+  const riaHead=join.findIndex(l=>/rapport de transaction/i.test(l));
+  if(riaHead>-1){
+    let env=0,pay=0,per=null;
+    flat.forEach(r=>{
+      const a=(r[0]||"");
+      if(/Envoi/i.test(a)&&/Transfert/i.test(a)) env+=parseInt(String(r[1]).replace(/\D/g,""),10)||0;
+      if(/Paiement/i.test(a)&&/Transfert/i.test(a)) pay+=parseInt(String(r[1]).replace(/\D/g,""),10)||0;
+      const p=(r[0]||"").match(/P.riode\s*:\s*([\d./]+)\s*-\s*([\d./]+)/);
+      if(p) per=[parseDate(p[1]),parseDate(p[2])];
+    });
+    if(env||pay){
+      const d=(per&&per[1])||todayISO();
+      return {type:"Ria", periode:per, lignes:[{key:d, uid:"", label:t().unassigned, ria:env, note:"Ria "+(per?per[0]+" → "+per[1]:"")}], total:{ria:env, riaPay:pay}};
+    }
+  }
+  // --- MoneyGram : rapport détaillé
+  let sec=null; const acc={}; const unknown={};
+  flat.forEach(r=>{
+    const l=r.join(" ").toUpperCase();
+    if(/D.TAILS DES ENVOIS/.test(l)) sec="mgEnv";
+    else if(/D.TAILS DES R.CEPTIONS/.test(l)) sec="mgPay";
+    else if(/D.TAILS DU REMBOURSEMENT/.test(l)) sec="skip";
+    else if(/R.CAPITULATIF|R.SUM. DE LA P.RIODE|TOTAL G.N.RAL/.test(l)) sec=null;
+    if(!sec||sec==="skip") return;
+    let d=null,uid=null,raw=null;
+    r.forEach(c=>{ const p=parseDate(c); if(p&&/\d{1,2}:\d{2}/.test(String(c))) d=p;
+      const k=String(c).trim().toLowerCase();
+      if(/^[a-z]{4,6}\d{3,4}$/.test(k)){ raw=k; if(ops[k]) uid=ops[k]; } });
+    if(!d||!raw) return;
+    if(!uid){ unknown[raw]=(unknown[raw]||0)+1; return; }
+    const key=d+"_"+uid; acc[key]=acc[key]||{mgEnv:0,mgPay:0,uid:uid,day:d};
+    acc[key][sec]+=1;
+  });
+  const lignes=Object.keys(acc).sort().map(k=>({key:k, uid:acc[k].uid, label:userById(acc[k].uid).name+" · "+acc[k].day,
+    mgEnv:acc[k].mgEnv, mgPay:acc[k].mgPay}));
+  if(lignes.length) return {type:"MoneyGram", lignes:lignes, unknown:unknown,
+    total:{mgEnv:lignes.reduce((a,b)=>a+b.mgEnv,0), mgPay:lignes.reduce((a,b)=>a+b.mgPay,0)}};
+  return {type:null, lignes:[], unknown:unknown};
+}
+
+function renderImport(res){
+  const box=document.getElementById("imp-res"), T2=t();
+  if(!res||!res.type){ box.innerHTML=`<div class="note" style="color:var(--bad)">⚠ ${T2.impNo}</div>`; window.__IMP=null; return; }
+  const uk=Object.keys(res.unknown||{});
+  let h=`<div class="note" style="margin-top:12px"><b>${esc(res.type)}</b> — ${res.lignes.length} ${T2.impLines}</div>
+   <div class="tblwrap" style="margin-top:8px"><table style="min-width:420px"><thead><tr>
+   <th>${T2.who2} / ${T2.date}</th><th>MG ${T2.sends}</th><th>MG ${T2.pays}</th><th>Ria</th></tr></thead><tbody>`;
+  res.lignes.forEach(l=>{ h+=`<tr><td>${esc(l.label)}</td><td class="num">${l.mgEnv==null?"—":nf(l.mgEnv)}</td>
+    <td class="num">${l.mgPay==null?"—":nf(l.mgPay)}</td><td class="num">${l.ria==null?"—":nf(l.ria)}</td></tr>`; });
+  h+=`</tbody></table></div>`;
+  if(uk.length) h+=`<div class="note" style="color:var(--warn)">⚠ ${T2.impUnknown}: ${uk.map(esc).join(", ")}</div>`;
+  h+=`<div class="note" id="imp-state">${T2.impAuto}</div>`;
+  box.innerHTML=h; window.__IMP=res;
+  (async()=>{
+    let n=0;
+    for(const l of res.lignes){
+      const cur=jours[l.key]||{mercury:0,mgEnv:0,mgPay:0,ria:0,visa:0,avis:0};
+      const rec=Object.assign({},cur);
+      if(l.mgEnv!=null) rec.mgEnv=l.mgEnv;
+      if(l.mgPay!=null) rec.mgPay=l.mgPay;
+      if(l.ria!=null) rec.ria=l.ria;
+      rec.by=l.uid||""; rec.name=l.uid?userById(l.uid).name:"Agence";
+      rec.at=new Date().toISOString(); rec.src=res.type;
+      jours[l.key]=rec; n++;
+      if(DB){ try{ await DB.doc("jours/"+l.key).set(rec); }catch(e){} }
+    }
+    if(!DB && typeof saveLocal==="function") saveLocal();
+    logIt("import",res.type+" · "+n+" "+t().impLines); if(!DB && typeof saveLocal==="function") saveLocal();
+    const mm=(res.lignes[0]&&res.lignes[0].key||"").slice(5,7);
+    if(mm && (+mm-1)!==CUR && +mm>=1 && +mm<=12){ CUR=+mm-1; try{localStorage.setItem("cs-mois",String(CUR));}catch(e){} }
+    renderAll(); renderEntry();
+    const st=document.getElementById("imp-state");
+    if(st) st.innerHTML=`<span class="saved">${t().impDone.replace("{n}",n)} ✓</span>`;
+  })();
+}
+
+function wireImport(){
+  const inp=document.getElementById("imp-file"); if(!inp) return;
+  inp.addEventListener("change",async()=>{
+    const f=inp.files&&inp.files[0]; if(!f) return;
+    const box=document.getElementById("imp-res");
+    box.innerHTML=`<div class="note">${t().impReading}</div>`;
+    if(typeof XLSX==="undefined"){ box.innerHTML=`<div class="note" style="color:var(--bad)">⚠ ${t().impLib}</div>`; return; }
+    try{
+      const buf=await f.arrayBuffer();
+      const wb=XLSX.read(new Uint8Array(buf),{type:"array"});
+      let best=null;
+      wb.SheetNames.forEach(n=>{
+        const rows=XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:false,defval:""});
+        const r=analyseRows(rows);
+        if(r&&r.type&&(!best||r.lignes.length>best.lignes.length)) best=r;
+      });
+      renderImport(best);
+    }catch(e){ box.innerHTML=`<div class="note" style="color:var(--bad)">⚠ ${esc(String(e.message||e))}</div>`; }
+  });
+}
+
+function renderImportSection(){
+  const el=document.getElementById("s-import"), T2=t();
+  if(!ME||!ME.admin){ el.innerHTML=""; return; }
+  el.innerHTML=`<div class="shead"><h2>${T2.imp}</h2><span class="hint">${T2.impHint2}</span></div>
+    <div class="card p18">
+      <div class="note" style="margin:0 0 12px">${T2.impHint}</div>
+      <input type="file" id="imp-file" accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+      <div id="imp-res"></div>
+    </div>`;
+  wireImport();
+}
 function renderAdmin(){
   const el=document.getElementById("s-admin");
   if(!ME||!ME.admin){el.innerHTML="";return;}
-  el.innerHTML=`<div class="shead"><h2>${t().admin}</h2><span class="hint">${t().adminHint} · ${t().unlockHint}</span></div>
-   <div class="card p18"><h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);margin-bottom:12px">${t().users}</h3>
-   <div class="form" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">`+
-   USERS.map((u,i)=>`<div><label>${t().uname}</label><input type="text" data-u="${i}" data-f="name" value="${esc(u.name)}" maxlength="24">
-     <label style="margin-top:8px">${t().upin}</label><input type="text" inputmode="numeric" pattern="[0-9]*" data-u="${i}" data-f="pin" value="" placeholder="••••" maxlength="4"></div>`).join("")+
-   `<div><button class="btn" id="usave">${t().usave}</button></div></div>
-   <div class="note">${t().pinNote}</div></div>`;
+  const T2=t();
+  el.innerHTML=`<div class="shead"><h2>${T2.admin}</h2><span class="hint">${T2.adminHint}</span></div>
+
+   <div class="card p18">
+    <h3 class="ah">${T2.users}</h3>
+    <div class="ulist">`+
+    USERS.map((u,i)=>`<div class="urow">
+      <span class="av" style="background:${u.color}">${esc(String(u.name)[0]||"?")}</span>
+      <input type="text" data-u="${i}" data-f="name" value="${esc(u.name)}" maxlength="24" aria-label="${T2.uname}">
+      <input type="text" inputmode="numeric" pattern="[0-9]*" data-u="${i}" data-f="pin" value="" placeholder="${T2.upin}" maxlength="4" aria-label="${T2.upin}">
+      <input type="text" data-u="${i}" data-f="opid" value="${esc(u.opid||"")}" maxlength="16" placeholder="${T2.opid}" style="max-width:120px" aria-label="${T2.opid}">
+      <button class="btn ghost sm" data-reset="${i}">${T2.reset}</button>
+      ${u.admin?`<span class="pill p-mut">admin</span>`:`<button class="btn ghost sm" data-del="${i}">${T2.del}</button>`}
+    </div>`).join("")+
+   `</div>
+    <div style="display:flex;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap">
+      <button class="btn" id="usave">${T2.usave}</button>
+      <span id="umsg" class="saved"></span>
+    </div>
+    <div class="note">${T2.pinNote}</div>
+
+    <h3 class="ah" style="margin-top:26px">${T2.addUser}</h3>
+    <div class="form" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))">
+      <div><label for="nu-name">${T2.uname}</label><input type="text" id="nu-name" maxlength="24" placeholder="${T2.uname}"></div>
+      <div><label for="nu-pin">${T2.upin}</label><input type="text" inputmode="numeric" pattern="[0-9]*" id="nu-pin" maxlength="4" placeholder="0000"></div>
+      <div><button class="btn ghost" id="nu-add">${T2.addBtn}</button></div>
+    </div>
+   </div>
+
+   <div class="card p18" style="margin-top:16px;border-color:var(--line2)">
+    <h3 class="ah">${T2.control}</h3>
+    <div class="ctrl">
+      <button class="btn ghost" id="c-unlock">${T2.cUnlock}</button>
+      <button class="btn ghost" id="c-export">${T2.cExport}</button>
+      <button class="btn ghost danger" id="c-log">${T2.cLog}</button>
+      <button class="btn ghost danger" id="c-recap">${T2.cRecap}</button>
+      <button class="btn ghost danger" id="c-jours">${T2.cJours}</button>
+      <button class="btn ghost danger" id="c-tasks">${T2.cTasks}</button>
+    </div>
+    <div class="note" id="c-msg"></div>
+
+    <div class="danger-zone">
+      <div class="dz-t">${T2.dzTitle}</div>
+      <div class="dz-d">${T2.dzHint.replace("{w}","<b>"+T2.dzWord+"</b>")}</div>
+      <div style="display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap">
+        <input type="text" id="dz-in" placeholder="${T2.dzWord}" style="max-width:180px">
+        <button class="btn danger-btn" id="dz-go">${T2.dzBtn}</button>
+      </div>
+    </div>
+    <textarea id="c-out" style="display:none;margin-top:14px;min-height:150px;font-family:'IBM Plex Mono';font-size:11.5px" readonly></textarea>
+   </div>`;
+
+  const msg=(txt)=>{const m=document.getElementById("c-msg");m.innerHTML='<span class="saved">'+esc(txt)+' ✓</span>';setTimeout(()=>{if(m)m.textContent="";},3200);};
+  const wipe=async(coll,store)=>{
+    if(DB){ try{ const s=await DB.collection(coll).get();
+      for(const d of s.docs){ try{ await DB.collection(coll).doc(d.id).delete(); }catch(e){} } }catch(e){} }
+    if(store==="journal") journal={}; else if(store==="recap") recap={};
+    else if(store==="jours") jours={}; else if(store==="taches"){taches={};unlocked={};}
+    else if(store==="mois") mois={};
+    if(!DB && typeof saveLocal==="function") saveLocal();
+  };
+
+  el.querySelectorAll("button[data-reset]").forEach(b=>b.addEventListener("click",async()=>{
+    const u=USERS[+b.dataset.reset];
+    const d=DEFAULT_USERS.find(x=>x.id===u.id);
+    if(d){ u.h=d.h; } else { u.h=await sha(SALT+"0000"); }
+    if(DB){try{await DB.doc("config/users").set({list:USERS.map(x=>({id:x.id,name:x.name,h:x.h,opid:x.opid||""}))});}catch(e){}}
+    logIt("users",T2.reset+" · "+u.name);
+    document.getElementById("umsg").textContent=(d?T2.resetOk:T2.resetZero)+" — "+u.name;
+    setTimeout(()=>renderAdmin(),2600);
+  }));
+
+  el.querySelectorAll("button[data-del]").forEach(b=>b.addEventListener("click",async()=>{
+    const i=+b.dataset.del, u=USERS[i];
+    if(!confirm(T2.delAsk.replace("{n}",u.name))) return;
+    USERS.splice(i,1);
+    if(DB){try{await DB.doc("config/users").set({list:USERS.map(x=>({id:x.id,name:x.name,h:x.h,opid:x.opid||""}))});}catch(e){}}
+    logIt("users",T2.del+" · "+u.name); renderAll();
+  }));
+
   document.getElementById("usave").addEventListener("click",async()=>{
     const jobs=[];
     el.querySelectorAll("input[data-u]").forEach(inp=>{
       const u=USERS[+inp.dataset.u], f=inp.dataset.f, v=clip(String(inp.value).trim(),24);
       if(f==="pin"){ if(/^[0-9]{4}$/.test(v)) jobs.push(sha(SALT+v).then(h=>{u.h=h;})); }
+      else if(f==="opid"){ u.opid=v.toLowerCase(); }
       else if(v) u.name=v;});
     await Promise.all(jobs);
-    if(DB){try{await DB.doc("config/users").set({list:USERS.map(u=>({id:u.id,name:u.name,h:u.h}))});}catch(e){}}
-    logIt("users",""); renderAll();
+    if(DB){try{await DB.doc("config/users").set({list:USERS.map(u=>({id:u.id,name:u.name,h:u.h,opid:u.opid||""}))});}catch(e){}}
+    logIt("users",""); document.getElementById("umsg").textContent=T2.saved+" ✓";
+    setTimeout(()=>renderAll(),1400);
+  });
+
+  document.getElementById("nu-add").addEventListener("click",async()=>{
+    const n=clip(String(document.getElementById("nu-name").value).trim(),24);
+    const p=String(document.getElementById("nu-pin").value).trim();
+    if(!n||!/^[0-9]{4}$/.test(p)){ document.getElementById("umsg").textContent="⚠ "+T2.addErr; return; }
+    const pal=["#7FD4C1","#F5C400","#C9A7F0","#8FB9F0","#F2A78C","#B9D97A"];
+    USERS.push({id:"u"+Date.now().toString(36), name:n, h:await sha(SALT+p), admin:false, color:pal[USERS.length%pal.length]});
+    if(DB){try{await DB.doc("config/users").set({list:USERS.map(x=>({id:x.id,name:x.name,h:x.h,opid:x.opid||""}))});}catch(e){}}
+    logIt("users",T2.addBtn+" · "+n); renderAll();
+  });
+
+  document.getElementById("c-unlock").addEventListener("click",async()=>{
+    const mk=YEAR+"-"+pad2(CUR+1);
+    const L=tasksFor(CUR);
+    for(let i=0;i<L.length;i++){ const id=mk+"-"+i; unlocked[id]=true;
+      if(DB){try{await DB.doc("unlocked/"+id).set({by:ME.id,at:new Date().toISOString()});}catch(e){}} }
+    logIt("unlock",T2.cUnlock); renderTasks(); msg(T2.cUnlock);
+  });
+
+  document.getElementById("c-export").addEventListener("click",()=>{
+    const out=document.getElementById("c-out");
+    out.style.display="block";
+    out.value=JSON.stringify({exporte:new Date().toISOString(),par:ME.name,jours:jours,taches:taches,mois:mois,recap:recap,journal:journal},null,1);
+    out.select(); msg(T2.cExport);
+  });
+
+  const dz=[["c-log","journal","journal",T2.cLog],["c-recap","recap","recap",T2.cRecap],
+            ["c-jours","jours","jours",T2.cJours],["c-tasks","taches","taches",T2.cTasks]];
+  dz.forEach(([id,coll,store,label])=>{
+    document.getElementById(id).addEventListener("click",async()=>{
+      if(!confirm(T2.confirmAsk.replace("{n}",label))) return;
+      await wipe(coll,store);
+      if(store==="taches"){ if(DB){ try{const s=await DB.collection("unlocked").get();
+        for(const d of s.docs){ try{await DB.collection("unlocked").doc(d.id).delete();}catch(e){} } }catch(e){} } }
+      logIt("wipe",label); if(!DB) saveLocal(); renderAll(); msg(label);
+    });
+  });
+
+  document.getElementById("dz-go").addEventListener("click",async()=>{
+    const v=String(document.getElementById("dz-in").value).trim().toUpperCase();
+    if(v!==T2.dzWord){ document.getElementById("c-msg").innerHTML='<span style="color:var(--bad);font-weight:600">⚠ '+esc(T2.dzWord)+'</span>'; return; }
+    for(const c of ["journal","recap","jours","taches","unlocked","mois"]) await wipe(c,c);
+    try{ localStorage.removeItem("cs-bienne-2026"); }catch(e){}
+    logIt("wipe",T2.dzBtn); renderAll(); msg(T2.dzDone);
   });
 }
-function renderAll(){renderStatic();renderToday();renderMonth();renderTasks();renderRecap();renderLog();renderYear();renderCorr();renderAdmin();}
 
+function renderAll(){renderStatic();renderImportSection();renderToday();renderMonth();renderTeam();renderTasks();renderRecap();renderLog();renderYear();renderCorr();renderAdmin();}
+
+document.getElementById("monthsel").addEventListener("change",e=>{
+  CUR=+e.target.value; try{localStorage.setItem("cs-mois",String(CUR));}catch(_){}
+  renderAll(); renderEntry();
+});
 document.getElementById("langsel").addEventListener("click",e=>{
   const b=e.target.closest("button"); if(!b)return;
   lang=b.dataset.l; try{localStorage.setItem("cs-lang",lang);}catch(_){}
@@ -924,12 +1345,12 @@ setTimeout(()=>document.getElementById("stage").classList.remove("intro"),480);
   try{ const cfg=await db.doc("config/users").get();
     if(cfg.exists&&cfg.data()&&Array.isArray(cfg.data().list)&&cfg.data().list.length){
       const saved=cfg.data().list;
-      USERS=DEFAULT_USERS.map(d=>{const s=saved.find(x=>x.id===d.id);return s?Object.assign({},d,{name:s.name||d.name,h:s.h||d.h}):d;});
+      USERS=DEFAULT_USERS.map(d=>{const s=saved.find(x=>x.id===d.id);return s?Object.assign({},d,{name:s.name||d.name,h:s.h||d.h,opid:(s.opid!=null?s.opid:d.opid)}):d;});
     }}catch(e){}
   if(!document.getElementById("app").hidden) setStatus("live");
   const sub=(coll,fn)=>{try{db.collection(coll).onSnapshot(s=>{
     const o={}; s.docs.forEach(d=>{o[d.id]=d.data()||{};}); fn(o);},()=>{});}catch(e){}};
-  sub("jours",o=>{jours=o; if(ME){renderToday();renderMonth();renderYear();}});
+  sub("jours",o=>{jours=o; if(ME){renderToday();renderMonth();renderYear();renderBonus();}});
   sub("taches",o=>{taches=o; if(ME){renderTasks();renderLog();}});
   sub("mois",o=>{mois=o; if(ME){renderYear();renderToday();renderMonth();}});
   sub("journal",o=>{journal=o; if(ME)renderLog();});
@@ -937,7 +1358,4 @@ setTimeout(()=>document.getElementById("stage").classList.remove("intro"),480);
   sub("recap",o=>{recap=o; if(ME)renderRecap();});
   setTimeout(()=>{ if(ME) setStatus("live"); },300);
 })();
-
-if("serviceWorker" in navigator){ window.addEventListener("load",function(){
-  navigator.serviceWorker.register("sw.js").catch(function(){}); }); }
 </script>
