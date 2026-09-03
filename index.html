@@ -276,13 +276,30 @@ input,select,textarea,.form>div{max-width:100%;min-width:0;box-sizing:border-box
 /* admin */
 .ah{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--brand-ink);font-weight:700;margin-bottom:12px}
 .ulist{display:grid;gap:9px}
-.urow{display:grid;grid-template-columns:auto 1fr;gap:9px 10px;align-items:center;
-  background:var(--sunk);border:1px solid var(--line2);border-radius:11px;padding:11px 12px}
+.urow{display:grid;gap:9px;background:var(--sunk);border:1px solid var(--line2);
+  border-radius:11px;padding:11px 12px}
 .urow input[type=text]{width:100%;min-width:0}
-.urow .u2{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.urow .u3{grid-column:1/-1;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.urow .u3 .btn{flex:0 0 auto}
+.urow .u1{display:flex;gap:8px;align-items:center}
+.urow .u1 input{flex:1 1 auto;min-width:0}
+.urow .u1 .av{width:17px;height:17px;font-size:9px}
+.urow .u2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 @media(max-width:520px){.urow .u2{grid-template-columns:1fr}}
+.icb{flex:0 0 auto;width:34px;height:34px;padding:0;border:1px solid var(--line2);border-radius:9px;
+  background:var(--card);color:var(--ink2);font-size:15px;line-height:1;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center}
+.icb:hover{background:var(--line)}
+.icb.bad{color:var(--bad)}
+.pinw{position:relative}
+.pinw input{padding-right:78px}
+.pinw .pinv{position:absolute;right:37px;top:50%;transform:translateY(-50%);pointer-events:none;
+  min-width:0;max-width:92px;overflow:hidden;white-space:nowrap;text-align:right;font-size:13px}
+.pinw .eye{position:absolute;right:5px;top:50%;transform:translateY(-50%);width:29px;height:29px;
+  padding:0;border:0;background:none;font-size:15px;line-height:1;cursor:pointer;border-radius:8px;
+  display:inline-flex;align-items:center;justify-content:center}
+.pinw .eye{color:var(--ink3)}
+.pinw .eye[data-on="1"]{color:var(--brand-ink)}
+.pinw .eye:hover{background:var(--line)}
+.pinw .eye[disabled]{opacity:.45;cursor:default}
 .ctrl{display:flex;gap:9px;flex-wrap:wrap}
 .btn.danger{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 35%,var(--line2))}
 @supports not (color:color-mix(in srgb,red 10%,white)){.btn.danger{border-color:var(--line2)}}
@@ -1504,6 +1521,8 @@ function renderImportSection(){
     </div>`;
   wireImport();
 }
+const EYE_ON='<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.8-6.6 10-6.6S22 12 22 12s-3.8 6.6-10 6.6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.7"/></svg>';
+const EYE_OFF='<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.8-6.6 10-6.6S22 12 22 12s-3.8 6.6-10 6.6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.7"/><path d="M3.6 3.6l16.8 16.8"/></svg>';
 function renderAdmin(){
   const el=document.getElementById("s-admin");
   if(!ME||!ME.admin){el.innerHTML="";return;}
@@ -1514,17 +1533,19 @@ function renderAdmin(){
     <h3 class="ah">${T2.users}</h3>
     <div class="ulist">`+
     USERS.map((u,i)=>`<div class="urow">
-      <span class="av" style="background:${u.color}">${esc(String(u.name)[0]||"?")}</span>
-      <input type="text" data-u="${i}" data-f="name" value="${esc(u.name)}" maxlength="24" aria-label="${T2.uname}">
-      <div class="u2">
-        <input type="text" inputmode="numeric" pattern="[0-9]*" data-u="${i}" data-f="pin" value="" placeholder="${T2.upin}" maxlength="4" aria-label="${T2.upin}">
-        <input type="text" data-u="${i}" data-f="opid" value="${esc(u.opid||"")}" maxlength="16" placeholder="${T2.opid}" aria-label="${T2.opid}">
+      <div class="u1">
+        <span class="av" style="background:${u.color}">${esc(String(u.name)[0]||"?")}</span>
+        <input type="text" data-u="${i}" data-f="name" value="${esc(u.name)}" maxlength="24" aria-label="${T2.uname}">
+        <button class="icb" data-reset="${i}" title="${T2.reset}" aria-label="${T2.reset}">⟲</button>
+        ${u.admin?`<span class="pill p-mut">admin</span>`:`<button class="icb bad" data-del="${i}" title="${T2.del}" aria-label="${T2.del}">✕</button>`}
       </div>
-      <div class="u3">
-        <span class="pinv" id="pv${i}">••••</span>
-        <button class="btn ghost sm" data-eye="${i}" title="${T2.showPin}">👁 ${T2.showPin}</button>
-        <button class="btn ghost sm" data-reset="${i}">${T2.reset}</button>
-        ${u.admin?`<span class="pill p-mut">admin</span>`:`<button class="btn ghost sm" data-del="${i}">${T2.del}</button>`}
+      <div class="u2">
+        <div class="pinw">
+          <input type="text" inputmode="numeric" pattern="[0-9]*" data-u="${i}" data-f="pin" value="" placeholder="${T2.upin}" maxlength="4" aria-label="${T2.upin}">
+          <span class="pinv" id="pv${i}"></span>
+          <button class="eye" data-eye="${i}" title="${T2.showPin}" aria-label="${T2.showPin}">${EYE_ON}</button>
+        </div>
+        <input type="text" data-u="${i}" data-f="opid" value="${esc(u.opid||"")}" maxlength="16" placeholder="${T2.opid}" aria-label="${T2.opid}">
       </div>
     </div>`).join("")+
    `</div>
@@ -1581,10 +1602,15 @@ function renderAdmin(){
   el.querySelectorAll("button[data-eye]").forEach(b=>b.addEventListener("click",async()=>{
     const i=+b.dataset.eye, u=USERS[i], pv=document.getElementById("pv"+i);
     if(!pv) return;
-    if(b.dataset.on==="1"){ pv.textContent="••••"; b.textContent="👁 "+T2.showPin; b.dataset.on="0"; return; }
+    const um=document.getElementById("umsg");
+    if(b.dataset.on==="1"){ pv.textContent=""; b.innerHTML=EYE_ON; b.title=T2.showPin;
+      b.setAttribute("aria-label",T2.showPin); b.dataset.on="0"; if(um)um.textContent=""; return; }
     b.disabled=true; pv.textContent=T2.pinFind;
     const p=await findPin(u.h);
-    pv.textContent=p||T2.pinNo; b.textContent="✕ "+T2.hidePin; b.dataset.on="1"; b.disabled=false;
+    pv.textContent=p||"—";
+    if(um) um.textContent = p ? "" : T2.pinNo+" — "+u.name;
+    b.innerHTML=EYE_OFF; b.title=T2.hidePin; b.setAttribute("aria-label",T2.hidePin);
+    b.dataset.on="1"; b.disabled=false;
     logIt("showpin",u.name);
   }));
 
