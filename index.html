@@ -550,7 +550,7 @@ const T={
   onTrack:"dans le rythme",behind:"en retard",critical:"critique",
   admin:"Administration",adminHint:"Réservé à l'administrateur — codes d'accès, déverrouillage et remise à zéro",
   users:"Codes d'accès",uname:"Nom",upin:"Nouveau code",usave:"Enregistrer les codes",
-  pinNote:"Laissez le champ vide pour ne pas changer un code. Les codes ne sont enregistrés nulle part : l'œil les retrouve en les recalculant, et seul l'administrateur peut le faire.",
+  pinNote:"Laissez le champ vide pour ne pas changer un code. 4 chiffres, puis « Enregistrer les codes ». Le code n'est jamais écrit en clair : seule son empreinte est gardée, sur CET appareil. Un code changé ici ne change pas sur le téléphone de quelqu'un d'autre.",
   unlock:"Déverrouiller",unlockHint:"Rouvrir une case verrouillée (l'action est enregistrée)",
   opid:"ID rapport",upinS:"Code",opidS:"ID",imp:"Rapports et photos du jour",
   impHint:"Déposez le rapport détaillé MoneyGram ou le rapport Ria. Les opérations sont comptées par caissier grâce à l'identifiant du rapport (colonne « ID rapport » ci-dessus).",
@@ -565,7 +565,7 @@ const T={
   ocrNo:"Je n'ai pas réussi à lire les chiffres sur cette photo. Écrivez-les ici, ça prend dix secondes.",
   ocrOff:"Lecteur d'image indisponible (Internet ?). Écrivez les chiffres ci-dessous.",
   ocrSave:"Enregistrer ces chiffres",
-  reset:"Réinitialiser",del:"Retirer",resetOk:"Code d'origine rétabli",resetZero:"Code remis à 0000",
+  pinSaved:"{n} code(s) enregistré(s) sur cet appareil",pinBad:"Le code doit avoir exactement 4 chiffres. Rien n'a été changé.",saveFail:"Impossible d'enregistrer sur cet appareil (mémoire du navigateur bloquée ?). Le code n'a pas été changé.",  reset:"Réinitialiser",del:"Retirer",resetOk:"Code d'origine rétabli",resetZero:"Code remis à 0000",
   delAsk:"Retirer {n} de la liste ?",addUser:"Ajouter une personne",addBtn:"Ajouter",
   addErr:"Il faut un nom et un code de 4 chiffres.",
   control:"Contrôle total",
@@ -670,7 +670,7 @@ const T={
   onTrack:"en ritmo",behind:"con retraso",critical:"crítico",
   admin:"Administración",adminHint:"Reservado al administrador — códigos de acceso, desbloqueo y reinicio",
   users:"Códigos de acceso",uname:"Nombre",upin:"Código nuevo",usave:"Guardar los códigos",
-  pinNote:"Deje el campo vacío para no cambiar un código. Los códigos no se guardan en ninguna parte: el ojito los recupera recalculándolos, y solo el administrador puede hacerlo.",
+  pinNote:"Deje el campo vacío para no cambiar un código. 4 cifras y luego «Guardar los códigos». El código nunca se escribe tal cual: solo se guarda su huella, en ESTE aparato. Un código cambiado aquí no cambia en el teléfono de otra persona.",
   unlock:"Desbloquear",unlockHint:"Reabrir una casilla bloqueada (la acción queda registrada)",
   opid:"ID informe",upinS:"Código",opidS:"ID",imp:"Informes y fotos del día",
   impHint:"Suelte aquí el informe detallado de MoneyGram o el informe de Ria. Las operaciones se cuentan por cajero gracias al identificador del informe (columna «ID informe» de arriba).",
@@ -685,7 +685,7 @@ const T={
   ocrNo:"No he conseguido leer las cifras de esta foto. Escríbalas aquí, son diez segundos.",
   ocrOff:"Lector de imagen no disponible (¿Internet?). Escriba las cifras abajo.",
   ocrSave:"Guardar estas cifras",
-  reset:"Restablecer",del:"Quitar",resetOk:"Código original restablecido",resetZero:"Código puesto a 0000",
+  pinSaved:"{n} código(s) guardado(s) en este aparato",pinBad:"El código debe tener exactamente 4 cifras. No se ha cambiado nada.",saveFail:"No se ha podido guardar en este aparato (¿memoria del navegador bloqueada?). El código no se ha cambiado.",  reset:"Restablecer",del:"Quitar",resetOk:"Código original restablecido",resetZero:"Código puesto a 0000",
   delAsk:"¿Quitar a {n} de la lista?",addUser:"Añadir una persona",addBtn:"Añadir",
   addErr:"Hace falta un nombre y un código de 4 cifras.",
   control:"Control total",
@@ -840,6 +840,29 @@ const CORR={mLost:[["Kenya",-215],["Sénégal",-160],["Brésil",-153],["Côte d'
 /* ===== ÉTAT ===== */
 let lang="fr"; try{const s=localStorage.getItem("cs-lang"); if(s==="es"||s==="fr")lang=s;}catch(e){}
 let DB=null, ME=null, USERS=DEFAULT_USERS.slice();
+const UK="cs-users-2026";
+const UPAL=["#7FD4C1","#F5C400","#C9A7F0","#8FB9F0","#F2A78C","#B9D97A"];
+function usersFrom(saved){
+  if(!Array.isArray(saved)||!saved.length) return null;
+  const out=saved.map((x,i)=>{
+    const d=DEFAULT_USERS.find(y=>y.id===x.id);
+    return d ? Object.assign({},d,{name:x.name||d.name,h:x.h||d.h,opid:(x.opid!=null?x.opid:d.opid)})
+             : {id:x.id,name:x.name||"?",h:x.h,admin:false,color:UPAL[i%UPAL.length],opid:x.opid||""};
+  }).filter(u=>u&&u.id&&u.h);
+  if(!out.length) return null;
+  if(!out.some(u=>u.admin)){ const a=DEFAULT_USERS.find(y=>y.admin); if(a) out.push(a); }
+  return out;
+}
+function loadUsersLocal(){
+  if(DB) return;
+  try{ const u=usersFrom(JSON.parse(localStorage.getItem(UK)||"[]")); if(u) USERS=u; }catch(e){}
+}
+async function saveUsers(){
+  const list=USERS.map(u=>({id:u.id,name:u.name,h:u.h,opid:u.opid||""}));
+  if(DB){ try{ await DB.doc("config/users").set({list:list}); return true; }catch(e){ return false; } }
+  try{ localStorage.setItem(UK,JSON.stringify(list)); return true; }catch(e){ return false; }
+}
+loadUsersLocal();
 let jours={}, taches={}, mois={}, journal={}, unlocked={}, recap={}, extras={}, apprend={};
 const t=()=>T[lang];
 const nf=n=>(n==null||isNaN(n))?"—":Math.round(n).toLocaleString(lang==="fr"?"fr-CH":"es-ES");
@@ -1752,7 +1775,7 @@ function renderAdmin(){
     const u=USERS[+b.dataset.reset];
     const d=DEFAULT_USERS.find(x=>x.id===u.id);
     if(d){ u.h=d.h; } else { u.h=await sha(SALT+"0000"); }
-    if(DB){try{await DB.doc("config/users").set({list:USERS.map(x=>({id:x.id,name:x.name,h:x.h,opid:x.opid||""}))});}catch(e){}}
+    await saveUsers();
     logIt("users",T2.reset+" · "+u.name);
     document.getElementById("umsg").textContent=(d?T2.resetOk:T2.resetZero)+" — "+u.name;
     setTimeout(()=>renderAdmin(),2600);
@@ -1762,21 +1785,29 @@ function renderAdmin(){
     const i=+b.dataset.del, u=USERS[i];
     if(!confirm(T2.delAsk.replace("{n}",u.name))) return;
     USERS.splice(i,1);
-    if(DB){try{await DB.doc("config/users").set({list:USERS.map(x=>({id:x.id,name:x.name,h:x.h,opid:x.opid||""}))});}catch(e){}}
+    await saveUsers();
     logIt("users",T2.del+" · "+u.name); renderAll();
   }));
 
   document.getElementById("usave").addEventListener("click",async()=>{
-    const jobs=[];
+    const jobs=[]; let nPin=0, bad=0;
     el.querySelectorAll("input[data-u]").forEach(inp=>{
       const u=USERS[+inp.dataset.u], f=inp.dataset.f, v=clip(String(inp.value).trim(),24);
-      if(f==="pin"){ if(/^[0-9]{4}$/.test(v)) jobs.push(sha(SALT+v).then(h=>{u.h=h;})); }
+      if(f==="pin"){
+        if(!v) return;
+        if(/^[0-9]{4}$/.test(v)){ nPin++; jobs.push(sha(SALT+v).then(h=>{u.h=h;})); }
+        else { bad++; inp.style.borderColor="var(--bad)"; }
+      }
       else if(f==="opid"){ u.opid=v.toLowerCase(); }
       else if(v) u.name=v;});
+    if(bad){ document.getElementById("umsg").innerHTML='<span style="color:var(--bad)">⚠ '+esc(T2.pinBad)+'</span>'; return; }
     await Promise.all(jobs);
-    if(DB){try{await DB.doc("config/users").set({list:USERS.map(u=>({id:u.id,name:u.name,h:u.h,opid:u.opid||""}))});}catch(e){}}
-    logIt("users",""); document.getElementById("umsg").textContent=T2.saved+" ✓";
-    setTimeout(()=>renderAll(),1400);
+    const ok=await saveUsers();
+    logIt("users",nPin?T2.pinSaved.replace("{n}",nPin):"");
+    document.getElementById("umsg").innerHTML = ok
+      ? '<span class="saved">'+esc(nPin?T2.pinSaved.replace("{n}",nPin):T2.saved)+' ✓</span>'
+      : '<span style="color:var(--bad)">⚠ '+esc(T2.saveFail)+'</span>';
+    setTimeout(()=>renderAll(),2600);
   });
 
   document.getElementById("nu-add").addEventListener("click",async()=>{
@@ -1785,7 +1816,7 @@ function renderAdmin(){
     if(!n||!/^[0-9]{4}$/.test(p)){ document.getElementById("umsg").textContent="⚠ "+T2.addErr; return; }
     const pal=["#7FD4C1","#F5C400","#C9A7F0","#8FB9F0","#F2A78C","#B9D97A"];
     USERS.push({id:"u"+Date.now().toString(36), name:n, h:await sha(SALT+p), admin:false, color:pal[USERS.length%pal.length]});
-    if(DB){try{await DB.doc("config/users").set({list:USERS.map(x=>({id:x.id,name:x.name,h:x.h,opid:x.opid||""}))});}catch(e){}}
+    await saveUsers();
     logIt("users",T2.addBtn+" · "+n); renderAll();
   });
 
@@ -2246,8 +2277,7 @@ setTimeout(()=>document.getElementById("stage").classList.remove("intro"),480);
   DB=db;
   try{ const cfg=await db.doc("config/users").get();
     if(cfg.exists&&cfg.data()&&Array.isArray(cfg.data().list)&&cfg.data().list.length){
-      const saved=cfg.data().list;
-      USERS=DEFAULT_USERS.map(d=>{const s=saved.find(x=>x.id===d.id);return s?Object.assign({},d,{name:s.name||d.name,h:s.h||d.h,opid:(s.opid!=null?s.opid:d.opid)}):d;});
+      const u=usersFrom(cfg.data().list); if(u) USERS=u;
     }}catch(e){}
   if(!document.getElementById("app").hidden) setStatus("live");
   const sub=(coll,fn)=>{try{db.collection(coll).onSnapshot(s=>{
