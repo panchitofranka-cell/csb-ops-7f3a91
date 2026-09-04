@@ -276,24 +276,30 @@ input,select,textarea,.form>div{max-width:100%;min-width:0;box-sizing:border-box
 /* admin */
 .ah{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--brand-ink);font-weight:700;margin-bottom:12px}
 .ulist{display:grid;gap:9px}
-.urow{display:grid;gap:9px;background:var(--sunk);border:1px solid var(--line2);
-  border-radius:11px;padding:11px 12px}
-.urow input[type=text]{width:100%;min-width:0}
-.urow .u1{display:flex;gap:8px;align-items:center}
+.urow{display:grid;gap:7px;background:var(--sunk);border:1px solid var(--line2);
+  border-radius:10px;padding:8px 9px}
+.urow input[type=text]{width:100%;min-width:0;padding:5px 9px;border-radius:8px}
+.urow .u1{display:flex;gap:7px;align-items:center}
 .urow .u1 input{flex:1 1 auto;min-width:0}
-.urow .u1 .av{width:17px;height:17px;font-size:9px}
-.urow .u2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-@media(max-width:520px){.urow .u2{grid-template-columns:1fr}}
-.icb{flex:0 0 auto;width:34px;height:34px;padding:0;border:1px solid var(--line2);border-radius:9px;
+.urow .u1 .av{width:16px;height:16px;font-size:8.5px}
+.urow .u2{display:grid;grid-template-columns:1.06fr 1fr;gap:7px}
+.icb{flex:0 0 auto;width:30px;height:30px;padding:0;border:1px solid var(--line2);border-radius:8px;
   background:var(--card);color:var(--ink2);font-size:15px;line-height:1;cursor:pointer;
   display:inline-flex;align-items:center;justify-content:center}
 .icb:hover{background:var(--line)}
 .icb.bad{color:var(--bad)}
+.impslot{margin-top:14px;padding-top:13px;border-top:1px solid var(--line)}
+.impslot:first-child{border-top:0;padding-top:0;margin-top:12px}
+.impslot-h{display:flex;gap:11px;align-items:flex-start}
+.impthumb{width:54px;height:54px;object-fit:cover;border-radius:9px;border:1px solid var(--line2);flex:0 0 auto}
+.impslot-h>div{min-width:0;flex:1 1 auto}
+.ocrcard{margin-top:11px}
 .pinw{position:relative}
-.pinw input{padding-right:78px}
-.pinw .pinv{position:absolute;right:37px;top:50%;transform:translateY(-50%);pointer-events:none;
-  min-width:0;max-width:92px;overflow:hidden;white-space:nowrap;text-align:right;font-size:13px}
-.pinw .eye{position:absolute;right:5px;top:50%;transform:translateY(-50%);width:29px;height:29px;
+.pinw input{padding-right:60px}
+.pinw .pinv{position:absolute;right:30px;top:50%;transform:translateY(-50%);pointer-events:none;
+  min-width:0;max-width:54px;overflow:hidden;white-space:nowrap;text-align:right;font-size:12.5px;
+  letter-spacing:.06em}
+.pinw .eye{position:absolute;right:3px;top:50%;transform:translateY(-50%);width:26px;height:26px;
   padding:0;border:0;background:none;font-size:15px;line-height:1;cursor:pointer;border-radius:8px;
   display:inline-flex;align-items:center;justify-content:center}
 .pinw .eye{color:var(--ink3)}
@@ -409,10 +415,10 @@ html{-webkit-text-size-adjust:100%}
   </div>
 </header>
 <div class="wrap">
+  <section id="s-entry"></section>
   <section id="s-recap2"></section>
   <section id="s-import"></section>
   <section id="s-today"></section>
-  <section id="s-entry"></section>
   <section id="s-month"></section>
   <section id="s-team"></section>
   <section id="s-tasks"></section>
@@ -546,12 +552,19 @@ const T={
   users:"Codes d'accès",uname:"Nom",upin:"Nouveau code",usave:"Enregistrer les codes",
   pinNote:"Laissez le champ vide pour ne pas changer un code. Les codes ne sont enregistrés nulle part : l'œil les retrouve en les recalculant, et seul l'administrateur peut le faire.",
   unlock:"Déverrouiller",unlockHint:"Rouvrir une case verrouillée (l'action est enregistrée)",
-  opid:"ID rapport",imp:"Importer un rapport Excel",
+  opid:"ID rapport",upinS:"Code",opidS:"ID",imp:"Rapports et photos du jour",
   impHint:"Déposez le rapport détaillé MoneyGram ou le rapport Ria. Les opérations sont comptées par caissier grâce à l'identifiant du rapport (colonne « ID rapport » ci-dessus).",
   impLines:"lignes",impApply:"Appliquer au tableau",impAuto:"Application automatique en cours…",
   impHint2:"Déposez le fichier : les chiffres se rangent tout seuls, par caissier et par jour",impNo:"Rapport non reconnu. Utilisez le rapport détaillé MoneyGram ou le rapport de transaction Ria.",
   impUnknown:"Identifiants non attribués",impReading:"Lecture du fichier…",impLib:"Bibliothèque de lecture Excel indisponible.",
   impDone:"{n} lignes enregistrées",
+  impMulti:"Excel, CSV ou photo d'écran — plusieurs à la fois (3, 4, autant que vous voulez).",
+  ocrLoad:"Préparation du lecteur d'image (la première fois, quelques Mo à télécharger)…",
+  ocrRead:"Lecture de l'image…",
+  ocrFound:"Voici ce que j'ai lu sur la photo. Corrigez ce qui ne va pas, puis enregistrez.",
+  ocrNo:"Je n'ai pas réussi à lire les chiffres sur cette photo. Écrivez-les ici, ça prend dix secondes.",
+  ocrOff:"Lecteur d'image indisponible (Internet ?). Écrivez les chiffres ci-dessous.",
+  ocrSave:"Enregistrer ces chiffres",
   reset:"Réinitialiser",del:"Retirer",resetOk:"Code d'origine rétabli",resetZero:"Code remis à 0000",
   delAsk:"Retirer {n} de la liste ?",addUser:"Ajouter une personne",addBtn:"Ajouter",
   addErr:"Il faut un nom et un code de 4 chiffres.",
@@ -659,12 +672,19 @@ const T={
   users:"Códigos de acceso",uname:"Nombre",upin:"Código nuevo",usave:"Guardar los códigos",
   pinNote:"Deje el campo vacío para no cambiar un código. Los códigos no se guardan en ninguna parte: el ojito los recupera recalculándolos, y solo el administrador puede hacerlo.",
   unlock:"Desbloquear",unlockHint:"Reabrir una casilla bloqueada (la acción queda registrada)",
-  opid:"ID informe",imp:"Importar un informe Excel",
+  opid:"ID informe",upinS:"Código",opidS:"ID",imp:"Informes y fotos del día",
   impHint:"Suelte aquí el informe detallado de MoneyGram o el informe de Ria. Las operaciones se cuentan por cajero gracias al identificador del informe (columna «ID informe» de arriba).",
   impLines:"líneas",impApply:"Aplicar a la tabla",impAuto:"Aplicando automáticamente…",
   impHint2:"Suelte el archivo: las cifras se colocan solas, por cajero y por día",impNo:"Informe no reconocido. Use el informe detallado de MoneyGram o el informe de transacciones de Ria.",
   impUnknown:"Identificadores sin asignar",impReading:"Leyendo el archivo…",impLib:"La librería para leer Excel no está disponible.",
   impDone:"{n} líneas guardadas",
+  impMulti:"Excel, CSV o captura de pantalla — varios a la vez (3, 4, los que quiera).",
+  ocrLoad:"Preparando el lector de imagen (la primera vez hay que descargar unos megas)…",
+  ocrRead:"Leyendo la imagen…",
+  ocrFound:"Esto es lo que he leído en la foto. Corrija lo que no cuadre y guarde.",
+  ocrNo:"No he conseguido leer las cifras de esta foto. Escríbalas aquí, son diez segundos.",
+  ocrOff:"Lector de imagen no disponible (¿Internet?). Escriba las cifras abajo.",
+  ocrSave:"Guardar estas cifras",
   reset:"Restablecer",del:"Quitar",resetOk:"Código original restablecido",resetZero:"Código puesto a 0000",
   delAsk:"¿Quitar a {n} de la lista?",addUser:"Añadir una persona",addBtn:"Añadir",
   addErr:"Hace falta un nombre y un código de 4 cifras.",
@@ -1453,76 +1473,190 @@ function analyseRows(rows){
   return {type:null, lignes:[], unknown:unknown};
 }
 
-function renderImport(res){
-  const box=document.getElementById("imp-res"), T2=t();
-  if(!res||!res.type){ box.innerHTML=`<div class="note" style="color:var(--bad)">⚠ ${T2.impNo}</div>`; window.__IMP=null; return; }
+function refreshData(){
+  try{renderStatic();renderToday();renderMonth();renderTeam();renderTasks();renderLearn();renderRecap();}catch(e){}
+  const later=f=>window.requestIdleCallback?requestIdleCallback(f,{timeout:600}):setTimeout(f,1);
+  later(()=>{try{renderLog();renderYear();renderCorr();renderAdmin();}catch(e){}});
+}
+
+async function applyLignes(res){
+  let n=0;
+  for(const l of res.lignes){
+    const cur=jours[l.key]||{mercury:0,mgEnv:0,mgPay:0,ria:0,visa:0,avis:0};
+    const rec=Object.assign({},cur);
+    if(l.mercury!=null) rec.mercury=l.mercury;
+    if(l.mgEnv!=null) rec.mgEnv=l.mgEnv;
+    if(l.mgPay!=null) rec.mgPay=l.mgPay;
+    if(l.ria!=null) rec.ria=l.ria;
+    rec.by=l.uid||""; rec.name=l.uid?userById(l.uid).name:"Agence";
+    rec.at=new Date().toISOString(); rec.src=res.type;
+    jours[l.key]=rec; n++;
+    if(DB){ try{ await DB.doc("jours/"+l.key).set(rec); }catch(e){} }
+  }
+  if(!DB && typeof saveLocal==="function") saveLocal();
+  logIt("import",res.type+" · "+n+" "+t().impLines);
+  const mm=(res.lignes[0]&&res.lignes[0].key||"").slice(5,7);
+  if(mm && (+mm-1)!==CUR && +mm>=1 && +mm<=12){ CUR=+mm-1; try{localStorage.setItem("cs-mois",String(CUR));}catch(e){} }
+  refreshData(); renderEntry();
+  return n;
+}
+
+function renderImport(res,slot,fname){
+  const T2=t();
+  if(!res||!res.type){ slot.innerHTML=`<div class="note" style="color:var(--bad)">⚠ ${esc(fname||"")} — ${T2.impNo}</div>`; return Promise.resolve(0); }
   const uk=Object.keys(res.unknown||{});
-  let h=`<div class="note" style="margin-top:12px"><b>${esc(res.type)}</b> — ${res.lignes.length} ${T2.impLines}</div>
-   <div class="tblwrap" style="margin-top:8px"><table style="min-width:420px"><thead><tr>
+  let h=`<div class="note" style="margin:0 0 8px"><b>${esc(fname||"")}</b> · ${esc(res.type)} — ${res.lignes.length} ${T2.impLines}</div>
+   <div class="tblwrap"><table style="min-width:420px"><thead><tr>
    <th>${T2.who2} / ${T2.date}</th><th>MG ${T2.sends}</th><th>MG ${T2.pays}</th><th>Ria</th></tr></thead><tbody>`;
   res.lignes.forEach(l=>{ h+=`<tr><td>${esc(l.label)}</td><td class="num">${l.mgEnv==null?"—":nf(l.mgEnv)}</td>
     <td class="num">${l.mgPay==null?"—":nf(l.mgPay)}</td><td class="num">${l.ria==null?"—":nf(l.ria)}</td></tr>`; });
   h+=`</tbody></table></div>`;
   if(uk.length) h+=`<div class="note" style="color:var(--warn)">⚠ ${T2.impUnknown}: ${uk.map(esc).join(", ")}</div>`;
-  h+=`<div class="note" id="imp-state">${T2.impAuto}</div>`;
-  box.innerHTML=h; window.__IMP=res;
-  (async()=>{
-    let n=0;
-    for(const l of res.lignes){
-      const cur=jours[l.key]||{mercury:0,mgEnv:0,mgPay:0,ria:0,visa:0,avis:0};
-      const rec=Object.assign({},cur);
-      if(l.mgEnv!=null) rec.mgEnv=l.mgEnv;
-      if(l.mgPay!=null) rec.mgPay=l.mgPay;
-      if(l.ria!=null) rec.ria=l.ria;
-      rec.by=l.uid||""; rec.name=l.uid?userById(l.uid).name:"Agence";
-      rec.at=new Date().toISOString(); rec.src=res.type;
-      jours[l.key]=rec; n++;
-      if(DB){ try{ await DB.doc("jours/"+l.key).set(rec); }catch(e){} }
-    }
-    if(!DB && typeof saveLocal==="function") saveLocal();
-    logIt("import",res.type+" · "+n+" "+t().impLines); if(!DB && typeof saveLocal==="function") saveLocal();
-    const mm=(res.lignes[0]&&res.lignes[0].key||"").slice(5,7);
-    if(mm && (+mm-1)!==CUR && +mm>=1 && +mm<=12){ CUR=+mm-1; try{localStorage.setItem("cs-mois",String(CUR));}catch(e){} }
-    renderAll(); renderEntry();
-    const st=document.getElementById("imp-state");
+  h+=`<div class="note imp-state">${T2.impAuto}</div>`;
+  slot.innerHTML=h;
+  return applyLignes(res).then(n=>{
+    const st=slot.querySelector(".imp-state");
     if(st) st.innerHTML=`<span class="saved">${t().impDone.replace("{n}",n)} ✓</span>`;
-  })();
-}
-
-function wireImport(){
-  const inp=document.getElementById("imp-file"); if(!inp) return;
-  inp.addEventListener("change",async()=>{
-    const f=inp.files&&inp.files[0]; if(!f) return;
-    const box=document.getElementById("imp-res");
-    box.innerHTML=`<div class="note">${t().impReading}</div>`;
-    if(typeof XLSX==="undefined"){ box.innerHTML=`<div class="note" style="color:var(--bad)">⚠ ${t().impLib}</div>`; return; }
-    try{
-      const buf=await f.arrayBuffer();
-      const wb=XLSX.read(new Uint8Array(buf),{type:"array"});
-      let best=null;
-      wb.SheetNames.forEach(n=>{
-        const rows=XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:false,defval:""});
-        const r=analyseRows(rows);
-        if(r&&r.type&&(!best||r.lignes.length>best.lignes.length)) best=r;
-      });
-      renderImport(best);
-    }catch(e){ box.innerHTML=`<div class="note" style="color:var(--bad)">⚠ ${esc(String(e.message||e))}</div>`; }
+    return n;
   });
 }
 
+/* ---- lecture d'image ---- */
+const OCRSRC=["https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js",
+              "https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.1.1/tesseract.min.js"];
+function loadScript(src,ms){
+  return new Promise((res,rej)=>{
+    const sc=document.createElement("script"); let done=false;
+    const to=setTimeout(()=>{ if(!done){done=true;rej(new Error("timeout"));} },ms||45000);
+    sc.src=src; sc.async=true;
+    sc.onload=()=>{ if(!done){done=true;clearTimeout(to);res();} };
+    sc.onerror=()=>{ if(!done){done=true;clearTimeout(to);rej(new Error("net"));} };
+    document.head.appendChild(sc);
+  });
+}
+async function loadOCR(say){
+  if(window.Tesseract) return window.Tesseract;
+  say&&say(t().ocrLoad);
+  for(const src of OCRSRC){
+    try{ await loadScript(src); }catch(e){ continue; }
+    if(window.Tesseract) return window.Tesseract;
+  }
+  throw new Error("ocr");
+}
+async function ocrRead(file,say){
+  const T=await loadOCR(say);
+  say&&say(t().ocrRead);
+  const w=await T.createWorker("eng",1,{logger:m=>{
+    if(!m||!m.status) return;
+    if(m.status==="recognizing text") say&&say(t().ocrRead+" "+Math.round((m.progress||0)*100)+"%");
+    else say&&say(t().ocrLoad);
+  }});
+  try{ const r=await w.recognize(file); return (r&&r.data&&r.data.text)||""; }
+  finally{ try{ await w.terminate(); }catch(e){} }
+}
+function ocrNums(txt){
+  const L=String(txt||"").split(/\r?\n/);
+  const pick=re=>{ for(const ln of L){ const m=ln.match(re); if(m&&m[1]!=null) return clampInt(m[1],99999); } return null; };
+  return {
+    mercury: pick(/mercur\S*[^0-9\n]{0,24}(\d{1,5})/i),
+    mgEnv:   pick(/(?:envoi|envio|env[ií]o|send)\S*[^0-9\n]{0,24}(\d{1,5})/i),
+    mgPay:   pick(/(?:paiement|payment|pago|pay)\S*[^0-9\n]{0,24}(\d{1,5})/i),
+    ria:     pick(/\bria\b[^0-9\n]{0,24}(\d{1,5})/i),
+    visa:    pick(/visa[^0-9\n]{0,24}(\d{1,5})/i),
+    avis:    pick(/(?:avis|google|rese[nñ]a|review)\S*[^0-9\n]{0,24}(\d{1,5})/i)
+  };
+}
+const NUMK=["mercury","mgEnv","mgPay","ria","visa","avis"];
+function ocrCard(pre){
+  const T2=t(), d=document.createElement("div"); d.className="card p18 ocrcard";
+  const who=USERS.map(u=>`<option value="${u.id}"${(ME&&u.id===ME.id)?" selected":""}>${esc(u.name)}</option>`).join("");
+  d.innerHTML=`<div class="form">
+    <div><label>${T2.date}</label><input type="date" class="o-d" value="${todayISO()}"></div>
+    <div><label>${T2.who2}</label><select class="o-u">${who}</select></div>`+
+    NUMK.map(k=>`<div><label>${T2[k]}</label><input type="number" min="0" class="o-${k}" value="${pre&&pre[k]!=null?pre[k]:""}" placeholder="0"></div>`).join("")+
+   `<div><button class="btn o-save">${T2.ocrSave}</button></div></div><div class="note o-msg"></div>`;
+  d.querySelector(".o-save").addEventListener("click",async()=>{
+    const day=d.querySelector(".o-d").value, u=d.querySelector(".o-u").value;
+    if(!day||!u) return;
+    const key=day+"_"+u, rec={};
+    NUMK.forEach(k=>{ const v=d.querySelector(".o-"+k).value; rec[k]=v===""?0:clampInt(v,99999); });
+    const tgt=userById(u);
+    rec.by=u; rec.name=tgt.name; rec.at=new Date().toISOString(); rec.saisiPar=ME?ME.id:""; rec.src="photo";
+    jours[key]=rec;
+    if(DB){ try{ await DB.doc("jours/"+key).set(rec); }catch(e){} }
+    else if(typeof saveLocal==="function") saveLocal();
+    logIt("photo",tgt.name+" · "+day+" · Mercury "+rec.mercury+" · MG "+rec.mgEnv+"/"+rec.mgPay+" · Ria "+rec.ria);
+    d.querySelector(".o-msg").innerHTML='<span class="saved">'+t().saved+' ✓</span>';
+    refreshData(); renderEntry();
+  });
+  return d;
+}
+async function impImage(f,slot){
+  const T2=t();
+  let url=""; try{ url=URL.createObjectURL(f); }catch(e){}
+  slot.innerHTML=`<div class="impslot-h">${url?`<img class="impthumb" src="${url}" alt="">`:""}
+    <div><b>${esc(f.name)}</b><div class="note o-say" style="margin:4px 0 0">${T2.ocrLoad}</div></div></div>`;
+  const say=m=>{ const e=slot.querySelector(".o-say"); if(e) e.textContent=m; };
+  let txt="", failed=false;
+  try{ txt=await ocrRead(f,say); }catch(e){ failed=true; }
+  let res=null;
+  if(txt){
+    try{
+      const rows=txt.split(/\r?\n/).map(l=>l.split(/\s{2,}|\t|\|/).map(x=>x.trim()).filter(x=>x!==""))
+                    .filter(r=>r.length);
+      const r=analyseRows(rows);
+      if(r&&r.type&&r.lignes.length) res=r;
+    }catch(e){}
+  }
+  if(res){ await renderImport(res,slot,f.name); return; }
+  say(failed?T2.ocrOff:(txt?T2.ocrFound:T2.ocrNo));
+  slot.appendChild(ocrCard(ocrNums(txt)));
+}
+async function impSheet(f,slot){
+  const T2=t();
+  slot.innerHTML=`<div class="note"><b>${esc(f.name)}</b> — ${T2.impReading}</div>`;
+  if(typeof XLSX==="undefined"){ slot.innerHTML=`<div class="note" style="color:var(--bad)">⚠ ${T2.impLib}</div>`; return; }
+  const buf=await f.arrayBuffer();
+  const wb=XLSX.read(new Uint8Array(buf),{type:"array"});
+  let best=null;
+  wb.SheetNames.forEach(n=>{
+    const rows=XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:false,defval:""});
+    const r=analyseRows(rows);
+    if(r&&r.type&&(!best||r.lignes.length>best.lignes.length)) best=r;
+  });
+  await renderImport(best,slot,f.name);
+}
+function wireImport(){
+  const inp=document.getElementById("imp-file"); if(!inp) return;
+  inp.addEventListener("change",async()=>{
+    const files=Array.prototype.slice.call(inp.files||[]); if(!files.length) return;
+    const box=document.getElementById("imp-res"); if(!box) return;
+    box.innerHTML="";
+    for(const f of files){
+      const slot=document.createElement("div"); slot.className="impslot"; box.appendChild(slot);
+      try{
+        if(/^image\//.test(f.type||"")) await impImage(f,slot);
+        else await impSheet(f,slot);
+      }catch(e){
+        slot.innerHTML=`<div class="note" style="color:var(--bad)">⚠ ${esc(f.name)} — ${esc(String((e&&e.message)||e))}</div>`;
+      }
+    }
+    try{ inp.value=""; }catch(e){}
+  });
+}
 function renderImportSection(){
   const el=document.getElementById("s-import"), T2=t();
   if(!ME||!ME.admin){ el.innerHTML=""; return; }
-  el.innerHTML=`<div class="shead"><h2>${T2.imp}</h2><span class="hint">${T2.impHint2}</span></div>
+  el.innerHTML=`<div class="shead"><h2>${T2.imp}</h2><span class="hint">${T2.impMulti}</span></div>
     <div class="card p18">
       <div class="note" style="margin:0 0 12px">${T2.impHint}</div>
-      <input type="file" id="imp-file" accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+      <input type="file" id="imp-file" multiple accept=".xlsx,.xls,.csv,image/*">
       <div id="imp-res"></div>
     </div>`;
   wireImport();
 }
-const EYE_ON='<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.8-6.6 10-6.6S22 12 22 12s-3.8 6.6-10 6.6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.7"/></svg>';
-const EYE_OFF='<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.8-6.6 10-6.6S22 12 22 12s-3.8 6.6-10 6.6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.7"/><path d="M3.6 3.6l16.8 16.8"/></svg>';
+const EYE_ON='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.8-6.6 10-6.6S22 12 22 12s-3.8 6.6-10 6.6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.7"/></svg>';
+const EYE_OFF='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.8-6.6 10-6.6S22 12 22 12s-3.8 6.6-10 6.6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.7"/><path d="M3.6 3.6l16.8 16.8"/></svg>';
 function renderAdmin(){
   const el=document.getElementById("s-admin");
   if(!ME||!ME.admin){el.innerHTML="";return;}
@@ -1541,11 +1675,11 @@ function renderAdmin(){
       </div>
       <div class="u2">
         <div class="pinw">
-          <input type="text" inputmode="numeric" pattern="[0-9]*" data-u="${i}" data-f="pin" value="" placeholder="${T2.upin}" maxlength="4" aria-label="${T2.upin}">
+          <input type="text" inputmode="numeric" pattern="[0-9]*" data-u="${i}" data-f="pin" value="" placeholder="${T2.upinS}" maxlength="4" aria-label="${T2.upin}">
           <span class="pinv" id="pv${i}"></span>
           <button class="eye" data-eye="${i}" title="${T2.showPin}" aria-label="${T2.showPin}">${EYE_ON}</button>
         </div>
-        <input type="text" data-u="${i}" data-f="opid" value="${esc(u.opid||"")}" maxlength="16" placeholder="${T2.opid}" aria-label="${T2.opid}">
+        <input type="text" data-u="${i}" data-f="opid" value="${esc(u.opid||"")}" maxlength="16" placeholder="${T2.opidS}" aria-label="${T2.opid}">
       </div>
     </div>`).join("")+
    `</div>
