@@ -12,7 +12,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https://cdnjs.cloudflare.com; manifest-src 'self'; worker-src 'self'; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; img-src 'self' data: blob:; connect-src 'self' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://tessdata.projectnaptha.com https://script.google.com https://script.googleusercontent.com; manifest-src 'self'; worker-src 'self' blob:; child-src blob:; form-action 'none'; base-uri 'none'">
 <title>Pilotage Bienne 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -294,6 +294,16 @@ input,select,textarea,.form>div{max-width:100%;min-width:0;box-sizing:border-box
 .impthumb{width:54px;height:54px;object-fit:cover;border-radius:9px;border:1px solid var(--line2);flex:0 0 auto}
 .impslot-h>div{min-width:0;flex:1 1 auto}
 .ocrcard{margin-top:11px}
+#cs-tsv{width:100%;min-height:120px;font:500 12.5px/1.5 "IBM Plex Mono";white-space:pre;overflow-x:auto}
+.cssep{margin:18px 0 8px;padding-top:14px;border-top:1px solid var(--line)}
+.shf{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:10px;margin-top:16px}
+.shsave{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+#sh-q{min-height:74px}
+.rbtn.on{background:var(--sunk);box-shadow:inset 0 0 0 2px var(--brand)}
+details>summary{cursor:pointer;font:600 12.5px/1.6 "IBM Plex Sans";color:var(--brand-ink);list-style:none}
+details>summary::-webkit-details-marker{display:none}
+details>summary:before{content:"▸ "}
+details[open]>summary:before{content:"▾ "}
 .pinw{position:relative}
 .pinw input{padding-right:60px}
 .pinw .pinv{position:absolute;right:30px;top:50%;transform:translateY(-50%);pointer-events:none;
@@ -616,6 +626,29 @@ const T={
   csPriv2:"Les noms et les téléphones n'ont jamais quitté cet appareil.",
   csEmpty:"Fichier vide.",csMap:"Vérifiez les colonnes",csMapH:"{n} lignes trouvées. Corrigez si une colonne n'est pas la bonne.",
   csNom:"Nom",csTel:"Téléphone",csPays:"Pays",csLast:"Dernier envoi",csGo:"Commencer",
+  csPrenom:"Prénom",csKey:"N° de client",
+  shComment:"Observation",shCommentPh:"Ce que le client a dit, avec ses mots.",
+  shSave:"Enregistrer et écrire dans le tableau",
+  shSending:"Écriture dans le tableau…",
+  shOk:"Écrit dans le tableau ✓",shKept:"Les cases {c} avaient déjà quelque chose : je n'y ai pas touché.",
+  shNoRow:"Ce numéro de client n'est pas dans l'onglet Bienne — rien n'a été écrit.",
+  shNoLink:"Gardé ici. Le tableau Google n'est pas encore relié.",
+  shQueued:"Pas de réseau : la ligne est gardée et repartira toute seule.",
+  shNoKey:"Colonne « N° de client » non reconnue : impossible d'écrire dans le tableau.",
+  shLink:"⚙ Liaison avec le tableau Google",
+  shUrl:"Adresse du script",shTok:"Clé",shSaveLink:"Enregistrer la liaison",shTest:"Tester",
+  shLinkH:"Une seule fois par appareil. Le script n'écrit que dans l'onglet Bienne, colonnes J et L à Q, et seulement dans les cases vides : il ne modifie jamais ce qui est déjà écrit.",
+  shLinkOk:"Liaison enregistrée ✓",shTestOk:"Le tableau répond ✓",shTestKo:"Pas de réponse. Vérifiez l'adresse et la clé.",
+  shPend:"{n} ligne(s) en attente d'écriture",shRetry:"Renvoyer maintenant",shSent:"{n} ligne(s) envoyée(s) ✓",
+  csPaste:"Collez vos lignes",
+  csPasteH:"Dans le tableau Google : ouvrez l'onglet Bienne, sélectionnez les lignes des clients, Ctrl+C (⌘+C), puis collez ici. Rien ne sort de cet appareil.",
+  csPastePh:"Collez ici (Ctrl+V)…",
+  csPasteBtn:"Utiliser ces lignes",
+  csPasteNo:"Rien à lire. Copiez d'abord les lignes dans le tableau.",
+  csOr:"Ou ouvrez un fichier Excel / CSV :",
+  csSheet:"Onglet à utiliser",
+  csCopyR:"Copier les réactions",
+  csCopyRH:"Secours si la liaison ne marche pas : colle les six colonnes L à Q dans le tableau Google, à la hauteur de la première ligne appelée.",
   csDone:"{n} enregistrés",csCall:"Appeler",csReact:"Qu'a répondu le client ?",
   csPrev:"Précédent",csSkip:"Passer",csEnd:"Session terminée",
   csEndH:"{n} réactions enregistrées. Récupérez votre fichier complété.",
@@ -735,7 +768,30 @@ const T={
   csPriv:"El fichero se queda en este aparato: no se envía ni se guarda en línea. Solo el país y la reacción se comparten con el equipo.",
   csPriv2:"Los nombres y los teléfonos no han salido de este aparato.",
   csEmpty:"Fichero vacío.",csMap:"Compruebe las columnas",csMapH:"{n} líneas encontradas. Corrija si alguna columna no es la correcta.",
-  csNom:"Nombre",csTel:"Teléfono",csPays:"País",csLast:"Último envío",csGo:"Empezar",
+  csNom:"Apellido",csTel:"Teléfono",csPays:"País",csLast:"Último envío",csGo:"Empezar",
+  csPrenom:"Nombre",csKey:"N.º de cliente",
+  shComment:"Observación",shCommentPh:"Lo que dijo el cliente, con sus palabras.",
+  shSave:"Guardar y escribir en la tabla",
+  shSending:"Escribiendo en la tabla…",
+  shOk:"Escrito en la tabla ✓",shKept:"Las casillas {c} ya tenían algo: no las he tocado.",
+  shNoRow:"Este número de cliente no está en la pestaña Bienne — no se ha escrito nada.",
+  shNoLink:"Guardado aquí. La tabla de Google todavía no está conectada.",
+  shQueued:"Sin red: la línea queda guardada y se enviará sola.",
+  shNoKey:"Columna «N.º de cliente» no reconocida: no se puede escribir en la tabla.",
+  shLink:"⚙ Conexión con la tabla de Google",
+  shUrl:"Dirección del guion",shTok:"Clave",shSaveLink:"Guardar la conexión",shTest:"Probar",
+  shLinkH:"Una sola vez por aparato. El guion solo escribe en la pestaña Bienne, columnas J y L a Q, y solo en casillas vacías: nunca modifica lo que ya está escrito.",
+  shLinkOk:"Conexión guardada ✓",shTestOk:"La tabla responde ✓",shTestKo:"No responde. Compruebe la dirección y la clave.",
+  shPend:"{n} línea(s) esperando",shRetry:"Reenviar ahora",shSent:"{n} línea(s) enviada(s) ✓",
+  csPaste:"Pegue sus líneas",
+  csPasteH:"En la tabla de Google: abra la pestaña Bienne, seleccione las líneas de los clientes, Ctrl+C (⌘+C) y péguelas aquí. Nada sale de este aparato.",
+  csPastePh:"Pegue aquí (Ctrl+V)…",
+  csPasteBtn:"Usar estas líneas",
+  csPasteNo:"No hay nada que leer. Copie primero las líneas en la tabla.",
+  csOr:"O abra un fichero Excel / CSV:",
+  csSheet:"Pestaña a usar",
+  csCopyR:"Copiar las reacciones",
+  csCopyRH:"Por si la conexión falla: pega las seis columnas L a Q en la tabla de Google, a la altura de la primera línea llamada.",
   csDone:"{n} registrados",csCall:"Llamar",csReact:"¿Qué respondió el cliente?",
   csPrev:"Anterior",csSkip:"Saltar",csEnd:"Sesión terminada",
   csEndH:"{n} reacciones registradas. Recoja su fichero completado.",
@@ -1947,6 +2003,45 @@ central:{
   pt:"Assunto: taxas — corredor {pays}, pedido de ajuste com números\n\nBom dia,\n\nCorredor {pays}. Levantamento desta semana: a nossa taxa ___, concorrente ___ (foto datada em anexo).\n\nDesde janeiro perdemos ___ operações neste corredor. Dos clientes contactados esta semana, ___ indicaram a taxa como único motivo.\n\nPedido concreto: uma taxa de ___ neste corredor. Sem isso estes clientes não voltam e o objetivo mensal da agência não será cumprido.\n\nObrigado desde já pela resposta,\nAgência de Bienne",
   en:"Subject: rates — {pays} corridor, adjustment request with figures\n\nHello,\n\n{pays} corridor. This week's survey: our rate ___, competitor ___ (dated photo attached).\n\nSince January we have lost ___ transactions on this corridor. Of the customers we called this week, ___ named the rate as the only reason they left.\n\nSpecific request: a rate of ___ on this corridor. Without it these customers will not come back and the branch's monthly target will not be met.\n\nThank you in advance for your reply,\nBienne branch"}}
 };
+const SHF=[
+ {k:"l",fr:"Contacter par",es:"Contactar por",o:["Téléphone","WhatsApp","SMS"]},
+ {k:"m",fr:"Pourquoi il ne vient plus",es:"Por qué ya no viene",o:["Taux","Service","Déménagé","Concurrence","Plus besoin","Ne répond pas"]},
+ {k:"n",fr:"Va revenir ?",es:"¿Va a volver?",o:["Oui","Non","Peut-être"]},
+ {k:"o",fr:"Action proposée",es:"Acción propuesta",o:["Rappeler","Promo corridor","Carte fidélité RIA","CornerCard","Rien"]},
+ {k:"p",fr:"Statut",es:"Estado",o:["À contacter","Contacté","Répondu","Revenu","À relancer"]}
+];
+const SHTR={"Téléphone":"Teléfono","SMS":"SMS","Taux":"Tasa","Service":"Servicio","Déménagé":"Se mudó",
+ "Concurrence":"Competencia","Plus besoin":"Ya no necesita","Ne répond pas":"No contesta",
+ "Oui":"Sí","Non":"No","Peut-être":"Quizás","Rappeler":"Volver a llamar","Promo corridor":"Promo corredor",
+ "Carte fidélité RIA":"Tarjeta fidelidad RIA","Rien":"Nada","À contacter":"Por contactar",
+ "Contacté":"Contactado","Répondu":"Respondió","Revenu":"Volvió","À relancer":"Por insistir"};
+function SHT(v){ return (lang==="es"&&SHTR[v])?SHTR[v]:v; }
+const REMAP={back:{p:"Revenu",n:"Oui"},rate:{p:"Répondu",n:"Peut-être",m:"Taux"},
+ comp:{p:"Répondu",n:"Non",m:"Concurrence"},moved:{p:"Répondu",n:"Non",m:"Plus besoin"},
+ later:{p:"À relancer",n:"Peut-être"},noans:{p:"À contacter",m:"Ne répond pas"}};
+
+const SHK="cs-sheet-link", SHQ="cs-sheet-queue";
+function shCfg(){ try{ return JSON.parse(localStorage.getItem(SHK)||"{}"); }catch(e){ return {}; } }
+function shSetCfg(o){ try{ localStorage.setItem(SHK,JSON.stringify(o)); return true; }catch(e){ return false; } }
+function shQ(){ try{ return JSON.parse(localStorage.getItem(SHQ)||"[]"); }catch(e){ return []; } }
+function shQSet(a){ try{ localStorage.setItem(SHQ,JSON.stringify(a.slice(-400))); }catch(e){} }
+async function shPush(rows){
+  const c=shCfg();
+  if(!c.url) return {ok:false,err:"nolink"};
+  try{
+    const r=await fetch(c.url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({token:c.token||"",rows:rows||[]})});
+    const j=await r.json();
+    if(j&&j.ok) return {ok:true,done:j.done||0,missing:j.missing||[],kept:j.kept||[]};
+    return {ok:false,err:(j&&j.err)||"err"};
+  }catch(e){ return {ok:false,err:"net"}; }
+}
+async function shFlush(){
+  const a=shQ(); if(!a.length) return {ok:true,done:0};
+  const r=await shPush(a);
+  if(r.ok) shQSet([]);
+  return r;
+}
 const REAC=[
  {k:"back", fr:"Il revient",        es:"Vuelve",              c:"#7FD4C1"},
  {k:"rate", fr:"C'est le taux",     es:"Es la tasa",          c:"#F5C400"},
@@ -2115,34 +2210,136 @@ function openCall(){
   document.getElementById("cs-x").addEventListener("click",()=>{el.hidden=true;el.innerHTML="";renderLearn();});
   csStep1();
 }
+function csHeaderRow(aoa){
+  const KEY=/nom|name|apellido|t[eé]l|phone|natel|pays|country|destin|pa[ií]s|pr[eé]nom|nombre|dernier|last|[uú]ltimo|envoi|env[ií]o|client|date/i;
+  let best=0,bestN=-1, lim=Math.min(aoa.length,14);
+  for(let i=0;i<lim;i++){
+    const r=aoa[i]||[]; let n=0;
+    r.forEach(c=>{ const v=String(c==null?"":c).trim(); if(v&&v.length<44&&KEY.test(v)) n++; });
+    if(n>bestN){ bestN=n; best=i; }
+  }
+  return bestN>=2?best:0;
+}
+function csLoad(aoa,name){
+  aoa=(aoa||[]).map(r=>Array.isArray(r)?r:[r]);
+  if(!aoa.length){ alert(t().csEmpty); return false; }
+  const hi=csHeaderRow(aoa);
+  const hdr=(aoa[hi]||[]).map(x=>String(x==null?"":x));
+  const rows=aoa.slice(hi+1).filter(r=>r.join("").trim()!=="");
+  if(!rows.length){ alert(t().csEmpty); return false; }
+  CS={rows:rows,hdr:hdr,map:{},i:0,wb:null,ws:null,name:name||"clients",done:0};
+  csAuto(); csStep2(); return true;
+}
+function shLinkBox(){
+  const T2=t(), c=shCfg(), q=shQ().length;
+  return `<details${(!c.url||q)?" open":""}>
+    <summary>${esc(T2.shLink)}${c.url?" ✓":""}${q?" — "+esc(T2.shPend.replace("{n}",q)):""}</summary>
+    <div class="form" style="margin-top:10px">
+      <div class="wide"><label for="sh-url">${esc(T2.shUrl)}</label>
+        <input type="text" id="sh-url" value="${esc(c.url||"")}" placeholder="https://script.google.com/macros/s/…/exec"></div>
+      <div><label for="sh-tok">${esc(T2.shTok)}</label><input type="text" id="sh-tok" value="${esc(c.token||"")}"></div>
+    </div>
+    <div class="shsave">
+      <button class="btn" id="sh-savelink">${esc(T2.shSaveLink)}</button>
+      <button class="btn ghost" id="sh-test">${esc(T2.shTest)}</button>
+      ${q?`<button class="btn ghost" id="sh-retry">${esc(T2.shRetry)} (${q})</button>`:""}
+      <span id="sh-linkmsg" class="note" style="margin:0"></span>
+    </div>
+    <div class="note" style="margin-top:8px">${esc(T2.shLinkH)}</div>
+  </details>`;
+}
+function shWireLink(){
+  const msg=(h)=>{ const e=document.getElementById("sh-linkmsg"); if(e) e.innerHTML=h; };
+  const grab=()=>({url:String((document.getElementById("sh-url")||{}).value||"").trim(),
+                   token:String((document.getElementById("sh-tok")||{}).value||"").trim()});
+  const sv=document.getElementById("sh-savelink");
+  if(sv) sv.addEventListener("click",()=>{
+    shSetCfg(grab());
+    msg('<span class="saved">'+esc(t().shLinkOk)+'</span>');
+  });
+  const tb=document.getElementById("sh-test");
+  if(tb) tb.addEventListener("click",async()=>{
+    shSetCfg(grab()); tb.disabled=true; msg(esc(t().shSending));
+    const r=await shPush([]); tb.disabled=false;
+    msg(r.ok?'<span class="saved">'+esc(t().shTestOk)+'</span>'
+            :'<span style="color:var(--bad)">'+esc(t().shTestKo)+' ('+esc(r.err||"")+')</span>');
+  });
+  const rt=document.getElementById("sh-retry");
+  if(rt) rt.addEventListener("click",async()=>{
+    rt.disabled=true; msg(esc(t().shSending));
+    const r=await shFlush(); rt.disabled=false;
+    msg(r.ok?'<span class="saved">'+esc(t().shSent.replace("{n}",r.done))+'</span>'
+            :'<span style="color:var(--bad)">'+esc(t().shTestKo)+'</span>');
+    if(r.ok) rt.remove();
+  });
+}
 function csStep1(){
   const T2=t();
   document.getElementById("cs-body").innerHTML=`
     <div class="csimp">
-      <h3>${esc(T2.csImp)}</h3>
-      <p class="hint" style="margin:0 0 12px">${esc(T2.csImpH)}</p>
-      <input type="file" id="cs-file" accept=".xlsx,.xls,.csv">
-      <div class="note" style="margin-top:12px">🔒 ${esc(T2.csPriv)}</div>
+      <h3>${esc(T2.csPaste)}</h3>
+      <p class="hint" style="margin:0 0 10px">${esc(T2.csPasteH)}</p>
+      <textarea id="cs-tsv" placeholder="${esc(T2.csPastePh)}"></textarea>
+      <div style="margin-top:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <button class="btn" id="cs-usetsv">${esc(T2.csPasteBtn)}</button>
+        <span id="cs-tsvmsg" class="note" style="margin:0"></span>
+      </div>
+      <div class="cssep">
+        <div class="note" style="margin:0 0 8px">${esc(T2.csOr)}</div>
+        <input type="file" id="cs-file" accept=".xlsx,.xls,.csv">
+        <div id="cs-sheets" style="margin-top:10px"></div>
+      </div>
+      <div class="cssep">${shLinkBox()}</div>
+      <div class="note" style="margin-top:14px">🔒 ${esc(T2.csPriv)}</div>
     </div>`;
+  shWireLink();
+  if(shCfg().url && shQ().length) setTimeout(async()=>{
+    const r=await shFlush();
+    if(r.ok&&r.done){ const e=document.getElementById("sh-linkmsg");
+      if(e) e.innerHTML='<span class="saved">'+esc(t().shSent.replace("{n}",r.done))+'</span>';
+      const b=document.getElementById("sh-retry"); if(b) b.remove(); }
+  },600);
+  document.getElementById("cs-usetsv").addEventListener("click",()=>{
+    const tx=String(document.getElementById("cs-tsv").value||"");
+    const lines=tx.split(/\r?\n/).filter(l=>l.trim()!=="");
+    if(!lines.length){ document.getElementById("cs-tsvmsg").innerHTML='<span style="color:var(--bad)">'+esc(t().csPasteNo)+'</span>'; return; }
+    const nTab=(tx.match(/\t/g)||[]).length;
+    const sep = nTab>0 ? "\t" : ((tx.split(";").length>tx.split(",").length)?";":",");
+    csLoad(lines.map(l=>l.split(sep)),"clients");
+  });
   document.getElementById("cs-file").addEventListener("change",async e=>{
-    const f=e.target.files&&e.target.files[0]; if(!f)return;
+    const f=e.target.files&&e.target.files[0]; if(!f) return;
     if(typeof XLSX==="undefined"){ alert(t().impLib); return; }
-    const buf=await f.arrayBuffer();
-    const wb=XLSX.read(buf,{type:"array"});
-    const ws=wb.Sheets[wb.SheetNames[0]];
-    const aoa=XLSX.utils.sheet_to_json(ws,{header:1,defval:""});
-    if(!aoa.length){ alert(t().csEmpty); return; }
-    CS={rows:aoa.slice(1).filter(r=>r.join("").trim()!==""),hdr:aoa[0].map(x=>String(x)),map:{},i:0,wb:wb,ws:ws,name:f.name,done:0};
-    csAuto(); csStep2();
+    let wb; try{ wb=XLSX.read(await f.arrayBuffer(),{type:"array"}); }catch(err){ alert(String(err.message||err)); return; }
+    const names=wb.SheetNames||[];
+    const grab=n=>{ try{ csLoad(XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,defval:""}),f.name); }catch(err){ alert(String(err.message||err)); } };
+    if(names.length<2){ grab(names[0]); return; }
+    const ville=String((typeof AGENCE!=="undefined"&&AGENCE.ville)||"").toLowerCase();
+    const def=names.find(n=>ville&&String(n).toLowerCase().indexOf(ville)>=0)||names[0];
+    const box=document.getElementById("cs-sheets");
+    box.innerHTML=`<label for="cs-sh">${esc(t().csSheet)}</label>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <select id="cs-sh" style="max-width:220px">`+
+        names.map(n=>`<option${n===def?" selected":""}>${esc(n)}</option>`).join("")+
+      `</select><button class="btn" id="cs-shgo">${esc(t().csGo)}</button></div>`;
+    document.getElementById("cs-shgo").addEventListener("click",()=>grab(document.getElementById("cs-sh").value));
   });
 }
 function csAuto(){
-  const h=CS.hdr.map(x=>x.toLowerCase());
-  const find=re=>{ for(let i=0;i<h.length;i++){ if(re.test(h[i])) return i; } return -1; };
-  CS.map.nom=find(/nom|name|client|apellido|nombre|beneficiario/);
-  CS.map.tel=find(/tel|phone|natel|mobile|portable|m[oó]vil/);
-  CS.map.pays=find(/pays|country|destino|destin|corridor|corredor|pais|país/);
-  CS.map.last=find(/dernier|last|derni|fecha|date|env[ií]o/);
+  const h=CS.hdr.map(x=>String(x==null?"":x).toLowerCase().trim());
+  const used=[];
+  const pick=list=>{
+    for(const re of list){
+      for(let i=0;i<h.length;i++){ if(used.indexOf(i)<0 && h[i] && re.test(h[i])){ used.push(i); return i; } }
+    }
+    return -1;
+  };
+  CS.map.key  = pick([/num[eé]ro de client/,/n[uú]mero de cliente/,/^n°\s*client/,/^id client/,/customer ?(id|n)/,/^client$/]);
+  CS.map.nom  = pick([/^nom$/,/^apellido/,/^name$/,/^beneficiario/,/^nom\b/,/^nombre y apellido/,/\bnom\b/,/\bname\b/,/apellido/]);
+  CS.map.nom2 = pick([/^pr[eé]nom/,/^nombre$/,/first ?name/,/vorname/,/pr[eé]nom/]);
+  CS.map.tel  = pick([/t[eé]l[eé]?phone/,/^t[eé]l/,/phone/,/natel/,/mobile/,/portable/,/m[oó]vil/,/\btel\b/]);
+  CS.map.pays = pick([/^pays/,/pays/,/country/,/destin/,/corridor/,/corredor/,/^pa[ií]s/,/pa[ií]s/]);
+  CS.map.last = pick([/dernier/,/[uú]ltimo/,/last/,/envoi/,/env[ií]o/,/date/]);
 }
 function csStep2(){
   const T2=t();
@@ -2152,7 +2349,7 @@ function csStep2(){
     <div class="csimp">
       <h3>${esc(T2.csMap)}</h3>
       <p class="hint" style="margin:0 0 12px">${esc(T2.csMapH.replace("{n}",CS.rows.length))}</p>
-      <div class="form">${sel("nom",T2.csNom)}${sel("tel",T2.csTel)}${sel("pays",T2.csPays)}${sel("last",T2.csLast)}</div>
+      <div class="form">${sel("key",T2.csKey)}${sel("nom",T2.csNom)}${sel("nom2",T2.csPrenom)}${sel("tel",T2.csTel)}${sel("pays",T2.csPays)}${sel("last",T2.csLast)}</div>
       <div style="margin-top:14px"><button class="btn" id="cs-go">${esc(T2.csGo)}</button></div>
     </div>`;
   document.querySelectorAll("#cs-body select[data-m]").forEach(s=>s.addEventListener("change",()=>{CS.map[s.dataset.m]=+s.value;}));
@@ -2163,7 +2360,7 @@ function csCard(){
   const T2=t();
   if(CS.i>=CS.rows.length){ csDone(); return; }
   const row=CS.rows[CS.i];
-  const nom=csVal(row,"nom")||"—", tel=csVal(row,"tel"), pays=csVal(row,"pays")||"—", last=csVal(row,"last");
+  const nom=[csVal(row,"nom"),csVal(row,"nom2")].filter(Boolean).join(" ")||"—", tel=csVal(row,"tel"), pays=csVal(row,"pays")||"—", last=csVal(row,"last");
   const tel2=tel.replace(/[^0-9+]/g,"");
   const wa=tel2?("https://wa.me/"+tel2.replace(/^\+/,"").replace(/^0/,"41")):"";
   document.getElementById("cs-body").innerHTML=`
@@ -2185,8 +2382,18 @@ function csCard(){
         <button class="hbtn" id="cs-cp">${T2.copy}</button></div>
       <div class="scbox"><div class="scT">📞 ${esc(T2.chCall)}</div><textarea id="cs-catx" readonly></textarea></div>
       <div class="csre"><div class="scT">${esc(T2.csReact)}</div><div class="csrb">`+
-        REAC.map(r=>`<button class="rbtn" data-r="${r.k}" style="border-color:${r.c}"><span class="dotc" style="background:${r.c}"></span>${esc(r[lang]||r.fr)}</button>`).join("")+
+        REAC.map(r=>`<button class="rbtn${row._rk===r.k?" on":""}" data-r="${r.k}" style="border-color:${r.c}"><span class="dotc" style="background:${r.c}"></span>${esc(r[lang]||r.fr)}</button>`).join("")+
       `</div></div>
+      <div class="shf">`+
+        SHF.map(f=>`<div><label for="sh-${f.k}">${esc(f[lang]||f.fr)}</label>
+          <select id="sh-${f.k}"><option value="">—</option>`+
+          f.o.map(v=>`<option value="${esc(v)}"${row["_"+f.k]===v?" selected":""}>${esc(SHT(v))}</option>`).join("")+
+          `</select></div>`).join("")+
+      `</div>
+      <div style="margin-top:12px"><label for="sh-q">${esc(T2.shComment)}</label>
+        <textarea id="sh-q" placeholder="${esc(T2.shCommentPh)}">${esc(row._q||"")}</textarea></div>
+      <div class="shsave"><button class="btn" id="cs-save">💾 ${esc(T2.shSave)}</button>
+        <span id="sh-msg" class="note" style="margin:0"></span></div>
       <div class="csnav">
         <button class="btn ghost sm" id="cs-prev"${CS.i?"":" disabled"}>← ${esc(T2.csPrev)}</button>
         <button class="btn ghost sm" id="cs-skip">${esc(T2.csSkip)} →</button>
@@ -2209,19 +2416,51 @@ function csCard(){
     try{navigator.clipboard.writeText(ta.value);}catch(e){}
     const b=document.getElementById("cs-cp"); b.textContent=t().copied; setTimeout(()=>{b.textContent=t().copy;},1600);
   });
-  document.querySelectorAll("#cs-body button[data-r]").forEach(b=>b.addEventListener("click",()=>csSave(b.dataset.r,pays)));
+  document.querySelectorAll("#cs-body button[data-r]").forEach(b=>b.addEventListener("click",()=>{
+    document.querySelectorAll("#cs-body button[data-r]").forEach(x=>x.classList.remove("on"));
+    b.classList.add("on"); CS.rows[CS.i]._rk=b.dataset.r;
+    const m=REMAP[b.dataset.r]||{};
+    ["m","n","p"].forEach(k=>{ const sel=document.getElementById("sh-"+k); if(sel&&m[k]) sel.value=m[k]; });
+  }));
+  document.getElementById("cs-save").addEventListener("click",()=>csSave(pays));
   document.getElementById("cs-prev").addEventListener("click",()=>{ if(CS.i>0){CS.i--;csCard();} });
   document.getElementById("cs-skip").addEventListener("click",()=>{ CS.i++; csCard(); });
 }
-async function csSave(r,pays){
+async function csLearn(r,pays){
   const day=todayISO(), mk=YEAR+"-"+pad2(CUR+1);
-  const key=day.replace(/-/g,"")+"_"+Date.now().toString(36);
+  const k=day.replace(/-/g,"")+"_"+Date.now().toString(36);
   const rec={mk:mk,day:day,pays:pays||"—",r:r,by:ME?ME.id:"",at:new Date().toISOString()};
-  apprend[key]=rec;
-  if(DB){try{await DB.doc("apprend/"+key).set(rec);}catch(e){}} else saveLocal();
-  const lab=(REAC.find(x=>x.k===r)||{}).fr||r;
-  CS.rows[CS.i]._r=lab; CS.rows[CS.i]._d=day;
-  CS.done++; CS.i++; csCard();
+  apprend[k]=rec;
+  if(DB){try{await DB.doc("apprend/"+k).set(rec);}catch(e){}} else saveLocal();
+}
+async function csSave(pays){
+  const T2=t(), row=CS.rows[CS.i];
+  const btn=document.getElementById("cs-save"), msg=document.getElementById("sh-msg");
+  const gv=k=>{ const e=document.getElementById("sh-"+k); return e?String(e.value||"").trim():""; };
+  SHF.forEach(f=>{ row["_"+f.k]=gv(f.k); });
+  row._q=String(((document.getElementById("sh-q")||{}).value)||"").trim();
+  row._d=todayISO();
+  const rk=row._rk||"";
+  if(rk){ row._r=(REAC.find(x=>x.k===rk)||{}).fr||rk; try{ await csLearn(rk,pays); }catch(e){} }
+  const key=csVal(row,"key");
+  const pack={key:key,l:row._l,m:row._m,n:row._n,o:row._o,p:row._p,q:row._q,date:row._d};
+  const next=()=>{ CS.done++; setTimeout(()=>{ CS.i++; csCard(); },900); };
+  if(!key){ if(msg) msg.innerHTML='<span style="color:var(--warn)">'+esc(T2.shNoKey)+'</span>'; next(); return; }
+  if(!shCfg().url){ if(msg) msg.innerHTML='<span style="color:var(--ink3)">'+esc(T2.shNoLink)+'</span>'; next(); return; }
+  if(btn) btn.disabled=true;
+  if(msg) msg.textContent=T2.shSending;
+  const r=await shPush([pack]);
+  if(btn) btn.disabled=false;
+  if(r.ok&&r.done){
+    const kp=(r.kept&&r.kept[0]&&r.kept[0].cols)||[];
+    if(msg) msg.innerHTML = kp.length
+      ? '<span class="saved">'+esc(T2.shOk)+'</span> <span style="color:var(--warn)">'+esc(T2.shKept.replace("{c}",kp.join(", ")))+'</span>'
+      : '<span class="saved">'+esc(T2.shOk)+'</span>';
+  }
+  else if(r.ok)    { if(msg) msg.innerHTML='<span style="color:var(--warn)">'+esc(T2.shNoRow)+'</span>'; }
+  else { const q=shQ(); q.push(pack); shQSet(q);
+         if(msg) msg.innerHTML='<span style="color:var(--warn)">'+esc(T2.shQueued)+'</span>'; }
+  next();
 }
 function csDone(){
   const T2=t();
@@ -2229,11 +2468,26 @@ function csDone(){
     <div class="csimp">
       <h3>${esc(T2.csEnd)}</h3>
       <p class="hint">${esc(T2.csEndH.replace("{n}",CS.done))}</p>
-      <button class="btn" id="cs-dl">⬇ ${esc(T2.csDl)}</button>
-      <button class="btn ghost" id="cs-again" style="margin-left:8px">${esc(T2.csAgain)}</button>
-      <div class="note" style="margin-top:14px">${esc(T2.csPriv2)}</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <button class="btn" id="cs-cpr">📋 ${esc(T2.csCopyR)}</button>
+        <button class="btn ghost" id="cs-dl">⬇ ${esc(T2.csDl)}</button>
+        <button class="btn ghost" id="cs-again">${esc(T2.csAgain)}</button>
+      </div>
+      <div class="note" style="margin-top:12px">${esc(T2.csCopyRH)}</div>
+      <div class="note" style="margin-top:6px">${esc(T2.csPriv2)}</div>
     </div>`;
   document.getElementById("cs-again").addEventListener("click",()=>{CS.i=0;csCard();});
+  document.getElementById("cs-cpr").addEventListener("click",()=>{
+    const b=document.getElementById("cs-cpr");
+    const txt=CS.rows.map(r=>["_l","_m","_n","_o","_p","_q"].map(k=>String(r[k]||"")).join("\t")).join("\n");
+    const ta=document.createElement("textarea");
+    ta.value=txt; ta.style.position="fixed"; ta.style.top="-1000px";
+    document.body.appendChild(ta); ta.select();
+    try{document.execCommand("copy");}catch(e){}
+    try{navigator.clipboard.writeText(txt);}catch(e){}
+    ta.remove();
+    b.textContent="✓ "+t().copied; setTimeout(()=>{b.textContent="📋 "+t().csCopyR;},1800);
+  });
   document.getElementById("cs-dl").addEventListener("click",()=>{
     const hdr=CS.hdr.slice(); hdr.push("Réaction","Date appel");
     const aoa=[hdr].concat(CS.rows.map(r=>{ const o=r.slice(0,CS.hdr.length);
