@@ -1220,6 +1220,7 @@ function newTaskForm(){
 function renderTasks(){
   const mk=YEAR+"-"+pad2(CUR+1), T2=t(), isAdm=!!(ME&&ME.admin), HOWTX={};
   let html=`<div class="shead"><h2>${T2.tasks}</h2><span class="hint">${T2.tasksHint}</span></div><div class="card p18">`;
+  html+=`<a class="btn" href="ruta.html" target="_blank" rel="noopener" style="display:block;text-align:center;margin:2px 0 16px;padding:14px;background:var(--brand);color:#16150F;text-decoration:none;font-weight:700;border-radius:11px">\uD83D\uDDFA\uFE0F `+(lang==="es"?"Ruta del d\u00eda \u2014 comercios (14h\u219218h)":"Route du jour \u2014 commerces (14h\u219218h)")+`</a>`;
   if(isAdm) html+=newTaskForm();
   const base=tasksFor(CUR).map((tk,i)=>Object.assign({},tk,{_id:mk+"-"+i}));
   const ex=extraList(mk).map(e=>Object.assign({},e,{_id:"x_"+e._x}));
