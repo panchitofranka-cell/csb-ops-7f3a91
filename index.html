@@ -2534,11 +2534,60 @@ function setStatus(kind){
 gateText(); buildPad(); paintCells();
 setTimeout(()=>document.getElementById("stage").classList.remove("intro"),480);
 
+/* ===== BASE COMPARTIDA (backend propio, aislado) ===== */
+const RDB_KEY="csb-bienne-2026-key";
+let RDB_URL="https://script.google.com/macros/s/AKfycbxZf-e-XcstcuSXxl1YuzlQwVPnraOSnUpLLB_U5BdyT22B3UZSX50REOFxnhKqjSWZ/exec";
+if(RDB_URL.indexOf("http")!==0) RDB_URL="";
+try{ const _c=JSON.parse(localStorage.getItem("cs-db-link")||"{}"); if(_c&&_c.url) RDB_URL=_c.url; }catch(e){}
+function rdbApi(url,payload){
+  return fetch(url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)}).then(r=>r.json());
+}
+async function makeRemoteDB(url,key){
+  const call=(p)=>rdbApi(url,Object.assign({k:key},p));
+  const ping=await call({a:"ping"});
+  if(!ping||!ping.ok) throw new Error("rdb-unreachable");
+  const subs={}; let cache={};
+  function fire(coll){ const o=cache[coll]||{}; const snap={docs:Object.keys(o).map(id=>({id,data:()=>o[id]}))}; (subs[coll]||[]).forEach(cb=>{try{cb(snap);}catch(e){}}); }
+  async function poll(){ try{ const j=await call({a:"dump"}); if(j&&j.ok){ cache=j.all||{}; for(const c in subs) fire(c); if(ME) setStatus("live"); } }catch(e){} }
+  const first=await call({a:"dump"}); if(first&&first.ok) cache=first.all||{};
+  setInterval(poll,7000);
+  const sp=(path)=>{ const i=path.indexOf("/"); return [path.slice(0,i),path.slice(i+1)]; };
+  return {
+    __remote:true,
+    refresh:poll,
+    seedIfEmpty:(users,data)=>call({a:"seedIfEmpty",users:users,data:data}),
+    doc(path){ const pr=sp(path), coll=pr[0], id=pr[1]; return {
+      async get(){ const j=await call({a:"get",coll:coll,id:id}); return {exists:!!(j&&j.exists),data:()=>(j&&j.data)||null}; },
+      async set(obj){ (cache[coll]=cache[coll]||{})[id]=obj; const j=await call({a:"set",coll:coll,id:id,data:obj}); if(!j||!j.ok) throw new Error("set"); return true; }
+    };},
+    collection(coll){ return {
+      async get(){ const j=await call({a:"list",coll:coll}); const docs=((j&&j.docs)||[]).map(d=>({id:d.id,data:()=>d.data})); return {docs:docs}; },
+      doc(id){ return {
+        async set(obj){ (cache[coll]=cache[coll]||{})[id]=obj; const j=await call({a:"set",coll:coll,id:id,data:obj}); if(!j||!j.ok) throw new Error("set"); return true; },
+        async delete(){ if(cache[coll]) delete cache[coll][id]; await call({a:"del",coll:coll,id:id}); return true; }
+      };},
+      onSnapshot(cb,err){ (subs[coll]=subs[coll]||[]).push(cb); fire(coll); return ()=>{}; }
+    };}
+  };
+}
+async function migrateLocalToRemote(db){
+  try{
+    let localUsers=[]; try{ localUsers=JSON.parse(localStorage.getItem(UK)||"[]"); }catch(e){}
+    let d={}; try{ d=JSON.parse(localStorage.getItem(LK)||"{}"); }catch(e){}
+    const data={}; ["jours","taches","mois","journal","unlocked","recap","extras","apprend"].forEach(c=>{ if(d[c]&&Object.keys(d[c]).length) data[c]=d[c]; });
+    const hasData=Object.keys(data).length>0, hasUsers=localUsers&&localUsers.length>0;
+    if(!hasData&&!hasUsers) return;
+    await db.seedIfEmpty(localUsers,data);
+  }catch(e){}
+}
+
 (async()=>{
   let db=null;
-  try{ db=(window.claude&&claude.use)?await claude.use("db"):null; }catch(e){ db=null; }
+  if(RDB_URL){ try{ db=await makeRemoteDB(RDB_URL,RDB_KEY); }catch(e){ db=null; } }
+  if(!db){ try{ db=(window.claude&&claude.use)?await claude.use("db"):null; }catch(e){ db=null; } }
   if(!db){ if(!document.getElementById("app").hidden) setStatus("local"); return; }
   DB=db;
+  if(db.__remote){ await migrateLocalToRemote(db); if(db.refresh) await db.refresh(); }
   try{ const cfg=await db.doc("config/users").get();
     if(cfg.exists&&cfg.data()&&Array.isArray(cfg.data().list)&&cfg.data().list.length){
       const u=usersFrom(cfg.data().list); if(u) USERS=u;
