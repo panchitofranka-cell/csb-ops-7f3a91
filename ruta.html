@@ -10,7 +10,8 @@ body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 -apple-sys
 h1{font-size:22px;margin:6px 0 2px}
 .sub{color:var(--ink3);font-size:13.5px;margin:0 0 16px}
 .allbtn{display:flex;gap:10px;align-items:center;justify-content:center;background:var(--brand);color:#16150F;
-  font-weight:700;font-size:16px;text-decoration:none;padding:15px;border-radius:14px;margin:0 0 20px}
+  font-weight:700;font-size:16px;text-decoration:none;padding:15px;border-radius:14px;margin:0 0 8px}
+.leg{display:flex;align-items:center;gap:8px;color:var(--ink3);font-size:12px;margin:0 0 18px;padding-left:4px}
 .stop{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);
   border-radius:14px;padding:14px;margin-bottom:11px;text-decoration:none;color:inherit}
 .stop:active{background:#26241d}
@@ -21,84 +22,101 @@ h1{font-size:22px;margin:6px 0 2px}
 .name{font-weight:600;font-size:16px;margin:1px 0}
 .addr{color:var(--ink2);font-size:14px}
 .tag{color:var(--ink3);font-size:12px;margin-top:3px}
+.walk{color:var(--brand2);font-size:11.5px;margin-top:4px}
 .pin{flex:0 0 auto;font-size:22px;opacity:.9}
+.zone{color:var(--brand2);font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin:20px 0 8px 4px}
 .note{color:var(--ink3);font-size:12.5px;margin-top:18px;line-height:1.6}
 .back{display:inline-block;margin-top:20px;color:var(--brand2);text-decoration:none;font-size:14px}
 </style></head><body>
 <div class="wrap">
   <h1>🗺️ Ruta cartas embajador</h1>
-  <p class="sub">Bienne · 14 h → 18 h · centro → Boujean/Bözingen. Toca cada comercio para abrir el mapa.</p>
-  <a class="allbtn" href="https://www.google.com/maps/dir/?api=1&travelmode=walking&origin=Gare%20de%20Bienne%2C%202502%20Biel/Bienne&destination=Z%C3%BCrichstrasse%2024c%2C%202504%20Biel/Bienne&waypoints=Zentralstrasse%2051%2C%202502%20Biel/Bienne%7CPoststrasse%2022%2C%202504%20Biel/Bienne%7CRuelle%20de%20l%27%C3%89glise%201%2C%202502%20Biel/Bienne%7CSch%C3%BCtzengasse%2079a%2C%202502%20Biel/Bienne%7CRue%20de%20Boujean%20143%2C%202504%20Biel/Bienne%7CB%C3%B6zingenstrasse%20107%2C%202504%20Biel/Bienne" target="_blank" rel="noopener">▶ Abrir TODA la ruta a pie en Maps</a>
-  <a class="stop" href="https://www.google.com/maps/search/?api=1&query=Zentralstrasse%2051%2C%202502%20Biel/Bienne" target="_blank" rel="noopener">
+  <p class="sub">Bienne · 14 h → 17 h · un solo recorrido seguido, sin devolverse. Empiezas en la estación y subes hacia Boujean. Toca cada comercio para abrir el mapa.</p>
+  <a class="allbtn" href="https://www.google.com/maps/dir/?api=1&travelmode=walking&origin=Gare%20de%20Bienne%2C%202502%20Biel/Bienne&destination=Z%C3%BCrichstrasse%2024c%2C%202504%20Biel/Bienne&waypoints=Poststrasse%2022%2C%202504%20Biel/Bienne%7CZentralstrasse%2051%2C%202502%20Biel/Bienne%7CSch%C3%BCtzengasse%2079a%2C%202502%20Biel/Bienne%7CRuelle%20de%20l%27%C3%89glise%201%2C%202502%20Biel/Bienne%7CB%C3%B6zingenstrasse%20107%2C%202504%20Biel/Bienne%7CRue%20de%20Boujean%20143%2C%202504%20Biel/Bienne" target="_blank" rel="noopener">▶ Abrir TODA la ruta a pie en Maps</a>
+  <div class="leg">📍 Orden optimizado: estación → centro → casco viejo → subiendo la Route de Boujean.</div>
+
+  <div class="zone">① Centro / estación</div>
+  <a class="stop" href="https://www.google.com/maps/search/?api=1&query=Poststrasse%2022%2C%202504%20Biel/Bienne" target="_blank" rel="noopener">
     <div class="num">1</div>
     <div class="info">
       <div class="time">14:00</div>
-      <div class="name">Le Kebap</div>
-      <div class="addr">Zentralstrasse 51, 2502 Biel/Bienne</div>
-      <div class="tag">Kebab / döner turc · Turquie · Balkans</div>
-    </div>
-    <div class="pin">📍</div>
-  </a>
-  <a class="stop" href="https://www.google.com/maps/search/?api=1&query=Poststrasse%2022%2C%202504%20Biel/Bienne" target="_blank" rel="noopener">
-    <div class="num">2</div>
-    <div class="info">
-      <div class="time">14:25</div>
       <div class="name">Balkan Metzgerei</div>
       <div class="addr">Poststrasse 22, 2504 Biel/Bienne</div>
       <div class="tag">Boucherie halal balkanique · Kosovo · Macédoine · Albanie</div>
+      <div class="walk">🚶 Al lado de la estación — punto de partida</div>
     </div>
     <div class="pin">📍</div>
   </a>
-  <a class="stop" href="https://www.google.com/maps/search/?api=1&query=Ruelle%20de%20l%27%C3%89glise%201%2C%202502%20Biel/Bienne" target="_blank" rel="noopener">
-    <div class="num">3</div>
+  <a class="stop" href="https://www.google.com/maps/search/?api=1&query=Zentralstrasse%2051%2C%202502%20Biel/Bienne" target="_blank" rel="noopener">
+    <div class="num">2</div>
     <div class="info">
-      <div class="time">14:55</div>
-      <div class="name">Batavia – Épicerie</div>
-      <div class="addr">Ruelle de l'Église 1, 2502 Biel/Bienne</div>
-      <div class="tag">Épicerie vieille ville · Visibilité</div>
+      <div class="time">14:20</div>
+      <div class="name">Le Kebap</div>
+      <div class="addr">Zentralstrasse 51, 2502 Biel/Bienne</div>
+      <div class="tag">Kebab / döner turc · Turquie · Balkans</div>
+      <div class="walk">🚶 ~3 min desde la parada anterior</div>
     </div>
     <div class="pin">📍</div>
   </a>
   <a class="stop" href="https://www.google.com/maps/search/?api=1&query=Sch%C3%BCtzengasse%2079a%2C%202502%20Biel/Bienne" target="_blank" rel="noopener">
-    <div class="num">4</div>
+    <div class="num">3</div>
     <div class="info">
-      <div class="time">15:20</div>
+      <div class="time">14:45</div>
       <div class="name">Épicerie 79a</div>
       <div class="addr">Schützengasse 79a, 2502 Biel/Bienne</div>
       <div class="tag">Épicerie de quartier · Flyers</div>
+      <div class="walk">🚶 ~5 min por el centro</div>
+    </div>
+    <div class="pin">📍</div>
+  </a>
+
+  <div class="zone">② Casco viejo</div>
+  <a class="stop" href="https://www.google.com/maps/search/?api=1&query=Ruelle%20de%20l%27%C3%89glise%201%2C%202502%20Biel/Bienne" target="_blank" rel="noopener">
+    <div class="num">4</div>
+    <div class="info">
+      <div class="time">15:10</div>
+      <div class="name">Batavia – Épicerie</div>
+      <div class="addr">Ruelle de l'Église 1, 2502 Biel/Bienne</div>
+      <div class="tag">Épicerie casco viejo · Visibilité</div>
+      <div class="walk">🚶 ~6 min subiendo al casco viejo</div>
+    </div>
+    <div class="pin">📍</div>
+  </a>
+
+  <div class="zone">③ Subiendo la Route de Boujean → Boujean</div>
+  <a class="stop" href="https://www.google.com/maps/search/?api=1&query=B%C3%B6zingenstrasse%20107%2C%202504%20Biel/Bienne" target="_blank" rel="noopener">
+    <div class="num">5</div>
+    <div class="info">
+      <div class="time">15:45</div>
+      <div class="name">Restaurant Le Sénégalais</div>
+      <div class="addr">Bözingenstrasse 107, 2504 Biel/Bienne</div>
+      <div class="tag">Restaurant africain · Sénégal · Côte d'Ivoire · Guinée</div>
+      <div class="walk">🚶 ~12 min por la Route de Boujean (misma calle, en subida)</div>
     </div>
     <div class="pin">📍</div>
   </a>
   <a class="stop" href="https://www.google.com/maps/search/?api=1&query=Rue%20de%20Boujean%20143%2C%202504%20Biel/Bienne" target="_blank" rel="noopener">
-    <div class="num">5</div>
+    <div class="num">6</div>
     <div class="info">
-      <div class="time">16:05</div>
+      <div class="time">16:15</div>
       <div class="name">BESA Biel</div>
       <div class="addr">Rue de Boujean 143, 2504 Biel/Bienne</div>
       <div class="tag">Alimentation · Mixte</div>
-    </div>
-    <div class="pin">📍</div>
-  </a>
-  <a class="stop" href="https://www.google.com/maps/search/?api=1&query=B%C3%B6zingenstrasse%20107%2C%202504%20Biel/Bienne" target="_blank" rel="noopener">
-    <div class="num">6</div>
-    <div class="info">
-      <div class="time">16:40</div>
-      <div class="name">Restaurant Le Sénégalais</div>
-      <div class="addr">Bözingenstrasse 107, 2504 Biel/Bienne</div>
-      <div class="tag">Restaurant africain · Sénégal · Côte d'Ivoire · Guinée</div>
+      <div class="walk">🚶 ~4 min más arriba, misma calle (nº 107 → 143)</div>
     </div>
     <div class="pin">📍</div>
   </a>
   <a class="stop" href="https://www.google.com/maps/search/?api=1&query=Z%C3%BCrichstrasse%2024c%2C%202504%20Biel/Bienne" target="_blank" rel="noopener">
     <div class="num">7</div>
     <div class="info">
-      <div class="time">17:15</div>
+      <div class="time">16:45</div>
       <div class="name">Coop Boujean</div>
       <div class="addr">Zürichstrasse 24c, 2504 Biel/Bienne</div>
-      <div class="tag">Grand supermarché · Visibilité</div>
+      <div class="tag">Grand supermarché · Visibilité · fin de ruta</div>
+      <div class="walk">🚶 ~6 min hasta Boujean — última parada</div>
     </div>
     <div class="pin">📍</div>
   </a>
-  <p class="note">En cada comercio: preguntar por el dueño, presentarse en 20 segundos, dejar un expositor de flyers + una carta embajador, anotar quién aceptó. No vender allí.<br>⚠️ BESA: confirmar el tipo de comercio en el sitio.</p>
+
+  <p class="note">En cada comercio: preguntar por el dueño, presentarse en 20 segundos, dejar un expositor de flyers + una carta embajador, anotar quién aceptó. No vender allí.<br>⚠️ BESA: confirmar el tipo de comercio en el sitio.<br>💡 Todo es un solo trayecto en subida hacia el noreste — no hay que devolverse.</p>
   <a class="back" href="./">← Volver a la app</a>
 </div></body></html>
